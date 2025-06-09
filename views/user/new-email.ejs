@@ -1,0 +1,184 @@
+<style>
+    /* Main content section */
+/* General body styles */
+body {
+    background-color: #f8f9fa; /* Light background color */
+    font-family: Arial, sans-serif; /* Font style */
+}
+
+/* Main content section */
+.content-main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Full height */
+}
+
+/* Card styles */
+.card {
+    background-color: #ffffff; /* White background for the card */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    padding: 20px; /* Padding inside the card */
+}
+
+/* Card title styles */
+.card-title {
+    font-size: 24px; /* Font size for the title */
+    color: #333; /* Dark text color */
+    text-align: center; /* Centered title */
+}
+
+/* Input field styles */
+.form-control {
+    border: 1px solid #ced4da; /* Light border */
+    border-radius: 4px; /* Rounded corners */
+    padding: 10px; /* Padding inside the input */
+    width: 100%; /* Full width */
+    transition: border-color 0.3s; /* Smooth transition for border color */
+}
+
+/* Input field focus styles */
+.form-control:focus {
+    border-color: #007bff; /* Blue border on focus */
+    outline: none; /* Remove default outline */
+}
+
+/* Error message styles */
+.error-message {
+    color: #dc3545; /* Red color for error messages */
+    font-size: 14px; /* Font size for error messages */
+    margin-top: 5px; /* Space above error message */
+}
+
+/* Button styles */
+.btn {
+    background-color: #007bff; /* Blue background */
+    color: #ffffff; /* White text */
+    border: none; /* No border */
+    border-radius: 4px; /* Rounded corners */
+    padding: 10px; /* Padding inside the button */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition for background color */
+}
+
+/* Button hover styles */
+.btn:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Invalid input styles */
+.is-invalid {
+    border-color: #dc3545; /* Red border for invalid inputs */
+}
+</style>
+<section class="content-main mt-80 mb-80">
+  <div class="card mx-auto card-login col-4">
+    <div class="card-body">
+      <h4 class="card-title mb-4">Enter Old Email</h4>
+      <form method="post" onsubmit="return submitEmailUpdate(event)">
+        <div class="mb-3">
+          <input class="form-control" name="oldEmail" placeholder="Old Email" type="text" id="oldEmail">
+          <div class="error-message text-danger" id="old-email-error"></div>
+        </div>
+
+        <h4 class="card-title mb-4">Enter New Email</h4>
+        <div class="mb-3">
+          <input class="form-control" name="newEmail" placeholder="New Email" type="text" id="newEmail">
+          <div class="error-message text-danger" id="new-email-error"></div>
+        </div>
+
+        <div class="mb-4">
+          <button type="submit" class="btn btn-primary w-100">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+ async function submitEmailUpdate(event) {
+  event.preventDefault();
+
+  const oldEmailInput = document.getElementById('oldEmail');
+  const newEmailInput = document.getElementById('newEmail');
+  const oldEmailError = document.getElementById('old-email-error');
+  const newEmailError = document.getElementById('new-email-error');
+
+  const oldEmailValue = oldEmailInput.value.trim();
+  const newEmailValue = newEmailInput.value.trim();
+
+  const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+  // Clear previous errors
+  oldEmailError.textContent = '';
+  newEmailError.textContent = '';
+  oldEmailInput.classList.remove('is-invalid');
+  newEmailInput.classList.remove('is-invalid');
+
+  let hasError = false;
+
+  if (oldEmailValue === '') {
+    oldEmailError.textContent = 'Old email is required.';
+    oldEmailInput.classList.add('is-invalid');
+    hasError = true;
+  } else if (!oldEmailValue.match(emailPattern)) {
+    oldEmailError.textContent = 'Enter a valid old email address.';
+    oldEmailInput.classList.add('is-invalid');
+    hasError = true;
+  }
+
+  if (newEmailValue === '') {
+    newEmailError.textContent = 'New email is required.';
+    newEmailInput.classList.add('is-invalid');
+    hasError = true;
+  } else if (!newEmailValue.match(emailPattern)) {
+    newEmailError.textContent = 'Enter a valid new email address.';
+    newEmailInput.classList.add('is-invalid');
+    hasError = true;
+  }
+
+  if (hasError) return;
+
+  // Send old and new email to backend
+  try {
+    const response = await fetch('/update-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        oldEmail: oldEmailValue,
+        newEmail: newEmailValue
+      })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      // ✅ Now call POST /change-email-otp to generate OTP and send email
+      await fetch('/change-email-otp', {
+        method: 'POST'
+      });
+
+      // ✅ Then redirect to OTP page
+      window.location.href = '/change-email-otp';
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: result.message
+      });
+    }
+  } catch (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Server Error',
+      text: 'Something went wrong!'
+    });
+  }
+}
+
+</script>
+
+
+

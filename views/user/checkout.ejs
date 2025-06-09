@@ -1,0 +1,796 @@
+<%- include("../../views/partials/user/header") %>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/linearicons.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/themify-icons.css">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/owl.carousel.css">
+    <link rel="stylesheet" href="css/nice-select.css">
+    <link rel="stylesheet" href="css/nouislider.min.css">
+    <link rel="stylesheet" href="css/ion.rangeSlider.css" />
+    <link rel="stylesheet" href="css/ion.rangeSlider.skinFlat.css" />
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <link rel="stylesheet" href="css/main.css">
+
+
+<style>
+ .card-green {
+   background-color: #ADD8E6;
+ }
+ .main {
+   padding: 30px 0;
+ }
+
+
+ .dashboard-menu {
+   background-color: #cce3e6;
+   border-radius: 10px;
+   padding: 15px;
+   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+ }
+
+
+ .dashboard-menu .nav-link {
+ font-weight: bold;
+ color: #30683c;
+ box-shadow: 0 4px 10px rgba(123, 131, 112, 0.3), 0 4px 20px rgba(0, 191, 255, 0.2);
+ transition: box-shadow 0.3s ease;
+}
+
+
+.dashboard-menu .nav-link:hover {
+ color: #00bfff;
+ box-shadow: 0 4px 15px rgba(173, 255, 47, 0.5), 0 6px 25px rgba(0, 191, 255, 0.4);
+}
+
+
+ .card {
+   border-radius: 10px;
+   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+   margin-bottom: 20px;
+ }
+
+
+ .card-header {
+   background-color: #487379;
+   color: white;
+   border-radius: 10px 10px 0 0;
+ }
+
+
+ .btn-success {
+   background-color: #577194;
+   border-color: #6bb87d;
+ }
+
+
+ .btn-success:hover {
+   background-color: #506955;
+ }
+
+
+ .form-group {
+   margin-bottom: 15px;
+ }
+
+
+ .required {
+   color: red;
+ }
+
+
+  @media (max-width: 768px) {
+   .dashboard-menu {
+     padding: 10px;
+   }
+
+
+   .card {
+     margin-bottom: 15px;
+   }
+ }
+ .page-header.breadcrumb-wrap {
+ background-color: #eee2e9;
+ padding: 15px 0;
+}
+
+
+.breadcrumb {
+ display: flex;
+ align-items: center;
+ font-family: 'Arial', sans-serif;
+ font-size: 16px;
+ color: #121311;
+}
+
+
+.breadcrumb a {
+ color: #007bff;
+ text-decoration: none;
+ position: relative;
+ margin: 0 5px;
+}
+
+
+.breadcrumb a:hover {
+ color: #0056b3;
+}
+
+
+.breadcrumb span {
+ margin: 0 5px;
+ color: #999;
+}
+
+
+.breadcrumb a::after {
+ content: '';
+ position: absolute;
+ width: 100%;
+ height: 2px;
+ background: #6e6e3a;
+ left: 0;
+ bottom: -2px;
+ transform: scaleX(0);
+ transition: transform 0.3s ease;
+}
+
+
+.breadcrumb a:hover::after {
+ transform: scaleX(1);
+}
+
+.profile-image-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .rounded-circle {
+        border-radius: 50%;
+        border: 2px solid #fff; /* Optional: Add a border to the image */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Optional: Add a shadow effect */
+    }
+
+    .ml-3 {
+        margin-left: 15px; /* Space between image and text */
+    }
+    
+        .order-summary {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .order-summary img {
+            width: 50px;
+            height: 50px;
+        }
+        .order-summary .product-name {
+            font-size: 14px;
+        }
+        .order-summary .product-mn {
+            font-size: 12px;
+            color: gray;
+        }
+        .order-summary .product-price {
+            color: blue;
+            font-weight: bold;
+        }
+        .order-summary .total-price {
+            color: blue;
+            font-weight: bold;
+        }
+        .order-summary .apply-btn {
+            background-color: #ffc107;
+            color: white;
+        }
+        .order-summary .place-order-btn {
+            background-color: #ffc107;
+            color: white;
+        }
+
+    .address-cards .card {
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .address-cards .card:hover {
+        border-color: #007bff;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    
+    .address-cards .form-check {
+        padding-left: 0;
+    }
+    
+    .address-cards .form-check-input {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+    }
+    
+    .address-cards .form-check-label {
+        display: block;
+        width: 100%;
+        cursor: pointer;
+    }
+    
+    .address-cards .card.selected {
+        border-color: #007bff;
+        background-color: #f8f9ff;
+    }
+    #img {
+        
+    }
+
+    /* Coupon styles */
+    .coupon-applied {
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+
+    .coupon-applied .coupon-name {
+        color: #155724;
+        font-weight: bold;
+    }
+
+    .coupon-discount {
+        color: #28a745 !important;
+        font-weight: bold;
+    }
+
+
+    </style>
+
+ 
+ <!-- Start Banner Area -->
+ <section class="banner-area organic-breadcrumb">
+    <div class="container">
+        <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+            <div class="col-first">
+                <h1>Checkout</h1>
+                <nav class="d-flex align-items-center">
+                    <a href="/">Home<span class="lnr lnr-arrow-right"></span></a>
+                    <a href="/cart">Cart<span class="lnr lnr-arrow-right"></span></a>
+                    <a href="/checkout">Checkout</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Banner Area -->
+
+
+   
+
+<body class="bg-light">
+    <form id ="get-address" >
+        <div class="container py-5">
+        <div class="row">
+
+    <div class="col-lg-6 mb-6">
+    <div class="bg-white p-4 rounded shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="h4 mb-0">Shipping Address</h2>
+           <a href="/addAddressCheckout" class="btn btn-primary add-address-btn">Add New Address</a>
+
+
+        </div>
+        
+ <!-- Address Selection Area -->
+<% if (userAddress && userAddress.address.length > 0) { %>
+  <div class="row" id="address">
+    <% userAddress.address.forEach((address) => { %>
+      <div class="col-12 mb-3">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" 
+                     name="selectedAddress" 
+                     id="address_<%= address._id %>" 
+                     value="<%= address._id %>">
+              <label class="form-check-label" for="address_<%= address._id %>">
+                <span class="badge badge-primary mb-2"><%= address.addressType %></span>
+                <h6 class="mb-1"><%= address.name %></h6>
+                <p class="mb-1 text-muted small">
+                  <%= address.streetAddress %><br>
+                  <%= address.city %>, <%= address.state %><br>
+                  <%= address.country %><br>
+                  Phone: <%= address.phone %>
+                </p>
+              </label>
+            </div>
+
+           
+            <div class="mt-2 d-inline-flex gap-3">
+              <a href="#" class="text-primary" onclick="confirmEdit('<%= address._id %>')">Edit</a>
+             
+            </div>
+
+          </div>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+<% } else { %>
+  <div class="text-center py-4">
+    <p class="mb-3">No addresses available</p>
+  </div>
+<% } %>
+
+
+
+     
+    </div>
+</div>
+
+
+
+        
+<!-- Order Summary -->
+<div class="col-lg-6">
+  <div class="order-summary">
+    <h2 class="h4 mb-4">Your Order</h2>
+    <div class="border-bottom pb-3 mb-3">
+      <div class="d-flex justify-content-between mb-2">
+        <span class="font-weight-bold">Products</span>
+      </div>
+
+      <% if (cartItems && cartItems.length > 0) { %>
+        <% cartItems.forEach(function(item) { %>
+          <div class="d-flex justify-content-between mb-3 align-items-start">
+            <a style="all: unset; display: flex; align-items: center;" href="/productDetails?id=<%= item.product._id %>">
+              <img src="<%= item.product.productImage && item.product.productImage.length > 0 ? item.product.productImage[0] : '/default-image.jpg' %>" 
+                   alt="<%= item.product.productName %>" 
+                   style="width: 100px; height: auto; object-fit: contain; margin-right: 15px;">
+              <div>
+                <p class="product-name mb-1 font-weight-bold">
+                  <%= item.product.productName.split('|')[0].trim() %>  (Size: <%= item.size %>, x<%= item.quantity %>)
+                </p>
+                <p class="product-category mb-1 text-muted">
+                  <%= item.product.category ? item.product.category.name : 'No category' %>
+                </p>
+                <% if (item.discountPercent > 0) { %>
+                  <p class="mb-1 text-muted" style="text-decoration: line-through;">
+                    ₹ <%= item.regularPriceSingle.toFixed(2) %>
+                  </p>
+                  <p class="mb-0 font-weight-bold text-success">
+                    ₹ <%= item.salesPrice.toFixed(2) %>
+                    <small class="text-success">(<%= item.discountPercent %>% off)</small>
+                  </p>
+                <% } else { %>
+                  <p class="mb-0 font-weight-bold">
+                    ₹ <%= item.salesPrice.toFixed(2) %> 
+                  </p>
+                <% } %>
+              </div>
+            </a>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <div class="text-center">
+          <p class="lead mb-4">No item found in Cart</p>
+          <a href="/shop" class="btn btn-primary">Continue Shopping</a>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Coupon Section -->
+    <div class="border-bottom pb-3 mb-3">
+      <div class="coupon-section mb-4" id="coupon-input-section">
+        <h3 class="h5 mb-3">Apply Coupon</h3>
+        <div class="input-group">
+          <input type="text" id="couponCode" class="form-control" placeholder="Enter coupon code">
+          <button class="btn btn-primary" type="button" onclick="applyCoupon()">Apply</button>
+        </div>
+        <p id="couponMessage" class="mt-2" style="display: none;"></p>
+        <a href="/mycoupons">View All Coupons</a>
+      </div>
+    
+      <div id="appliedCoupon" class="coupon-applied" style="display: none;">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <span class="coupon-name" id="appliedCouponName"></span>
+            <div class="text-success">
+              <small>Discount: ₹<span id="appliedCouponDiscount">0.00</span></small>
+            </div>
+          </div>
+          <button class="btn btn-sm btn-outline-danger" type="button" onclick="removeCoupon()">Remove</button>
+        </div>
+      </div>
+    </div>
+
+    <% if (cartItems && cartItems.length > 0) { %>
+      <!-- Order Summary Section -->
+      <div class="border-bottom pb-3 mb-3" id="order-summary-section">
+        <div class="d-flex justify-content-between mb-2">
+          <span>Subtotal</span>
+          <span id="subtotal-display">₹ <%= subtotal.toFixed(2) %></span>
+        </div>
+
+        <div class="d-flex justify-content-between mb-2" id="coupon-discount-row">
+          <span>Coupon Discount</span>
+          <span class="coupon-discount">(-) ₹ <span id="coupon-discount-amount">0.00</span></span>
+        </div>
+
+        <div class="d-flex justify-content-between mb-2">
+          <span>Shipping</span>
+          <span id="shipping-display"> ₹ 50</span>
+        </div>
+
+        <% if (shippingCharge > 0) { %>
+          <div class="text-right text-primary mb-2">
+            <a href="#" onclick="showShippingCharge(); return false;">View shipping charge</a>
+          </div>
+        <% } %>
+
+        <div class="d-flex justify-content-between font-weight-bold">
+          <span>Total</span>
+          <span class="total-price" id="grand-total-display">
+            ₹ <%= grandTotal.toFixed(2) %>
+          </span>
+        </div>
+      </div>
+
+      <!-- Payment Method Section -->
+      <div class="mb-4">
+        <h3 class="h5 mb-3">Payment Method</h3>
+        
+        <div class="mb-3">
+          <label class="d-flex align-items-center">
+            <input type="radio" name="payment" value="online" class="mr-2">
+            <span class="ml-2">Online Payment</span>
+          </label>
+        </div>
+        
+        <div class="mb-3">
+          <label class="d-flex align-items-center">
+            <input type="radio" name="payment" value="cod" class="mr-2">
+            <span>Cash on delivery</span>
+          </label>
+        </div>
+      </div>
+
+      <button class="btn place-order-btn btn-block" onclick="placeOrder(event)">Place Order</button>
+    <% } %>
+  </div>
+</div>
+        </div>
+    </div>
+    
+</form>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+</body>
+
+<script>
+// Fixed JavaScript with proper element targeting and coupon functionality
+let appliedCoupon = null;
+let originalSubtotal = <%= subtotal %>;
+let originalShipping = <%= shippingCharge %>;
+let originalGrandTotal = <%= grandTotal %>;
+
+function applyCoupon() {
+    const couponCode = document.getElementById('couponCode').value.trim();
+    
+    if (!couponCode) {
+        showCouponMessage('Please enter a coupon code', 'red');
+        return;
+    }
+
+    // Show loading state
+    const applyButton = document.querySelector('#coupon-input-section button');
+    const originalText = applyButton.textContent;
+    applyButton.textContent = 'Applying...';
+    applyButton.disabled = true;
+
+    fetch('/apply-coupon', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+            couponCode: couponCode, 
+            subtotal: originalSubtotal 
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Reset button state
+        applyButton.textContent = originalText;
+        applyButton.disabled = false;
+
+        if (data.success) {
+            appliedCoupon = data.coupon;
+            showAppliedCoupon(data.coupon);
+            updateOrderSummary();
+            showCouponMessage('Coupon applied successfully!', 'green');
+            
+            // Hide coupon input section and show applied coupon
+            document.getElementById('coupon-input-section').style.display = 'none';
+            document.getElementById('appliedCoupon').style.display = 'block';
+        } else {
+            showCouponMessage(data.message || 'Invalid coupon code', 'red');
+        }
+    })
+    .catch(error => {
+        // Reset button state
+        applyButton.textContent = originalText;
+        applyButton.disabled = false;
+        
+        console.error('Error:', error);
+        showCouponMessage('An error occurred while applying the coupon', 'red');
+    });
+}
+
+function removeCoupon() {
+    appliedCoupon = null;
+    updateOrderSummary();
+    
+    // Show coupon input section and hide applied coupon
+    document.getElementById('coupon-input-section').style.display = 'block';
+    document.getElementById('appliedCoupon').style.display = 'none';
+    
+    // Clear input and message
+    document.getElementById('couponCode').value = '';
+    document.getElementById('couponMessage').style.display = 'none';
+}
+
+function showAppliedCoupon(coupon) {
+    document.getElementById('appliedCouponName').textContent = coupon.name || coupon.code;
+    document.getElementById('appliedCouponDiscount').textContent = (coupon.offerPrice || 0).toFixed(2);
+}
+
+function showCouponMessage(message, color) {
+    const messageElement = document.getElementById('couponMessage');
+    messageElement.textContent = message;
+    messageElement.style.color = color;
+    messageElement.style.display = 'block';
+    
+    // Hide message after 5 seconds
+    setTimeout(() => {
+        messageElement.style.display = 'none';
+    }, 5000);
+}
+
+function updateOrderSummary() {
+    // Calculate discount
+    let discount = 0;
+    if (appliedCoupon) {
+        discount = appliedCoupon.offerPrice || 0;
+    }
+    
+    // Update coupon discount display
+    document.getElementById('coupon-discount-amount').textContent = discount.toFixed(2);
+    
+    // Calculate new grand total
+    const newGrandTotal = originalSubtotal - discount + originalShipping;
+    
+    // Update grand total display
+    document.getElementById('grand-total-display').textContent = `₹ ${newGrandTotal.toFixed(2)}`;
+    
+    // Show/hide coupon discount row based on whether coupon is applied
+    const couponDiscountRow = document.getElementById('coupon-discount-row');
+    if (discount > 0) {
+        couponDiscountRow.style.display = 'flex';
+    } else {
+        couponDiscountRow.style.display = 'none';
+    }
+}
+
+// Initialize page
+document.addEventListener("DOMContentLoaded", function () {
+    // Hide coupon discount row initially if no coupon is applied
+    if (!appliedCoupon) {
+        const couponDiscountRow = document.getElementById('coupon-discount-row');
+        if (couponDiscountRow) {
+            couponDiscountRow.style.display = 'none';
+        }
+    }
+
+    const addBtn = document.querySelector(".add-address-btn");
+    if (addBtn) {
+        addBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: "Add New Address?",
+                text: "Do you want to add a new shipping address?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Yes",
+                cancelButtonText: "No"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.assign(addBtn.getAttribute("href"));
+                }
+            });
+        });
+    }
+});
+
+function placeOrder(event) {
+    event.preventDefault();
+
+    const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
+    const selectedPayment = document.querySelector('input[name="payment"]:checked');
+
+    if (!selectedAddress) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'No Address Selected',
+            text: 'Please select a shipping address before placing your order.',
+            confirmButtonColor: '#577194'
+        });
+        return;
+    }
+
+    if (!selectedPayment) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'No Payment Method Selected',
+            text: 'Please select a payment method before placing your order.',
+            confirmButtonColor: '#577194'
+        });
+        return;
+    }
+
+    const addressId = selectedAddress.value;
+    const paymentMethod = selectedPayment.value;
+
+    // Show loading
+    Swal.fire({
+        title: 'Processing Order...',
+        text: 'Please wait while we process your order.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    // Include coupon information in order data
+    const orderData = { 
+        addressId, 
+        paymentMethod,
+        appliedCoupon: appliedCoupon
+    };
+
+    // Proceed with order placement
+    fetch('/placeOrder', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(orderData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        Swal.close();
+        
+        if (data.success) {
+            if (paymentMethod === 'online') {
+                // Handle Razorpay payment
+                const options = {
+                    key: '<%= razorpayKeyId %>',
+                    amount: data.amount * 100,
+                    currency: data.currency,
+                    name: 'Karma',
+                    description: 'Order Payment',
+                    order_id: data.razorpayOrderId,
+                    handler: function (response) {
+                        // Verify payment
+                        fetch('/verifyPayment', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                                orderId: data.orderId
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(verifyData => {
+                            if (verifyData.success) {
+                                window.location.href = `/orderSuccess?orderId=${data.orderId}`;
+                            } else {
+                                window.location.href = `/orderFailure?orderId=${data.orderId}`;
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Verification error:', err);
+                            window.location.href = `/orderFailure?orderId=${data.orderId}`;
+                        });
+                    },
+                    prefill: {
+                        name: data.name,
+                        email: data.email,
+                        contact: data.contact
+                    },
+                    theme: {
+                        color: '#577194'
+                    },
+                    modal: {
+                        ondismiss: function() {
+                            window.location.href = `/orderFailure?orderId=${data.orderId}`;
+                        }
+                    }
+                };
+                const razorpay = new Razorpay(options);
+                razorpay.open();
+            } else if (paymentMethod === 'cod') {
+                window.location.href = `/orderSuccess?orderId=${data.orderId}`;
+            }
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Order Failed',
+                text: data.message || 'Something went wrong.',
+                confirmButtonColor: '#577194'
+            });
+        }
+    })
+    .catch(err => {
+        Swal.close();
+        console.error('Order error:', err);
+        Swal.fire({
+            icon: 'error',
+            title: 'Order Error',
+            text: 'An unexpected error occurred.',
+            confirmButtonColor: '#577194'
+        });
+    });
+}
+
+function confirmEdit(id) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you want to edit this address?",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#aaa',
+        confirmButtonText: 'Yes, edit it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = `/editAddress?id=${id}&from=address`;
+        }
+    });
+}
+
+function showShippingCharge() {
+    Swal.fire({
+        title: 'Shipping Information',
+        html: `
+            <div class="text-left">
+                <p><strong>Shipping Charges:</strong></p>
+                <ul>
+                    <li>Orders above ₹500: <span class="text-success">FREE</span></li>
+                    <li>Orders below ₹500: ₹50</li>
+                </ul>
+                <p class="text-muted small mt-3">
+                    * Free shipping applies to orders with subtotal ₹500 or more
+                </p>
+            </div>
+        `,
+        icon: 'info',
+        confirmButtonColor: '#577194'
+    });
+}
+</script>
+
+</html>
+
+<%- include("../../views/partials/user/footer") %>

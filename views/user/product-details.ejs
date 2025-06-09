@@ -1,0 +1,688 @@
+<%- include('../partials/user/header') %>
+<head>
+    <link rel="stylesheet" href="css/linearicons.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/themify-icons.css">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/owl.carousel.css">
+    <link rel="stylesheet" href="css/nice-select.css">
+    <link rel="stylesheet" href="css/nouislider.min.css">
+    <link rel="stylesheet" href="css/ion.rangeSlider.css" />
+    <link rel="stylesheet" href="css/ion.rangeSlider.skinFlat.css" />
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+
+<style>
+  #side-show {
+    margin-top: -170px;
+  }
+  .tab-content {
+  overflow: visible;
+  padding-bottom: 50px; /* optional for spacing */
+}
+
+
+
+.glow-button {
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s ease-in-out;
+  color: black;
+  font-weight: 600;
+   width: 211px;
+    text-align: center;
+      margin-top: 112px;
+    margin-left: -226px;
+}
+
+.glow-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.6);
+  transform: skewX(-20deg);
+}
+
+.glow-button:active::after {
+  animation: shine 0.6s ease-out;
+}
+
+@keyframes shine {
+  0% {
+    left: -75%;
+  }
+  100% {
+    left: 125%;
+  }
+}
+
+ .selected-size {
+    background-color: black;
+    color: white;
+  }
+
+    .size-option.selected {
+    background-color: black;
+    color: white;
+  }
+
+
+
+</style>
+
+<!-- Start Banner Area -->
+<section class="banner-area organic-breadcrumb">
+  <div class="container">
+    <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+      <div class="col-first">
+        <h1>Product Details Page</h1>
+        <nav class="d-flex align-items-center">
+          <a href="/">Home<span class="lnr lnr-arrow-right"></span></a>
+          <a href="/shop">Shop<span class="lnr lnr-arrow-right"></span></a>
+          <a href="#">Product Details</a>
+        </nav>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End Banner Area -->
+
+<div class="product_image_area">
+  <div class="container">
+    <div class="product-details-container" style="display: flex; gap: 30px; flex-wrap: wrap;">
+      <!-- Left: Images -->
+      <div class="product-image-container" style="flex: 1; min-width: 300px;">
+        <!-- Main Image (Zoom enabled) -->
+        <div class="main-image zoom-container" style="margin-bottom: 20px;">
+          <img class="img-fluid zoom-image" src="/<%= product.productImage[0] %>" alt="" style="width: 100%; max-height: 500px; object-fit: contain;">
+        </div>
+        <!-- Sub Images (No zoom) -->
+        <div class="sub-images" style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <% product.productImage.forEach(function(img) { %>
+            <div class="sub-image">
+              <img src="/<%= img %>" alt="" 
+                   style="width: 80px; height: 80px; object-fit: cover; cursor: pointer; "
+                   onclick="document.querySelector('.main-image img').src='/<%= img %>'">
+            </div>
+          <% }); %>
+        </div>
+      </div>
+
+      <!-- Right: Product Info (Enhanced) -->
+      <div class="product-info-container" style="flex: 1; min-width: 300px;">
+        <div class="s_product_text">
+          <h3><%= product.productName %></h3>
+          <h2>₹ <%= Math.round(product.salePrice) %>.00</h2>
+          <div style="display: flex; align-items: center;">
+            <h6 class="l-through" style="margin-bottom: 0;">₹ <%= product.regularPrice %>.00</h6>
+            <h4 style="margin-left: 10px;">
+              <%= Math.max(product.category.categoryOffer, product.productOffer) %> % Off
+            </h4>
+          </div>
+          
+          <!-- Enhanced Product Information -->
+          <ul class="list">
+            <li><a href="#"><span>Category</span> : <%= product.category.name %></a></li>
+            <li><a href="#"><span>Brand</span> : <%= product.brand || 'N/A' %></a></li>
+          
+            
+         <!-- Select Size Section -->
+<% if (product.variants && product.variants.length > 0) { %>
+  <div style="margin-top: 20px;">
+    <h5>Select Size:</h5>
+    <div id="size-options" style="display: flex; gap: 10px; flex-wrap: wrap;">
+      <% product.variants.forEach((variant, index) => { %>
+        <% if (variant.quantity > 0) { %>
+          <div class="size-option available-size <%= index === 0 ? 'selected' : '' %>" 
+               data-size="<%= variant.size %>" 
+               data-stock="<%= variant.quantity > 0 ? 'In Stock' : 'Out of Stock' %>"
+               onclick="selectSize(this)"
+               style="padding: 8px 14px; border: 1px solid black; border-radius: 5px; cursor: pointer;">
+            <%= variant.size %>
+          </div>
+        <% } else { %>
+          <div class="size-option unavailable-size"
+               style="padding: 8px 14px; border: 1px solid #ccc; border-radius: 5px; color: #aaa; cursor: not-allowed; text-decoration: line-through;">
+            <%= variant.size %>
+          </div>
+        <% } %>
+      <% }); %>
+    </div>
+
+    <!-- Stock Status Display -->
+    <div style="margin-top: 10px;" id="stock-status">
+      <% const firstVariant = product.variants[0]; %>
+      <% if (firstVariant.quantity > 0) { %>
+        <span class="stock-available" style="color: green; font-weight: bold;">
+          ✓ In Stock
+        </span>
+      <% } else { %>
+        <span class="stock-unavailable" style="color: red; font-weight: bold;">
+          ✗ Out of Stock
+        </span>
+      <% } %>
+    </div>
+  </div>
+<% } %>
+
+            
+            <!-- Quantity Display -->
+         
+              <% if (product.quantity > 0 && product.quantity <= 5) { %>
+                <small style="color: orange; margin-left: 10px;">⚠️ Limited Stock!</small>
+              <% } %>
+            </li>
+
+           
+
+            <!-- Additional Product Details -->
+            <% if (product.size) { %>
+              <li><a href="#"><span>Size</span> : <%= product.size %></a></li>
+            <% } %>
+            
+           
+            
+         
+
+          <!-- Stock Alert Box -->
+          <% if (product.quantity === 0) { %>
+            <div class="alert alert-danger" role="alert" style="margin: 15px 0;">
+              <strong>⚠️ Out of Stock!</strong> This product is currently unavailable.
+            </div>
+          <% } else if (product.quantity <= 5) { %>
+            <div class="alert alert-warning" role="alert" style="margin: 15px 0;">
+              <strong>⏰ Hurry Up!</strong> Only <%= product.quantity %> items left in stock!
+            </div>
+          <% } else if (product.quantity <= 10) { %>
+            <div class="alert alert-info" role="alert" style="margin: 15px 0;">
+              <strong>📦 Limited Stock:</strong> <%= product.quantity %> items available.
+            </div>
+          <% } %>
+
+          <p><%= product.description %></p>
+          
+          <!-- Enhanced Action Buttons -->
+         <div class="card_area d-flex align-items-center">
+  <a class="primary-btn" href="#" onclick="addToCart('<%=product._id%>')">Add to Cart</a>
+
+
+
+  
+  <a class="icon_btn d-inline-block" onclick="addToWishlist('<%=product._id%>', '<%= product.variants.size%>')" href="#" style="margin-left: 15px;">
+    <i class="lnr lnr-heart"></i>
+  </a>
+</div>
+
+
+          <!-- Quantity Selector (if in stock) -->
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="product_description_area">
+  <div class="container">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Description</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="specs-tab" data-toggle="tab" href="#specs" role="tab" aria-controls="specs" aria-selected="false">Specifications</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Comments</a>
+      </li> 
+    </ul>
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
+        <p><%=product.description%></p>
+      </div>
+
+      <!-- New Specifications Tab -->
+      <div class="tab-pane fade" id="specs" role="tabpanel" aria-labelledby="specs-tab">
+        <div class="row">
+          <div class="col-md-6">
+            <h5>Product Details</h5>
+            <table class="table table-bordered">
+              <tbody>
+                <tr><td><strong>Product Name</strong></td><td><%= product.productName %></td></tr>
+                <tr><td><strong>Category</strong></td><td><%= product.category.name %></td></tr>
+                <tr><td><strong>Brand</strong></td><td><%= product.brand || 'N/A' %></td></tr>
+                <tr><td><strong>Sale Price</strong></td><td>₹ <%= Math.round(product.salePrice) %></td></tr>
+                <tr><td><strong>Stock Quantity</strong></td><td><%= product.quantity %> units</td></tr>
+                <% if (product.size) { %>
+                  <tr><td><strong>Size</strong></td><td><%= product.size %></td></tr>
+                <% } %>
+                <% if (product.color) { %>
+                  <tr><td><strong>Color</strong></td><td><%= product.color %></td></tr>
+                <% } %>
+               
+              </tbody>
+            </table>
+          </div>
+          <div class="col-md-6">
+            <h5>Offers & Discounts</h5>
+            <table class="table table-bordered">
+              <tbody>
+                
+               
+
+                <tr><td><strong>Stock Status</strong></td><td>
+                  <span style="color: <%= product.quantity > 0 ? 'green' : 'red' %>;">
+                    <%= product.quantity > 0 ? 'In Stock' : 'Out of Stock' %>
+                  </span>
+                </td></tr>
+                <tr><td><strong>Added On</strong></td><td><%= new Date(product.createdOn).toLocaleDateString() %></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="comment_list" id="comments-container">
+              <!-- Comments will be loaded here dynamically -->
+            </div>
+            <div id="comments-pagination" class="d-flex justify-content-center mt-4">
+              <!-- Pagination will be added here -->
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="review_box">
+              <h4>Post a comment</h4>
+              <% if (locals.user) { %>
+                <form class="row contact_form" onsubmit="submitComment('<%= product._id %>'); return false;">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <textarea class="form-control" id="comment-text" rows="4" placeholder="Your Comment" maxlength="500" required></textarea>
+                      <small class="text-muted">Maximum 500 characters</small>
+                    </div>
+                  </div>
+                  <div class="col-md-12 text-right">
+                    <button type="submit" class="btn primary-btn">Submit Comment</button>
+                  </div>
+                </form>
+              <% } else { %>
+                <div class="alert alert-info">
+                  Please <a href="/login">login</a> to post a comment.
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>      
+  </div>
+</section>
+
+<section class="related-product-area section_gap_bottom">
+  <div class="container" id="side-show">
+    <div class="row justify-content-center">
+      <div class="col-lg-6 text-center">
+        <div class="section-title">
+          <h1>Related Products</h1>
+          <p>Explore our range of related products that complement your purchase. Each item is carefully selected to ensure the highest quality and satisfaction.</p>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="row">
+        <% for (let i = 0; i < products.length; i++) { %>
+  <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+    <div class="single-related-product product-card border rounded shadow-sm">
+      <a href="#" class="product-img">
+        <img src="<%= products[i].productImage[0] %>" alt="<%= products[i].productName.split('|')[0] %>" class="img-fluid rounded-top">
+      </a>
+
+      <div class="desc p-3">
+        <a href="#" class="title h5 text-dark d-block font-weight-bold"><%= products[i].productName.split('|')[0] %></a>
+        
+        <div class="price">
+          <h6 class="text-primary">₹ <%= products[i].salePrice.toLocaleString('en-IN') %></h6>
+          <h6 class="text-muted text-decoration-line-through">₹ <%= products[i].regularPrice %></h6>
+        </div>
+        
+       
+     <div class="prd-bottom">
+  <a href="#" onclick="addToCart('<%= products[i]._id %>')" class="social-info">
+    <span class="ti-bag"></span>
+    <p class="hover-text">add to cart</p>
+  </a>
+
+  <a href="#" onclick="buyNow('<%= products[i]._id %>')" class="social-info">
+    <span class="ti-bag"></span>
+    <p class="hover-text">Buy now</p>
+  </a>
+
+  <a href="#" onclick="addToWishlist('<%= products[i]._id %>', '<%= products[i].variants.size%>')" class="social-info">
+    <span class="lnr lnr-heart"></span>
+    <p class="hover-text">Wishlist</p>
+  </a>
+</div>
+
+      </div>
+    </div>
+  </div>
+<% } %>
+
+
+              </div>
+            </div>
+          </div>
+         
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script>
+
+
+// Size selection function
+function selectSize(element) {
+  // Remove 'selected' class from all buttons
+  const buttons = document.querySelectorAll('.size-option.available-size');
+  buttons.forEach(btn => btn.classList.remove('selected'));
+
+  // Add 'selected' class to the clicked button
+  element.classList.add('selected');
+
+  // Update the stock status
+  const stockText = element.dataset.stock;
+  const stockStatus = document.getElementById('stock-status');
+  if (stockText === "In Stock") {
+    stockStatus.innerHTML = `<span class="stock-available" style="color: green; font-weight: bold;">✓ In Stock</span>`;
+  } else {
+    stockStatus.innerHTML = `<span class="stock-unavailable" style="color: red; font-weight: bold;">✗ Out of Stock</span>`;
+  }
+}
+
+// Fixed add to cart function - ONLY ONE VERSION
+function addToCart(productId) {
+  // Find the currently selected size option
+  const selectedSizeElement = document.querySelector(".size-option.selected");
+  let selectedSize = null;
+
+  if (selectedSizeElement) {
+    selectedSize = selectedSizeElement.getAttribute("data-size");
+  } else {
+    // If no size selected, show warning and don't proceed
+    Swal.fire({
+      icon: "warning",
+      title: "Please select a size!",
+      text: "You must select a size before adding to cart",
+      timer: 3000,
+      showConfirmButton: true
+    });
+    return;
+  }
+
+  
+
+  $.ajax({
+    url: '/addToCart',
+    method: "POST",
+    data: {
+      productId: productId,
+      size: selectedSize
+    },
+    success: (response) => {
+      console.log('Cart response:', response); // Debug log
+      
+      if (response.status) {
+        Swal.fire({
+          title: "Added to Cart",
+          text: response.message,
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false
+        });
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: response.message || "Unable to add to cart",
+          icon: "error",
+          timer: 3000,
+          showConfirmButton: true
+        });
+      }
+    },
+    error: (xhr, status, error) => {
+      console.error('Cart error:', xhr.responseText);
+      
+      // Handle different error types
+      if (xhr.status === 401) {
+        Swal.fire({
+          title: "Login Required",
+          text: "Please login to add items to cart",
+          icon: "warning",
+          showConfirmButton: true,
+          confirmButtonText: "Login"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = '/login';
+          }
+        });
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: "Something went wrong while adding to cart",
+          icon: "error",
+          timer: 3000,
+          showConfirmButton: true
+        });
+      }
+    }
+  });
+}
+
+// Fixed wishlist function - ONLY ONE VERSION
+function addToWishlist(productId, defaultSize) {
+  // Validate inputs
+  if (!productId) {
+    Swal.fire({
+      title: "Error",
+      text: "Product ID is missing",
+      icon: "error",
+      timer: 2000,
+      showConfirmButton: false
+    });
+    return;
+  }
+
+  let selectedSize = null;
+
+  // First, try to get the selected size from size options (for product detail page)
+  const selectedSizeElement = document.querySelector(".size-option.selected");
+  if (selectedSizeElement) {
+    selectedSize = selectedSizeElement.getAttribute("data-size");
+  }
+
+  // If no size selected, use the provided default size or first available size
+  if (!selectedSize) {
+    selectedSize = defaultSize;
+  }
+
+  // If still no size, try to get from variants (fallback)
+  if (!selectedSize || selectedSize.trim() === '' || selectedSize === 'undefined') {
+    const sizeOptions = document.querySelectorAll('.size-option.available-size');
+    if (sizeOptions.length > 0) {
+      selectedSize = sizeOptions[0].getAttribute('data-size');
+    } else {
+      selectedSize = 'Default'; // Final fallback
+    }
+  }
+
+
+
+  $.ajax({
+    url: '/addToWishlist',
+    method: "POST",
+    data: { 
+      productId: productId,
+      size: selectedSize
+    },
+    success: (response) => {
+      console.log('Wishlist response:', response); // Debug log
+      
+      // FIXED: Show success message for both true and false status
+      if (response.status === true) {
+        Swal.fire({
+          title: "Added to Wishlist",
+          text: response.message,
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false
+        });
+      } else if (response.status === false) {
+        // Show info message for already exists case
+        Swal.fire({
+          title: "Already in Wishlist",
+          text: response.message,
+          icon: "info",
+          timer: 2000,
+          showConfirmButton: false
+        });
+      }
+    },
+    error: (xhr, status, error) => {
+      console.error('Wishlist error:', xhr.responseText);
+      
+      // Handle different error types
+      if (xhr.status === 401) {
+        Swal.fire({
+          title: "Login Required",
+          text: "Please login to add items to wishlist",
+          icon: "warning",
+          showConfirmButton: true,
+          confirmButtonText: "Login"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = '/login';
+          }
+        });
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: "Something went wrong while adding to wishlist",
+          icon: "error",
+          timer: 2000,
+          showConfirmButton: false
+        });
+      }
+    }
+  });
+}
+
+// Buy now function for related products
+function buyNow(productId) {
+  // For related products, we'll use the first available size
+  const product = products.find(p => p._id === productId);
+  let selectedSize = 'Default';
+  
+  if (product && product.variants && product.variants.length > 0) {
+    const availableVariant = product.variants.find(v => v.quantity > 0);
+    selectedSize = availableVariant ? availableVariant.size : product.variants[0].size;
+  }
+
+  // Add to cart first, then redirect to checkout
+  $.ajax({
+    url: '/addToCart',
+    method: "POST",
+    data: {
+      productId: productId,
+      size: selectedSize,
+      useDefaultSize: true
+    },
+    success: (response) => {
+      if (response.status) {
+        // Redirect to checkout or cart page
+        window.location.href = '/checkout';
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: response.message || "Unable to process order",
+          icon: "error",
+          timer: 3000,
+          showConfirmButton: true
+        });
+      }
+    },
+    error: (xhr, status, error) => {
+      if (xhr.status === 401) {
+        window.location.href = '/login';
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: "Something went wrong",
+          icon: "error",
+          timer: 3000,
+          showConfirmButton: true
+        });
+      }
+    }
+  });
+}
+
+// Image Zoom Effect
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.zoom-container').forEach(function(container) {
+    container.addEventListener('mousemove', function(e) {
+      const zoomImage = container.querySelector('.zoom-image');
+      const x = e.offsetX;
+      const y = e.offsetY;
+      const width = container.offsetWidth;
+      const height = container.offsetHeight;
+
+      const xPercent = (x / width) * 100;
+      const yPercent = (y / height) * 100;
+
+      zoomImage.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+      zoomImage.style.transform = `scale(1.8)`;
+    });
+
+    container.addEventListener('mouseleave', function() {
+      const zoomImage = container.querySelector('.zoom-image');
+      zoomImage.style.transform = `scale(1)`;
+    });
+  });
+
+  // Auto-select first available size on page load
+  const firstAvailableSize = document.querySelector('.size-option.available-size');
+  if (firstAvailableSize) {
+    selectSize(firstAvailableSize);
+  }
+});
+</script>
+
+<!-- Additional Scripts -->
+<script>
+  const currentUserId = '<%= locals.user ? user._id : null %>';
+</script>
+<script src="/js/comments.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    loadComments('<%= product._id %>');
+  });
+</script>
+
+
+
+<%- include('../partials/user/footer') %>
+
+

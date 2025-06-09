@@ -1,0 +1,150 @@
+<%- include('../../views/partials/user/header') %>
+<head>
+	<!-- Mobile Specific Meta -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<!-- Favicon-->
+	<link rel="shortcut icon" href="img/fav.png">
+	<!-- Author Meta -->
+	<meta name="author" content="CodePixar">
+	<!-- Meta Description -->
+	<meta name="description" content="">
+	<!-- Meta Keyword -->
+	<meta name="keywords" content="">
+	<!-- meta character set -->
+	<meta charset="UTF-8">
+	<!-- Site Title -->
+	<title>Karma Shop</title>
+	<!--
+		CSS
+		============================================= -->
+	<link rel="stylesheet" href="css/linearicons.css">
+	<link rel="stylesheet" href="css/font-awesome.min.css">
+	<link rel="stylesheet" href="css/themify-icons.css">
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="css/owl.carousel.css">
+	<link rel="stylesheet" href="css/nice-select.css">
+	<link rel="stylesheet" href="css/nouislider.min.css">
+	<link rel="stylesheet" href="css/ion.rangeSlider.css" />
+	<link rel="stylesheet" href="css/ion.rangeSlider.skinFlat.css" />
+	<link rel="stylesheet" href="css/magnific-popup.css">
+	<link rel="stylesheet" href="css/main.css">
+</head>
+<style>
+    /* General body styles */
+    body {
+        background-color: #f8f9fa; /* Light background color */
+        font-family: Arial, sans-serif; /* Font style */
+    }
+
+    /* Main content section */
+    .content-main {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start; /* Align content to top */
+        min-height: calc(100vh - 80px); /* Full height minus header height */
+        padding-top: 202px; /* Space for header so no overlap */ 
+        padding-bottom: 40px; /* Optional bottom padding */
+    }
+
+    /* Card styles */
+    .card {
+        background-color: #ffffff; /* White background for the card */
+        border-radius: 8px; /* Rounded corners */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        padding: 20px; /* Padding inside the card */
+        width: 100%; /* full width within column */
+        max-width: 400px; /* max width to keep card narrow */
+    }
+
+    /* Card title styles */
+    .card-title {
+        font-size: 24px; /* Font size for the title */
+        color: #333; /* Dark text color */
+        text-align: center; /* Centered title */
+    }
+
+    /* Input field styles */
+    .form-control {
+        border: 1px solid #ced4da; /* Light border */
+        border-radius: 4px; /* Rounded corners */
+        padding: 10px; /* Padding inside the input */
+        width: 100%; /* Full width */
+        transition: border-color 0.3s; /* Smooth transition for border color */
+    }
+
+    /* Input field focus styles */
+    .form-control:focus {
+        border-color: #007bff; /* Blue border on focus */
+        outline: none; /* Remove default outline */
+    }
+
+    /* Error message styles */
+    .error-message {
+        color: #dc3545; /* Red color for error messages */
+        font-size: 14px; /* Font size for error messages */
+        margin-top: 5px; /* Space above error message */
+    }
+
+    /* Button styles */
+    .btn {
+        background-color: #007bff; /* Blue background */
+        color: #ffffff; /* White text */
+        border: none; /* No border */
+        border-radius: 4px; /* Rounded corners */
+        padding: 10px; /* Padding inside the button */
+        cursor: pointer; /* Pointer cursor on hover */
+        transition: background-color 0.3s; /* Smooth transition for background color */
+        width: 100%;
+    }
+
+    /* Button hover styles */
+    .btn:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+    }
+
+    /* Invalid input styles */
+    .is-invalid {
+        border-color: #dc3545; /* Red border for invalid inputs */
+    }
+
+</style>
+
+<section class="content-main" id="email-style">
+   <div class="card mx-auto card-login">
+       <div class="card-body">
+           <h4 class="card-title mb-4">Enter Current Email</h4>
+           <form method="post" action="/change-email" onsubmit="return validateLoginForm()">
+               <div class="mb-3">
+                   <input class="form-control" name="email" placeholder="Email" type="text" id="email" >
+                   <div class="error-message" id="email-error"></div>
+               </div>
+               <div class="mb-4">
+                   <button type="submit" class="btn btn-primary">Verify</button>
+               </div>
+           </form>
+       </div>
+   </div>
+</section>
+
+<script>
+   function validateLoginForm() {
+       const emailInput = document.getElementById('email');
+       const emailError = document.getElementById('email-error');
+       const emailValue = emailInput.value.trim();
+       const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+       if (emailValue === '') {
+           emailError.textContent = 'Please enter your email.';
+           emailInput.classList.add('is-invalid');
+           return false;
+       } else if (!emailValue.match(emailPattern)) {
+           emailError.textContent = 'Please enter a valid email address';
+           emailInput.classList.add('is-invalid');
+           return false;
+       } else {
+           emailError.textContent = '';
+           emailInput.classList.remove('is-invalid');
+           return true;
+       }
+   }
+</script>

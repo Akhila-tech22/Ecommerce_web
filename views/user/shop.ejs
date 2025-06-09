@@ -1,0 +1,644 @@
+<%- include('../partials/user/header') %>
+<head>
+    <link rel="stylesheet" href="css/linearicons.css">
+	<link rel="stylesheet" href="css/font-awesome.min.css">
+	<link rel="stylesheet" href="css/themify-icons.css">
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="css/owl.carousel.css">
+	<link rel="stylesheet" href="css/nice-select.css">
+	<link rel="stylesheet" href="css/nouislider.min.css">
+	<link rel="stylesheet" href="css/ion.rangeSlider.css" />
+	<link rel="stylesheet" href="css/ion.rangeSlider.skinFlat.css" />
+	<link rel="stylesheet" href="css/magnific-popup.css">
+	<link rel="stylesheet" href="css/main.css">
+</head>
+
+<style>
+  .pagination {
+    justify-content: center;
+    margin-top: 1.5rem;
+  }
+
+  .pagination .page-link {
+    color: var(--secondary-color);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 4px;
+    border: 1px solid var(--light-gray);
+    font-size: 0.85rem;
+    transition: var(--transition);
+  }
+
+  .pagination .page-item.active .page-link {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--white);
+  }
+
+  .pagination .page-link:hover {
+    background-color: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
+  }
+
+  /* General button styles */
+  .social-info {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    text-transform: uppercase;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    color: white;
+    margin: 4px;
+    border: none;
+    min-width: 100px; /* Optional: consistent size */
+    gap: 6px; /* spacing between icon and text */
+  }
+
+  /* Add to Cart Button */
+  .btn-cart {
+    background-color: #ff6347;
+  }
+
+  .btn-cart:hover {
+    background-color: #e5533d;
+  }
+
+  /* Add to Wishlist Button */
+  .btn-wishlist {
+    background-color: #32cd32;
+  }
+
+  .btn-wishlist:hover {
+    background-color: #28a745;
+  }
+
+  /* View More Button */
+  .btn-view-more {
+    background-color: #4682b4;
+  }
+
+  .btn-view-more:hover {
+    background-color: #5a9bd3;
+  }
+
+  /* Product Hover Effect */
+  .single-product {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease-in-out;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  .single-product:hover img {
+    transform: scale(1.1);
+  }
+  .single-product img {
+    width: 100%;
+    transition: transform 0.3s ease-in-out;
+    border-radius: 10px;
+  }
+  .single-product .product-details h6,
+  .single-product .social-info p {
+    transition: color 0.3s ease-in-out;
+  }
+  .single-product:hover .product-details h6,
+  .single-product:hover .social-info p {
+    color: #ffbb00;
+  }
+
+  /* Sidebar Styles */
+  .sidebar-categories {
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+  }
+  .sidebar-categories .head {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #333;
+  }
+  .main-categories li {
+    padding: 10px 0;
+  }
+  .main-categories li a {
+    color: #333;
+    font-size: 16px;
+    text-decoration: none;
+  }
+  .main-categories li a:hover {
+    color: #ffbb00;
+  }
+
+  /* Filter and Sort Styles */
+  .advanced-search-sort {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  .form-control {
+    margin-right: 10px;
+    border-radius: 5px;
+    box-shadow: none;
+  }
+  .btn-primary,
+  .btn-danger {
+    border-radius: 5px;
+    font-weight: bold;
+    padding: 8px 15px;
+  }
+  .btn-primary {
+    background-color: #ffbb00;
+    border: none;
+  }
+  .btn-danger {
+    background-color: #e74c3c;
+    border: none;
+  }
+  .btn-primary:hover,
+  .btn-danger:hover {
+    opacity: 0.8;
+  }
+
+  /* Product Listing Styles */
+  .lattest-product-area .product-details h6 {
+    font-size: 16px;
+    color: #333;
+    font-weight: bold;
+  }
+  .lattest-product-area .price {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .lattest-product-area .price h6 {
+    font-size: 18px;
+    color: #e74c3c;
+  }
+  .lattest-product-area .price .l-through {
+    text-decoration: line-through;
+    color: #999;
+  }
+
+  /* Pagination Styles */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  .pagination a {
+    margin: 0 5px;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+  }
+  .pagination a.active {
+    color: #ffbb00;
+  }
+  .pagination .prev-arrow,
+  .pagination .next-arrow {
+    font-size: 20px;
+    color: #333;
+  }
+  .pagination .dot-dot {
+    font-size: 20px;
+    color: #333;
+  }
+
+  /* Responsive Styles */
+  @media screen and (max-width: 768px) {
+    .sidebar-categories {
+      margin-bottom: 20px;
+    }
+    .single-product {
+      margin-bottom: 20px;
+    }
+    .filter-bar {
+      flex-direction: column;
+    }
+  }
+  .horizontal-scroll-wrapper {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    padding-bottom: 10px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .horizontal-scroll-wrapper::-webkit-scrollbar {
+    display: none; /* hide scrollbar */
+  }
+
+  .product-card-hscroll {
+    flex: 0 0 auto;
+    width: 250px;
+    scroll-snap-align: start;
+     height: 520px;
+  }
+
+  /* ========== Related Products Buttons Styling ONLY ========= */
+
+  .related-card .prd-bottom-related {
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+  }
+
+  .related-card .related-btn {
+    background-color: #f9f9f9;
+    padding: 8px 10px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    font-size: 13px;
+    color: #333;
+    text-decoration: none;
+    display: block;
+  }
+
+  .related-card .related-btn:hover {
+    background-color: #ff6f61;
+    color: #fff;
+  }
+
+  .related-card .related-btn span {
+    font-size: 16px;
+    margin-bottom: 3px;
+    display: block;
+  }
+
+  /* Align buttons exactly as you wanted */
+  .related-card .prd-bottom-related > div.d-flex {
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+</style>
+
+
+	<!-- Start Banner Area -->
+	<section class="banner-area organic-breadcrumb">
+		<div class="container">
+			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+				<div class="col-first">
+					<h1>Shoping page</h1>
+					<nav class="d-flex align-items-center">
+						<a href="/">Home<span class="lnr lnr-arrow-right"></span></a>
+						<a href="#">Shop Category</a>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- End Banner Area -->
+
+
+
+<!-- Start Advanced Search and Sort -->
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="advanced-search-sort">
+               <form action="/shop" method="GET" class="form-inline">
+    <% if (typeof selectedCategory !== 'undefined' && selectedCategory) { %>
+        <input type="hidden" name="category" value="<%= selectedCategory %>">
+    <% } %>
+
+    <div class="form-group mr-2">
+        <input type="text" id="advanced-search-glow" name="search" class="form-control"
+               placeholder="Search products..." value="<%= typeof search !== 'undefined' ? search : '' %>">
+    </div>
+
+    <div class="form-group mr-2">
+        <select name="sort" class="form-control">
+            <option value="popularity"<%= sort === 'popularity' ? ' selected' : '' %>>Popularity</option>
+<option value="price_asc"<%= sort === 'price_asc' ? ' selected' : '' %>>Price: Low to High</option>
+<option value="price_desc"<%= sort === 'price_desc' ? ' selected' : '' %>>Price: High to Low</option>
+<option value="rating"<%= sort === 'rating' ? ' selected' : '' %>>Average Ratings</option>
+<option value="featured"<%= sort === 'featured' ? ' selected' : '' %>>Featured</option>
+<option value="new"<%= sort === 'new' ? ' selected' : '' %>>New Arrivals</option>
+<option value="name_asc"<%= sort === 'name_asc' ? ' selected' : '' %>>Name: A to Z</option>
+<option value="name_desc"<%= sort === 'name_desc' ? ' selected' : '' %>>Name: Z to A</option>
+
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Apply</button>
+    <a href="/shop" class="btn btn-danger">Clear All</a>
+</form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Advanced Search and Sort -->
+
+<!-- Start Product List Area -->
+<div class="container">
+    <div class="row">
+        <div class="col-xl-3 col-lg-4 col-md-5">
+         
+           <!-- Sidebar Categories -->
+<div class="sidebar-categories">
+    <div class="head">Browse Categories</div>
+    <ul class="main-categories">
+        <% for(let i=0; i < category.length; i++) { %>
+        <li class="main-nav-list">
+            <a href="/shop?category=<%= category[i]._id %><% if (sort) { %>&sort=<%= sort %><% } %><% if (search) { %>&search=<%= search %><% } %>" aria-expanded="false">
+                <span class="lnr lnr-arrow-right"></span>
+                <%= category[i].name %>
+                <span class="number">(<%= category[i].productCount %>)</span>
+            </a>
+        </li>
+        <% } %>
+    </ul>
+</div>
+
+        </div>
+        <div class="col-xl-9 col-lg-8 col-md-7">
+            <!-- Product List -->
+            <section class="lattest-product-area pb-40 category-list">
+				<div class="row">
+					<% for(let i=0;i<products.length; i++){ %>
+					<div class="col-lg-4 col-md-6 col-sm-6 col-6">
+						<div class="single-product">
+							<a class="hover-light" href="/productDetails?id=<%=products[i]._id%>">
+								<img class="img-fluid" src="<%= products[i].productImage[0] %>" alt="<%= products[i].productName %>">
+								<div class="product-details">
+									<h6><%=products[i].productName%></h6>
+									<div class="price">
+										<h6>₹ <%= Math.round(products[i].salePrice)%>.00</h6>
+										<h6 class="l-through">₹ <%=products[i].regularPrice%>.00</h6>
+									</div>
+								</a>
+								<div class="prd-bottom">
+                  <a href="javascript:void(0)" onclick="addToCart('<%= products[i]._id %>'); return false;" class="social-info btn btn-cart">
+  <span class="ti-bag"></span>
+  <span class="hover-text">Add to Cart</span>
+</a>
+									<a href="#" onclick="addToWishlist('<%= products[i]._id %>')" class="social-info btn btn-wishlist">
+									  <span class="lnr lnr-heart"></span>
+									  <span class="hover-text">Add to Wishlist</span>
+									</a>
+									
+									<a href="/productDetails?id=<%= products[i]._id %>" class="social-info btn btn-view-more">
+									  <span class="lnr lnr-move"></span>
+									  <span class="hover-text">View More</span>
+									</a>
+								  </div>
+								  
+							</div>
+						</div>
+					</div>
+					<% } %>
+				</div>
+			</section>
+			
+        </div>
+    </div>
+</div><br>
+
+<!-- start product Area -->
+<section class="related-product-area section_gap_bottom">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-6 text-center">
+        <div class="section-title">
+          <h1>Related Products</h1>
+          <p>Explore our range of related products that complement your purchase. Each item is carefully selected to ensure the highest quality and satisfaction.</p>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="horizontal-scroll-wrapper mb-5">
+          <% for (let i = 0; i < products.length; i++) { %>
+            <div class="product-card-hscroll">
+              <div class="single-related-product product-card related-card border rounded shadow-sm">
+                <a href="/productDetails?id=<%= products[i]._id %>" class="product-img">
+                  <img src="<%= products[i].productImage[0] %>" alt="<%= products[i].productName.split('|')[0] %>" class="img-fluid rounded-top">
+                </a>
+                <div class="desc p-3">
+                  <a href="/productDetails?id=<%= products[i]._id %>" class="title h5 text-dark d-block font-weight-bold">
+                    <%= products[i].productName.split('|')[0] %>
+                  </a>
+                  <div class="price">
+                    <h6 class="text-primary">₹ <%= products[i].salePrice.toLocaleString('en-IN') %></h6>
+                    <h6 class="text-muted text-decoration-line-through">₹ <%= products[i].regularPrice.toLocaleString('en-IN') %></h6>
+                  </div>
+                  <div class="prd-bottom-related mt-3">
+                    <a href="#" onclick="addToWishlist('<%= products[i]._id %>')" class="related-btn text-center w-100 ms-1">
+                      <span class="lnr lnr-heart d-block mb-1"></span>
+                      <p class="hover-text m-0">Wishlist</p>
+                    </a>
+                  </div>
+                  <div class="text-center mt-2">
+                    <a href="/productDetails?id=<%= products[i]._id %>" class="related-btn d-inline-block">
+                      <span class="lnr lnr-move d-block mb-1"></span>
+                      <p class="hover-text m-0">View details</p>
+                    </a>
+                  </div>
+                </div> <!-- desc -->
+              </div> <!-- single-related-product -->
+            </div> <!-- product-card-hscroll -->
+          <% } %>
+        </div> <!-- horizontal-scroll-wrapper -->
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center">
+            <% if (currentPage > 1) { %>
+              <li class="page-item">
+                <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+            <% } %>
+
+            <% for (let i = 1; i <= totalPages; i++) { %>
+              <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+              </li>
+            <% } %>
+
+            <% if (currentPage < totalPages) { %>
+              <li class="page-item">
+                <a class="page-link" href="?page=<%= currentPage + 1 %>" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+            <% } %>
+          </ul>
+        </nav>
+
+      </div> <!-- col-lg-12 -->
+    </div> <!-- row -->
+  </div> <!-- container -->
+</section>
+
+
+<!-- end product Area -->
+
+							
+								
+
+
+						
+			
+
+<!-- Start brand Area -->
+<section class="brand-area section_gap">
+	<div class="container">
+		<div class="row">
+			<a class="col single-img" href="#">
+				<img class="img-fluid d-block mx-auto" src="img/brand/1.png" alt="">
+			</a>
+			<a class="col single-img" href="#">
+				<img class="img-fluid d-block mx-auto" src="img/brand/2.png" alt="">
+			</a>
+			<a class="col single-img" href="#">
+				<img class="img-fluid d-block mx-auto" src="img/brand/3.png" alt="">
+			</a>
+			<a class="col single-img" href="#">
+				<img class="img-fluid d-block mx-auto" src="img/brand/4.png" alt="">
+			</a>
+			<a class="col single-img" href="#">
+				<img class="img-fluid d-block mx-auto" src="img/brand/5.png" alt="">
+			</a>
+		</div>
+	</div>
+</section>		
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>	
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>	
+
+
+function addToCart(productId) {
+  $.ajax({
+    url: '/addToCartFromShop',
+    method: "POST",
+    data: { 
+      productId: productId,
+      useDefaultSize: true  // Flag to tell backend to use first available size
+    },
+    success: (response) => {
+      if (response.status) {
+        Swal.fire({
+          title: "Added to Cart",
+          text: response.message,
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false
+        });
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: response.message || "Unable to add to cart",
+          icon: "error",
+          timer: 2000,
+          showConfirmButton: false
+        });
+      }
+    },
+    error: (xhr, status, error) => {
+      console.error('Cart error:', error);
+      Swal.fire({
+        title: "Error",
+        text: "Something went wrong while adding to cart",
+        icon: "error",
+        timer: 2000,
+        showConfirmButton: false
+      });
+    }
+  });
+}
+
+function addToWishlist(productId) {
+  if (!productId) {
+    Swal.fire({
+      title: "Error",
+      text: "Product ID is missing",
+      icon: "error",
+      timer: 2000,
+      showConfirmButton: false
+    });
+    return;
+  }
+
+  // No size validation here — backend will pick first size automatically
+
+  $.ajax({
+    url: '/addToWishlistFromShop',
+    method: "POST",
+    data: { 
+      productId: productId 
+    },
+    success: (response) => {
+      if (response.status) {
+        Swal.fire({
+          title: "Added to Wishlist",
+          text: response.message,
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false
+        });
+      } else {
+        Swal.fire({
+          title: "Info",
+          text: response.message || "Unable to add to wishlist",
+          icon: "info",
+          timer: 2000,
+          showConfirmButton: false
+        });
+      }
+    },
+    error: (xhr, status, error) => {
+      console.error('Wishlist error:', xhr.responseText);
+
+      if (xhr.status === 401) {
+        Swal.fire({
+          title: "Login Required",
+          text: "Please login to add items to wishlist",
+          icon: "warning",
+          showConfirmButton: true,
+          confirmButtonText: "Login"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = '/login';
+          }
+        });
+      } else {
+        const errorMessage = xhr.responseJSON && xhr.responseJSON.message 
+          ? xhr.responseJSON.message 
+          : "Something went wrong while adding to wishlist";
+
+        Swal.fire({
+          title: "Error",
+          text: errorMessage,
+          icon: "error",
+          timer: 3000,
+          showConfirmButton: false
+        });
+      }
+    }
+  });
+}
+
+
+
+</script>	
+<%- include('../partials/user/footer') %>

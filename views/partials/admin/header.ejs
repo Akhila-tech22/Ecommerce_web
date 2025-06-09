@@ -1,0 +1,140 @@
+<style>
+   * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background: #7ea2a2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  z-index: 1000;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.profile {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid white;
+}
+
+.profile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.logout-btn {
+  padding: 6px 12px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background-color: #d32f2f;
+}
+
+.sidebar {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  width: 230px;
+  height: calc(100vh - 60px);
+  background: #b3dce0;
+  padding-top: 20px;
+}
+
+.sidebar h2 {
+  text-align: center;
+  color: #222;
+  margin-bottom: 20px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  padding: 15px 20px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.sidebar ul li i {
+  margin-right: 10px;
+}
+
+.sidebar ul li:hover {
+  background-color: #a3cbd3;
+}
+
+/* Remove underline from links and increase font size */
+.sidebar ul li a {
+  text-decoration: none; /* Remove underline */
+  color: inherit; /* Inherit text color from parent */
+  font-size: 18px; /* Increase font size */
+}
+
+.sidebar ul li a:hover {
+  background-color: #a3cbd3;
+  text-decoration: none; /* Ensure no underline on hover */
+}
+
+  </style>
+  
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <button><i class="fa fa-bars"></i></button>
+    </div>
+    <div class="header-left">
+    
+      <form action="/admin/logout" method="POST" style="margin-left: 10px;">
+        <button type="submit" class="logout-btn">Logout</button>
+      </form>
+    </div>
+  </div>
+  
+<!-- Sidebar -->
+<div class="sidebar">
+  <h2>Karma<span style="color: red;">.</span></h2>
+  <ul>
+    <li><a href="/admin"><i class="fa fa-home"></i> Dashboard</a></li>
+    <li><a href="/admin/users"><i class="fa fa-users"></i> Customers</a></li>
+    <li><a href="/admin/category"><i class="fa fa-list"></i> Category</a></li>
+    <li><a href="/admin/brands"><i class="fa fa-tags"></i> Brands</a></li>
+    <li><a href="/admin/AddProducts"><i class="fa fa-box"></i> Add Products</a></li>
+    <li><a href="/admin/products"><i class="fa fa-box"></i> Products</a></li>
+    <li><a href="/admin/coupon"><i class="fa fa-ticket-alt"></i> Coupon</a></li>
+      <li><a href="/admin/orders"><i class="fa fa-shopping-cart"></i> Orders</a></li>
+  </ul>
+</div>
+
+
+  

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Failed</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .failure-container {
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .failure-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #ff6b6b, #ee5a52);
+        }
+
+        .failure-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            animation: shake 1s ease-in-out;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+        }
+
+        .failure-icon i {
+            font-size: 60px;
+            color: white;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .failure-title {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: -0.5px;
+        }
+
+        .failure-message {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .error-details {
+            background: #fff5f5;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            border-left: 4px solid #ff6b6b;
+            border: 1px solid #fed7d7;
+        }
+
+        .error-code {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #c53030;
+            margin-bottom: 10px;
+        }
+
+        .error-info {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .failure-reasons {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .failure-reasons h3 {
+            color: #2c3e50;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .failure-reasons ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .failure-reasons li {
+            padding: 8px 0;
+            color: #666;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .failure-reasons li::before {
+            content: '•';
+            color: #ff6b6b;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            min-width: 180px;
+            justify-content: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-retry {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-retry:hover {
+            background: linear-gradient(135deg, #ee5a52, #ff6b6b);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .help-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 107, 107, 0.1);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .help-section a {
+            color: #ff6b6b;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .help-section a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .failure-container {
+                padding: 40px 20px;
+                margin: 20px;
+            }
+
+            .failure-title {
+                font-size: 2rem;
+            }
+
+            .button-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="failure-container">
+        <!-- Failure Icon -->
+        <div class="failure-icon">
+            <i class="fas fa-times"></i>
+        </div>
+
+        <!-- Failure Message -->
+        <h1 class="failure-title">Order Failed!</h1>
+        <p class="failure-message">
+            We're sorry, but your order could not be processed. Please try again or contact our support team.
+        </p>
+
+        <!-- Error Details (if available) -->
+        <% if (typeof error !== 'undefined' && error) { %>
+        <div class="error-details">
+            <div class="error-code">
+                <i class="fas fa-exclamation-triangle"></i>
+                Error Code: <%= error.code || 'PAYMENT_FAILED' %>
+            </div>
+            <div class="error-info">
+                <p><strong>Error Message:</strong> <%= error.message || 'Payment processing failed' %></p>
+                <% if (error.transactionId) { %>
+                    <p><strong>Transaction ID:</strong> <%= error.transactionId %></p>
+                <% } %>
+                <p><strong>Time:</strong> <%= new Date().toLocaleString('en-IN') %></p>
+            </div>
+        </div>
+        <% } %>
+
+        <!-- Order Details (if order exists) -->
+        <% if (typeof order !== 'undefined' && order) { %>
+        <div class="error-details">
+            <div class="error-code">
+                <i class="fas fa-shopping-cart"></i>
+                Failed Order Details
+            </div>
+            <div class="error-info">
+                <p><strong>Order ID:</strong> <%= order.orderId %></p>
+                <p><strong>Amount:</strong> ₹<%= order.finalAmount.toFixed(2) %></p>
+                <p><strong>Payment Method:</strong> <%= order.paymentMethod.toUpperCase() %></p>
+                <p><strong>Items:</strong> <%= order.orderedItems.length %> item(s)</p>
+                <p><strong>Status:</strong> <span style="color: #ff6b6b; font-weight: 600;"><%= order.status.toUpperCase() %></span></p>
+            </div>
+        </div>
+        <% } %>
+
+        <!-- Common Failure Reasons -->
+        <div class="failure-reasons">
+            <h3><i class="fas fa-info-circle"></i> Common Reasons for Order Failure</h3>
+            <ul>
+                <li>Insufficient funds in your account</li>
+                <li>Bank server temporarily unavailable</li>
+                <li>Incorrect payment details entered</li>
+                <li>Network connectivity issues</li>
+                <li>Card expired or blocked</li>
+                <li>Daily transaction limit exceeded</li>
+            </ul>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="button-container">
+            <a href="javascript:history.back()" class="btn btn-retry">
+                <i class="fas fa-redo"></i>
+                Try Again
+            </a>
+            <a href="/" class="btn btn-primary">
+                <i class="fas fa-home"></i>
+                Go to Home
+            </a>
+            <a href="/cart" class="btn btn-secondary">
+                <i class="fas fa-shopping-cart"></i>
+                View Cart
+            </a>
+        </div>
+
+        <!-- Help Section -->
+        <div class="help-section">
+            <p><i class="fas fa-headset"></i> 
+                Need help? Contact our support team at 
+                <a href="mailto:support@yourstore.com">support@karma.com</a> or 
+                <a href="tel:+911234567890">+91 12345 67890</a>
+            </p>
+            <p style="margin-top: 10px;">
+                <small>If money was deducted from your account, it will be refunded within 3-5 business days.</small>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Add some interactive animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate failure icon on load
+            const failureIcon = document.querySelector('.failure-icon');
+            setTimeout(() => {
+                failureIcon.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    failureIcon.style.transform = 'scale(1)';
+                }, 200);
+            }, 1000);
+
+            // Add click effects to buttons
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.classList.add('ripple');
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        });
+    </script>
+
+    <style>
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: ripple-animation 600ms linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        .btn {
+            position: relative;
+            overflow: hidden;
+        }
+    </style>
+</body>
+</html>

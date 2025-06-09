@@ -1,0 +1,949 @@
+<%- include("../../views/partials/admin/header") %>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            line-height: 1.6;
+        }
+
+        :root {
+            --primary-color: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #06b6d4;
+            --light-gray: #f1f5f9;
+            --border-color: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --white: #ffffff;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius: 8px;
+            --radius-lg: 12px;
+        }
+
+        .error-message {
+            color: var(--danger-color);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .error-message::before {
+            content: "⚠";
+            font-size: 0.75rem;
+        }
+
+        .content-main {
+            margin-top: 96px;
+            margin-left: 254px;
+            padding: 2rem;
+            min-height: calc(100vh - 96px);
+        }
+
+        .content-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .content-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .content-title::before {
+            content: "📦";
+            font-size: 2rem;
+        }
+
+        .form-wrapper {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .form-container {
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group label .required {
+            color: var(--danger-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            font-size: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            background-color: var(--white);
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
+        }
+
+        .form-control:hover {
+            border-color: var(--secondary-color);
+        }
+
+        .form-control[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .form-control[type="number"]::-webkit-outer-spin-button,
+        .form-control[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .form-select {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+
+        .textarea-resize {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* Size Variants Professional Styling */
+        .size-variants-container {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin: 1rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .size-variants-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--info-color));
+        }
+
+        .size-variants-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .size-variants-header h4 {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .size-variants-header h4::before {
+            content: "👟";
+            font-size: 1.25rem;
+        }
+
+        .add-size-btn {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .add-size-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+
+        .add-size-btn::before {
+            content: "+";
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .size-variants-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .size-variant-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 1rem;
+            align-items: end;
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .size-variant-item:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .size-variant-item::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, var(--primary-color), var(--info-color));
+            border-radius: var(--radius) 0 0 var(--radius);
+        }
+
+        .remove-size-btn {
+            background: linear-gradient(135deg, var(--danger-color), #dc2626);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            height: fit-content;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow-sm);
+                width: 115px;
+        }
+
+        .remove-size-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+        }
+
+        .remove-size-btn::before {
+            content: "🗑";
+            font-size: 0.875rem;
+        }
+
+        .total-quantity-display {
+            background: linear-gradient(135deg, #e0f2fe, #b3e5fc);
+            border: 2px solid var(--info-color);
+            padding: 1rem;
+            border-radius: var(--radius);
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.125rem;
+            color: #0277bd;
+            margin-top: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .total-quantity-display::before {
+            content: "📊";
+            font-size: 1.25rem;
+        }
+
+        /* Image Upload Professional Styling */
+        .image-upload-section {
+            grid-column: 1 / -1;
+            background: var(--white);
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin: 1rem 0;
+            transition: var(--transition);
+        }
+
+        .image-upload-section:hover {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, #fafbff, #f0f4ff);
+        }
+
+        .image-upload-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .image-upload-item {
+            background: var(--light-gray);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .image-upload-item:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 600;
+            text-align: center;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+        }
+
+        .file-input-label:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .file-input-label::before {
+            content: "📸";
+            font-size: 1.25rem;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            margin-top: 1rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .save-image-btn {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 1rem;
+            width: 100%;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .save-image-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .save-image-btn::before {
+            content: "💾";
+            font-size: 1rem;
+        }
+
+        /* Form Actions */
+        .form-actions {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-radius: var(--radius-lg);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 1rem 3rem;
+            font-size: 1.125rem;
+            font-weight: 700;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: var(--shadow-lg);
+            min-width: 200px;
+            justify-content: center;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .submit-btn::before {
+            content: "🚀";
+            font-size: 1.25rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .content-main {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            
+            .form-container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+            
+            .size-variant-item {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .image-upload-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading States */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+            position: relative;
+        }
+
+        .loading::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Success States */
+        .success-state {
+            border-color: var(--success-color) !important;
+            background-color: #f0fdf4 !important;
+        }
+
+        /* Error States */
+        .error-state {
+            border-color: var(--danger-color) !important;
+            background-color: #fef2f2 !important;
+        }
+    </style>
+</head>
+
+<section class="content-main">
+    <div class="content-header">
+        <h2 class="content-title">Add New Product</h2>
+    </div>
+
+    <div class="form-wrapper">
+        <form id="productForm" method="POST" action="/admin/addProducts" enctype="multipart/form-data">
+            <div class="form-container">
+                <!-- Basic Product Information -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-info-circle"></i>
+                        Basic Information
+                    </h3>
+                    
+                    <div class="form-group">
+                        <label for="product_name">
+                            <i class="fas fa-tag"></i>
+                            Product Name <span class="required">*</span>
+                        </label>
+                        <input type="text" name="productName" id="product_name" class="form-control" placeholder="Enter product name">
+                        <div id="productName-error" class="error-message"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="descriptionid">
+                            <i class="fas fa-align-left"></i>
+                            Full Description <span class="required">*</span>
+                        </label>
+                        <textarea id="descriptionid" name="description" rows="4" class="form-control textarea-resize" placeholder="Enter detailed product description"></textarea>
+                        <div id="description-error" class="error-message"></div>
+                    </div>
+                               <div class="form-group">
+                <label for="color">Color</label>
+                <input type="text" name="color" id="color" placeholder="Enter color">
+                <div id="color-error" class="error-message"></div>
+            </div>
+
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-building"></i>
+                            Brand <span class="required">*</span>
+                        </label>
+                        <select class="form-control form-select" name="brand">
+                            <option value="">Select Brand</option>
+                            <% for (let i = 0; i < brand.length; i++) { %>
+                                <option value="<%= brand[i].brandName %>"><%= brand[i].brandName %></option>
+                            <% } %>
+                        </select>
+                        <div id="brand-error" class="error-message"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">
+                            <i class="fas fa-list"></i>
+                            Category <span class="required">*</span>
+                        </label>
+                        <select name="category" id="category" class="form-control form-select">
+                            <option value="">Select Category</option>
+                            <% for (let i = 0; i < cat.length; i++) { %>
+                                <option value="<%= cat[i].name %>"><%= cat[i].name %></option>
+                            <% } %>
+                        </select>
+                        <div id="category-error" class="error-message"></div>
+                    </div>
+                </div>
+
+                <!-- Pricing and Details -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-dollar-sign"></i>
+                        Pricing & Details
+                    </h3>
+               
+
+                    <div class="form-group">
+                        <label for="regularPrice">
+                            <i class="fas fa-money-bill-wave"></i>
+                            Regular Price <span class="required">*</span>
+                        </label>
+                        <input type="number" name="regularPrice" id="regularPrice" class="form-control" placeholder="0.00">
+                        <div id="regularPrice-error" class="error-message"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="salePrice">
+                            <i class="fas fa-tags"></i>
+                            Sale Price <span class="required">*</span>
+                        </label>
+                        <input type="number" name="salePrice" id="salePrice" class="form-control" placeholder="0.00">
+                        <div id="salePrice-error" class="error-message"></div>
+                    </div>
+
+                    
+                </div>
+            </div>
+
+            <!-- Size Variants Section -->
+            <div class="size-variants-container">
+                <div class="size-variants-header">
+                    <h4>Shoe Sizes , Quantities and color</h4>
+                    <button type="button" class="add-size-btn" onclick="addSizeVariant()">Add Size</button>
+                </div>
+                
+                <div class="size-variants-grid" id="sizeVariantsContainer">
+                    <!-- Size variants will be added here dynamically -->
+                </div>
+                
+               
+                
+                <div id="variants-error" class="error-message"></div>
+            </div>
+
+            <!-- Image Upload Section -->
+            <div class="image-upload-section">
+                <h3 class="section-title">
+                    <i class="fas fa-images"></i>
+                    Product Images
+                </h3>
+                <div class="image-upload-grid">
+                    <% for (let i = 1; i <= 4; i++) { %>
+                        <div class="image-upload-item">
+                            <div class="form-group">
+                                <label for="image<%= i %>">
+                                    <i class="fas fa-camera"></i>
+                                    Image <%= i %> <span class="required">*</span>
+                                </label>
+                                <div class="file-input-wrapper">
+                                    <input type="file" name="image<%= i %>" id="image<%= i %>" class="file-input" accept="image/*" onchange="previewImage(event, <%= i %>)">
+                                    <label for="image<%= i %>" class="file-input-label">Choose Image <%= i %></label>
+                                </div>
+                                <div class="preview-container" id="cropping<%= i %>" style="display: none;">
+                                    <img id="preview<%= i %>" src="#" alt="Image preview" class="image-preview">
+                                </div>
+                                <input type="hidden" name="croppedImage<%= i %>" id="croppedImage<%= i %>">
+                                <button type="button" class="save-image-btn" onclick="saveImage(<%= i %>)">Save Image <%= i %></button>
+                                <div id="image<%= i %>-error" class="error-message"></div>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="submit-btn">Publish Product</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
+
+<script>
+    let croppers = {};
+    let sizeVariantCount = 0;
+
+    // Common shoe sizes
+    const shoeSizes = [
+        '6',  '7',  '8',  '9',  
+        
+    ];
+
+    // Initialize with one size variant
+    document.addEventListener('DOMContentLoaded', function() {
+        addSizeVariant();
+    });
+
+    function addSizeVariant() {
+        sizeVariantCount++;
+        const container = document.getElementById('sizeVariantsContainer');
+        
+        const sizeOptions = shoeSizes.map(size => `<option value="${size}">${size}</option>`).join('');
+        
+        const variantHTML = `
+            <div class="size-variant-item" id="sizeVariant${sizeVariantCount}">
+                <div class="form-group">
+                    <label for="size${sizeVariantCount}">Size <span class="required">*</span></label>
+                    <select name="variants[${sizeVariantCount-1}][size]" id="size${sizeVariantCount}" onchange="validateVariants()">
+                        <option value="">Select Size</option>
+                        ${sizeOptions}
+                    </select>
+                </div>
+          
+                <div class="form-group">
+                    <label for="quantity${sizeVariantCount}">Quantity <span class="required">*</span></label>
+                    <input type="number" name="variants[${sizeVariantCount-1}][quantity]" id="quantity${sizeVariantCount}" 
+                           min="0" placeholder="Enter quantity" onchange="updateTotalQuantity()">
+                </div>
+                <button type="button" class="remove-size-btn" onclick="removeSizeVariant(${sizeVariantCount})">Remove</button>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', variantHTML);
+        
+    }
+
+    function removeSizeVariant(id) {
+        const variantElement = document.getElementById(`sizeVariant${id}`);
+        if (variantElement) {
+            variantElement.remove();
+            
+            validateVariants();
+        }
+        
+        // Ensure at least one variant exists
+        const remainingVariants = document.querySelectorAll('.size-variant-item');
+        if (remainingVariants.length === 0) {
+            addSizeVariant();
+        }
+    }
+
+ 
+    function validateVariants() {
+        const sizeSelects = document.querySelectorAll('[name*="[size]"]');
+        const errorDiv = document.getElementById('variants-error');
+        
+        const selectedSizes = [];
+        let hasDuplicate = false;
+        
+        sizeSelects.forEach((sizeSelect) => {
+            if (sizeSelect.value) {
+                if (selectedSizes.includes(sizeSelect.value)) {
+                    hasDuplicate = true;
+                } else {
+                    selectedSizes.push(sizeSelect.value);
+                }
+            }
+        });
+        
+        if (hasDuplicate) {
+            errorDiv.textContent = 'Duplicate sizes are not allowed.';
+        } else {
+            errorDiv.textContent = '';
+        }
+        
+        return !hasDuplicate;
+    }
+
+    function previewImage(event, index) {
+        const input = event.target;
+        const preview = document.getElementById(`preview${index}`);
+        const container = document.getElementById(`cropping${index}`);
+        const errorDiv = document.getElementById(`image${index}-error`);
+
+        errorDiv.textContent = '';
+        if (croppers[index]) {
+            croppers[index].destroy();
+            delete croppers[index];
+        }
+
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+            const maxSize = 5 * 1024 * 1024;
+
+            if (!validTypes.includes(file.type)) {
+                errorDiv.textContent = 'Invalid image type.';
+                input.value = '';
+                return;
+            }
+            if (file.size > maxSize) {
+                errorDiv.textContent = 'Image must be under 5MB.';
+                input.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                container.style.display = 'block';
+
+                croppers[index] = new Cropper(preview, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function saveImage(index) {
+        const croppedInput = document.getElementById(`croppedImage${index}`);
+        if (croppers[index]) {
+            const canvas = croppers[index].getCroppedCanvas();
+            canvas.toBlob(blob => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    croppedInput.value = reader.result;
+                    Swal.fire({
+                        icon: 'success',
+                        title: `Image ${index} saved!`,
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                };
+                reader.readAsDataURL(blob);
+            }, 'image/jpeg');
+        } else {
+            Swal.fire('Error', 'Upload and crop the image before saving.', 'error');
+        }
+    }
+
+    document.getElementById('productForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        let isValid = true;
+        const fields = ['productName', 'description', 'brand', 'regularPrice', 'salePrice', 'category', 'color'];
+
+        // Validate basic fields
+        fields.forEach(field => {
+            const input = document.getElementsByName(field)[0];
+            const error = document.getElementById(`${field}-error`);
+            if (!input.value.trim()) {
+                error.textContent = 'This field is required.';
+                isValid = false;
+            } else {
+                error.textContent = '';
+            }
+        });
+
+        // Validate size variants
+        const sizeSelects = document.querySelectorAll('[name*="[size]"]');
+        const quantityInputs = document.querySelectorAll('[name*="[quantity]"]');
+        const variantsError = document.getElementById('variants-error');
+        
+        let hasValidVariant = false;
+        let totalQuantity = 0;
+        
+        sizeSelects.forEach((sizeSelect, index) => {
+            const quantityInput = quantityInputs[index];
+            
+            if (sizeSelect.value && quantityInput.value && parseInt(quantityInput.value) > 0) {
+                hasValidVariant = true;
+                totalQuantity += parseInt(quantityInput.value);
+            }
+        });
+        
+        if (!hasValidVariant) {
+            variantsError.textContent = 'At least one complete variant (size and quantity) is required.';
+            isValid = false;
+        } else if (!validateVariants()) {
+            isValid = false;
+        } else {
+            variantsError.textContent = '';
+        }
+        
+        // Validate images
+        for (let i = 1; i <= 4; i++) {
+            if (!document.getElementById(`image${i}`).files.length) {
+                document.getElementById(`image${i}-error`).textContent = 'Image is required.';
+                isValid = false;
+            } else {
+                document.getElementById(`image${i}-error`).textContent = '';
+                if (croppers[i]) {
+                    const canvas = croppers[i].getCroppedCanvas();
+                    document.getElementById(`croppedImage${i}`).value = canvas.toDataURL('image/jpeg');
+                }
+            }
+        }
+
+        if (isValid) {
+            const formData = new FormData(this);
+            fetch('/admin/addProducts', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire('Success', 'Product added successfully!', 'success').then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire('Error', data.message, 'error');
+                }
+            })
+            .catch(() => {
+                Swal.fire('Error', 'Something went wrong.', 'error');
+            });
+        }
+    });
+</script>
+
+<%- include("../../views/partials/admin/footer") %>

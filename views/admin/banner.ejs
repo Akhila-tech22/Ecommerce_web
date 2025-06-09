@@ -1,0 +1,136 @@
+<%- include("../../views/partials/admin/header") %>
+
+<style>
+  #content {
+    margin-top: 100px;
+    padding: 0 20px;
+  }
+
+  .container-custom {
+    max-width: 1100px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  }
+
+  .content-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 30px;
+  }
+
+  table.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+  }
+
+  .table thead th {
+    background-color: #f1f5f9;
+    font-weight: 600;
+    text-align: center;
+    padding: 12px;
+  }
+
+  .table td {
+    text-align: center;
+    vertical-align: middle;
+    padding: 12px;
+    background-color: #fff;
+  }
+
+  .img-thumbnail {
+    max-width: 60px;
+    height: auto;
+    border-radius: 4px;
+  }
+
+  .badge {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border-radius: 8px;
+  }
+
+  .badge-active {
+    background-color: #d4edda;
+    color: #155724;
+  }
+
+  .badge-inactive {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+
+  .btn-add {
+    background-color: #0d9488;
+    color: white;
+    padding: 12px 28px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 6px;
+    transition: background-color 0.2s ease-in-out;
+  }
+
+  .btn-add:hover {
+    background-color: #0f766e;
+  }
+
+  .add-banner-wrapper {
+    text-align: center;
+    margin-top: 40px;
+  }
+</style>
+
+<div id="content">
+  <div class="container-custom">
+    <h2 class="content-title">Banners</h2>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Image</th>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Active</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+            <td>
+                <img src="" style="height: 2rem; width: 3rem;" class="img-xs" alt="Item">
+
+
+
+
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td>
+                    <p class="badge rounded-pill alert-success">Active</p>
+                    <p class="badge rounded-pill alert-danger">No Active</p>
+            </td>
+
+
+
+
+            <td class="action" data-title="Remove"><a href=""><i class="icon material-icons md-delete"></i> </a></td>
+        </tr>
+</tbody>
+</table>
+</div>
+<div class="container mt-3">
+<div class="row justify-content-center">
+<div class="col-md-6 text-center">
+<a href="">
+    <button class="btn btn-primary mt-3 mr-200" type="submit">Add Banner</button>
+</a>
+</div>
+</div>
+</div>
+</div>
+<%- include("../../views/partials/admin/footer") %>

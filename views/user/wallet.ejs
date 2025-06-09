@@ -1,0 +1,712 @@
+<%- include("../../views/partials/user/header") %>
+ <head>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+   
+    <link rel="stylesheet" href="css/linearicons.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/themify-icons.css">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/owl.carousel.css">
+    <link rel="stylesheet" href="css/nice-select.css">
+    <link rel="stylesheet" href="css/nouislider.min.css">
+    <link rel="stylesheet" href="css/ion.rangeSlider.css" />
+    <link rel="stylesheet" href="css/ion.rangeSlider.skinFlat.css" />
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+
+<style>
+ .card-green {
+   background-color: #ADD8E6;
+ }
+ .main {
+   padding: 30px 0;
+ }
+
+
+ .dashboard-menu {
+   background-color: #cce3e6;
+   border-radius: 10px;
+   padding: 15px;
+   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+ }
+
+
+ .dashboard-menu .nav-link {
+ font-weight: bold;
+ color: #30683c;
+ box-shadow: 0 4px 10px rgba(123, 131, 112, 0.3), 0 4px 20px rgba(0, 191, 255, 0.2);
+ transition: box-shadow 0.3s ease;
+}
+
+
+.dashboard-menu .nav-link:hover {
+ color: #00bfff;
+ box-shadow: 0 4px 15px rgba(173, 255, 47, 0.5), 0 6px 25px rgba(0, 191, 255, 0.4);
+}
+
+
+ .card {
+   border-radius: 10px;
+   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+   margin-bottom: 20px;
+ }
+
+
+ .card-header {
+   background-color: #487379;
+   color: white;
+   border-radius: 10px 10px 0 0;
+ }
+
+
+ .btn-success {
+   background-color: #577194;
+   border-color: #6bb87d;
+ }
+
+
+ .btn-success:hover {
+   background-color: #506955;
+ }
+
+
+ .form-group {
+   margin-bottom: 15px;
+ }
+
+
+ .required {
+   color: red;
+ }
+
+
+  @media (max-width: 768px) {
+   .dashboard-menu {
+     padding: 10px;
+   }
+
+
+   .card {
+     margin-bottom: 15px;
+   }
+ }
+ .page-header.breadcrumb-wrap {
+ background-color: #eee2e9;
+ padding: 15px 0;
+}
+
+
+.breadcrumb {
+ display: flex;
+ align-items: center;
+ font-family: 'Arial', sans-serif;
+ font-size: 16px;
+ color: #121311;
+}
+
+
+.breadcrumb a {
+ color: #007bff;
+ text-decoration: none;
+ position: relative;
+ margin: 0 5px;
+}
+
+
+.breadcrumb a:hover {
+ color: #0056b3;
+}
+
+
+.breadcrumb span {
+ margin: 0 5px;
+ color: #999;
+}
+
+
+.breadcrumb a::after {
+ content: '';
+ position: absolute;
+ width: 100%;
+ height: 2px;
+ background: #6e6e3a;
+ left: 0;
+ bottom: -2px;
+ transform: scaleX(0);
+ transition: transform 0.3s ease;
+}
+
+
+.breadcrumb a:hover::after {
+ transform: scaleX(1);
+}
+
+.profile-image-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .rounded-circle {
+        border-radius: 50%;
+        border: 2px solid #fff; /* Optional: Add a border to the image */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Optional: Add a shadow effect */
+    }
+
+    .ml-3 {
+        margin-left: 15px; /* Space between image and text */
+    }
+
+
+/* body {
+            background-color: #f7f7f7;
+        } */
+        .sidebar {
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar a {
+            color: #333;
+            display: block;
+            padding: 10px 0;
+            text-decoration: none;
+        }
+        .sidebar a.active {
+            color: #ff6600;
+        }
+        .sidebar a:hover {
+            color: #ff6600;
+        }
+        .sidebar a i {
+            margin-right: 10px;
+        }
+        .main-content {
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .main-content h2 {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .form-group span {
+            color: red;
+        }
+        .btn-orange {
+            background-color: #ff6600;
+            color: white;
+        }
+        .btn-orange:hover {
+            background-color: #e65c00;
+        }
+        .btn-blue {
+            background-color: #0000ff;
+            color: white;
+        }
+        .btn-blue:hover {
+            background-color: #0000cc;
+        }
+        .photo img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        #coupons-title {
+            color: #1E3A8A;
+            font-size: 1.125rem;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+        .coupon {
+            background-color: #D1FAE5;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        .coupon h2 {
+            font-size: 1.125rem;
+            font-weight: bold;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+        .coupon h2 span {
+            margin-right: 8px;
+        }
+        .coupon p {
+            color: #4B5563;
+            margin: 8px 0 16px;
+        }
+        .coupon .input-group {
+            display: flex;
+        }
+        .coupon input {
+            border: 1px solid #D1D5DB;
+            border-radius: 4px 0 0 4px;
+            padding: 8px;
+            flex-grow: 1;
+            outline: none;
+        }
+        .coupon button {
+            background-color: #1F2937;
+            color: white;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+
+
+    .unique-container {
+        max-width: 1024px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .unique-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 16px;
+    }
+    .unique-balance-card {
+        padding: 16px;
+        border-radius: 8px;
+        text-align: center;
+        color: #ffffff;
+    }
+    .available {
+        padding: 50px;
+        border-radius: 18px;
+        text-align: center;
+        color: #ffffff;
+    }
+    .unique-balance-card.available {
+        background-color: #4a5568;
+    }
+    .unique-balance-card.reward {
+        background-color: #48bb78;
+    }
+    .unique-balance-card.pending {
+        background-color: #f56565;
+    }
+    .unique-balance-card p {
+        margin: 0;
+    }
+    .unique-balance-card .amount {
+        font-size: 2rem;
+        font-weight: 700;
+    }
+    .wallet-action-button {
+        display: inline-block;
+        padding: 12px 24px;
+        background-color: #4a5568;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        margin-right: 10px;
+        cursor: pointer;
+    }
+    .wallet-action-button:hover {
+        background-color: #2d3748;
+        color: white;
+        transform: translateY(-2px);
+    }
+    .quick-amount {
+        display: inline-block;
+        padding: 10px 20px;
+        margin: 5px;
+        border: 2px solid #4a5568;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .quick-amount:hover {
+        background: #4a5568;
+        color: white;
+    }
+    .transaction-status {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.875rem;
+    }
+    .status-credit {
+        background-color: #48bb78;
+        color: white;
+    }
+    .status-debit {
+        background-color: #f56565;
+        color: white;
+    }
+</style>
+
+<section class="banner-area organic-breadcrumb">
+    <div class="container">
+        <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-between">
+            <div class="col-first">
+                <h1>My Wallet</h1>
+                <nav class="d-flex align-items-center">
+                    <a href="/">Home<span class="lnr lnr-arrow-right"></span></a>
+                    <a href="/userProfile">User Profile<span class="lnr lnr-arrow-right"></span></a>
+                    <a href="#">My Wallet</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 sidebar">
+            <h2>My Account</h2>
+            <a href="/userProfile" ><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
+                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
+              </svg> Account Details</a>
+            <a href="/address" ><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
+                <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10"/>
+                <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+              </svg> Address</a>
+            <a href="/orders"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart2" viewBox="0 0 16 16">
+                <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5M3.14 5l1.25 5h8.22l1.25-5zM5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0m9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0"/>
+              </svg> Orders</a>
+            <a href="/wishlist"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
+                <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
+              </svg> Wishlist</a>
+            <a href="/wallet" class="active"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-wallet-fill" viewBox="0 0 16 16">
+                <path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v2h6a.5.5 0 0 1 .5.5c0 .253.08.644.306.958.207.288.557.542 1.194.542s.987-.254 1.194-.542C9.42 6.644 9.5 6.253 9.5 6a.5.5 0 0 1 .5-.5h6v-2A1.5 1.5 0 0 0 14.5 2z"/>
+                <path d="M16 6.5h-5.551a2.7 2.7 0 0 1-.443 1.042C9.613 8.088 8.963 8.5 8 8.5s-1.613-.412-2.006-.958A2.7 2.7 0 0 1 5.551 6.5H0v6A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5z"/>
+              </svg> Wallet</a>
+            <a href="mycoupons"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cash" viewBox="0 0 16 16">
+                <path d="M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
+                <path d="M0 4a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V6a2 2 0 0 1-2-2z"/>
+              </svg> My Coupons</a>
+            <a href="#" onclick="confirmLogout(event)" class="text-danger mt-4"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9 main-content">
+            <div class="unique-container">
+                <h2 class="unique-title">Wallet & Transactions</h2>
+              
+               <!-- Replace the commented section in your EJS with this: -->
+<div class="row mb-4">
+    <div class="col-md-4 mb-3">
+        <div id="add-money-button" class="unique-balance-card available">
+            <p class="amount">₹<span id="availableBalance"><%= wallet.balance.toFixed(2) %></span></p>
+            <p>Available Balance</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="unique-balance-card reward">
+            <p class="amount">₹<%= wallet.refundAmount.toFixed(2) %></p>
+            <p>Wallet Top-ups</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="unique-balance-card pending">
+            <p class="amount">₹<%= wallet.totalDebited.toFixed(2) %></p>
+            <p>Total Refunded</p>
+        </div>
+    </div>
+</div>
+              
+                <div class="unique-transaction-history">
+                    <h3>Transaction History</h3>
+                    <table class="table unique-transaction-table">
+                        <thead>
+                            <tr>
+                                <th>Amount</th>
+                                <th>Purpose</th>
+                                <th>Date</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (transactions && transactions.length > 0) { %>
+                                <% transactions.forEach(transaction => { %>
+                                    <tr>
+                                        <td>₹<%= transaction.amount.toFixed(2) %></td>
+                                        <td><%= transaction.description %></td>
+                                        <td><%= new Date(transaction.createdAt).toLocaleDateString() %></td>
+                                        <td>
+                                            <span class="transaction-status <%= transaction.transactionType === 'credit' ? 'status-credit' : 'status-debit' %>">
+                                                <%= transaction.transactionType.charAt(0).toUpperCase() + transaction.transactionType.slice(1) %>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="4" class="text-center">No transactions found</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Money Modal -->
+<div class="modal fade" id="addMoneyModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Money to Wallet</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-4">
+                    <input type="number" id="amount" class="form-control form-control-lg text-center" placeholder="Enter Amount (₹)" min="1" step="1">
+                </div>
+                <div class="text-center mb-4">
+                    <div class="quick-amount" onclick="setAmount(10000)">₹10000</div>
+                    <div class="quick-amount" onclick="setAmount(50000)">₹50000</div>
+                    <div class="quick-amount" onclick="setAmount(100000)">₹100000</div>
+                    <div class="quick-amount" onclick="setAmount(200000)">₹200000</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="payButton">Proceed to Pay</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Withdraw Money Modal -->
+<div class="modal fade" id="withdrawModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Withdraw Money</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="withdrawAmount" class="form-label">Enter Amount to Withdraw</label>
+                    <input type="number" id="withdrawAmount" class="form-control" min="1" step="1">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="withdrawButton">Withdraw</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .pagination .page-link {
+        font-size: 14px; /* Reduce font size */
+        padding: 6px 12px; /* Adjust padding */
+        min-width: 80px; /* Ensure consistent width */
+        text-align: center; /* Align text properly */
+    }
+</style>
+
+<div class="pagination-container d-flex justify-content-center mt-4">
+    <nav>
+        <ul class="pagination">
+            <% if (currentPage > 1) { %>
+                <li class="page-item mx-2">
+                    <a href="?page=<%= currentPage - 1 %>" class="page-link btn-sm">Previous</a>
+                </li>
+            <% } else { %>
+                <li class="page-item disabled">
+                    <span class="page-link btn-sm">Previous</span>
+                </li>
+            <% } %>
+
+            <li class="page-item active">
+                <span class="page-link">Page <%= currentPage %> of <%= totalPages %></span>
+            </li>
+
+            <% if (currentPage < totalPages) { %>
+                <li class="page-item mx-2">
+                    <a href="?page=<%= currentPage + 1 %>" class="page-link btn-sm">Next</a>
+                </li>
+            <% } else { %>
+                <li class="page-item disabled">
+                    <span class="page-link btn-sm">Next</span>
+                </li>
+            <% } %>
+        </ul>
+    </nav>
+</div>
+
+
+
+
+
+<!-- <button class="wallet-action-button" data-bs-toggle="modal" data-bs-target="#addMoneyModal">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
+        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+    </svg> Add Balance
+</button> -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+function setAmount(amount) {
+    document.getElementById('amount').value = amount;
+}
+
+document.getElementById('payButton').addEventListener('click', async () => {
+    const amount = document.getElementById('amount').value;
+    
+    if (!amount || amount < 1) {
+        alert('Please enter a valid amount');
+        return;
+    }
+
+    try {
+        const response = await fetch('/wallet/create-razorpay-order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ amount })
+        });
+
+        const data = await response.json();
+        
+        if (!data.success) {
+            throw new Error(data.message);
+        }
+
+        const options = {
+            key: data.key_id,
+            amount: data.amount,
+            currency: "INR",
+            name: "Wallet Recharge",
+            image: 'img/pc-logo.png',
+            description: "Add money to wallet",
+            order_id: data.order_id,
+            handler: async function (response) {
+                try {
+                    const verifyResponse = await fetch('/wallet/verify-payment', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(response)
+                    });
+
+                    const verifyData = await verifyResponse.json();
+                    
+                    if (verifyData.success) {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Payment successful! Your wallet has been updated.',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.reload();
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Payment verification failed. Please contact support.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Payment verification failed. Please contact support.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            },
+            prefill: {
+                name: "<%= user.name %>",
+                email: "<%= user.email %>"
+            },
+            theme: {
+                color: "#4a5568"
+            }
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.open();
+        
+        // Close the modal after opening Razorpay
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addMoneyModal'));
+        modal.hide();
+    } catch (error) {
+        console.error('Error:', error);
+       
+    }
+});
+
+document.getElementById('withdrawButton').addEventListener('click', async () => {
+    const amount = document.getElementById('withdrawAmount').value;
+    
+    if (!amount || amount < 1) {
+        alert('Please enter a valid amount');
+        return;
+    }
+
+    try {
+        const response = await fetch('/wallet/withdraw-money', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ amount })
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+    Swal.fire({
+        title: 'Success!',
+        text: 'Money withdrawn successfully!',
+        icon: 'success',
+        confirmButtonText: 'OK'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.reload();
+        }
+    });
+} else {
+    Swal.fire({
+        title: 'Error!',
+        text: data.message || 'Failed to withdraw money. Please try again.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+    });
+}
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to withdraw money. Please try again.');
+    }
+});
+</script>
+
+
+<br><br>
+<%- include("../../views/partials/user/footer") %>

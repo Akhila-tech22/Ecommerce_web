@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zxx" class="no-js">
+
+<head>
+	<!-- Mobile Specific Meta -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<!-- Favicon-->
+	<link rel="shortcut icon" href="img/pc-logo.png">
+	<!-- Author Meta -->
+	<meta name="author" content="CodePixar">
+	<!-- Meta Description -->
+	<meta name="description" content="">
+	<!-- Meta Keyword -->
+	<meta name="keywords" content="">
+	<!-- meta character set -->
+	<meta charset="UTF-8">
+	<!-- Site Title -->
+	<title>PC Monarch - Sign Up</title>
+
+	<!--
+		CSS
+		============================================= -->
+	<link rel="stylesheet" href="css/linearicons.css">
+	<link rel="stylesheet" href="css/owl.carousel.css">
+	<link rel="stylesheet" href="css/themify-icons.css">
+	<link rel="stylesheet" href="css/font-awesome.min.css">
+	<link rel="stylesheet" href="css/nice-select.css">
+	<link rel="stylesheet" href="css/nouislider.min.css">
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .or-divider {
+            text-align: center;
+            margin: 16px 0;
+            color: #666;
+        }
+
+        .google-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 16px;
+            gap: 8px;
+        }
+        #flex-clm {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; 
+            margin-left: 127px;
+        }
+        .error-message {
+            color: red;
+            font-size: 12px;
+            display: none;
+        }
+
+        .or-divider {
+            text-align: center;
+            margin: 16px 0;
+            color: #666;
+        }
+
+        .google-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 16px;
+            gap: 8px;
+        }
+        
+        #flex-clm {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-left: 127px;
+        }
+        
+        .error-message {
+            color: red;
+            font-size: 12px;
+            display: none;
+        }
+
+        /* New responsive styles */
+        @media screen and (max-width: 768px) {
+            .login_box_area .row {
+                flex-direction: column;
+            }
+
+            .login_box_img {
+                display: none; /* Hide image on mobile */
+            }
+
+            .col-lg-6 {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .login_form_inner {
+                padding: 20px;
+            }
+
+            #flex-clm {
+                margin-left: 0;
+            }
+
+            .navbar-nav {
+                text-align: center;
+            }
+
+            /* Add Login button for mobile */
+            .mobile-login {
+                display: block;
+                text-align: center;
+                margin-top: 20px;
+            }
+
+            .mobile-login .primary-btn {
+                display: inline-block;
+            }
+        }
+
+        @media screen and (min-width: 769px) {
+            .mobile-login {
+                display: none; /* Hide mobile button on desktop */
+            }
+        }
+
+        /* Additional responsive adjustments */
+        @media screen and (max-width: 576px) {
+            .login_form_inner h3 {
+                font-size: 24px;
+            }
+
+            .primary-btn {
+                padding: 2px 10px;
+            }
+
+            .google-button {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            .error-message {
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+	<!-- Start Header Area -->
+	<header class="header_area sticky-header">
+		<div class="main_menu">
+			<nav class="navbar navbar-expand-lg navbar-light main_box">
+				<div class="container">
+					<!-- Brand and toggle get grouped for better mobile display -->
+					<a class="navbar-brand logo_h" href="/"><img src="img/logo.png" alt=""></a>
+					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+					 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<!-- Collect the nav links, forms, and other content for toggling -->
+					<div class="collapse navbar-collapse offset" id="navbarSupportedContent">
+						<ul class="nav navbar-nav menu_nav ml-auto">
+							<li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+							<li class="nav-item submenu dropdown">
+								<a href="/shop" class="nav-link dropdown-toggle" role="button" aria-haspopup="true"
+								 aria-expanded="false">Shop</a>
+							</li>
+							<li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+							<li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+						</ul>
+						<ul class="nav navbar-nav navbar-right">
+							<li class="nav-item"><a href="#" class="cart"><span class="ti-bag"></span></a></li>
+							<li class="nav-item">
+								<button class="search"><span class="lnr lnr-magnifier" id="search"></span></button>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</nav>
+		</div>
+		<div class="search_input" id="search_input_box">
+			<div class="container">
+				<form class="d-flex justify-content-between">
+					<input type="text" class="form-control" id="search_input" placeholder="Search Here">
+					<button type="submit" class="btn"></button>
+					<span class="lnr lnr-cross" id="close_search" title="Close Search"></span>
+				</form>
+			</div>
+		</div>
+	</header>
+	<!-- End Header Area -->
+
+	<!--================Sign Up Box Area =================-->
+	<section class="login_box_area section_gap">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="login_box_img">
+                        <img class="img-fluid" src="img/login.jpg" alt="Gaming laptop display">
+                        <div class="hover">
+                            <h4>Already have an account?</h4>
+                            <p>There are advances being made in science and technology everyday, and a good example of this is the</p>
+                            <a class="primary-btn" href="/login">Login to your Account</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="login_form_inner">
+                        <h3>Sign up to enter</h3>
+                        <% if(locals.message && message.length > 0){ %>
+                            <div class="alert alert-danger text-center">
+                                <%= message %>
+                            </div>
+                        <% } %>
+                        <form class="row login_form" action="/signup" method="post" id="signForm">
+                            <div class="col-md-12 form-group">
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Full Name">
+                                <div id="error1" class="error-message"></div>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Email">
+                                <div id="error2" class="error-message"></div>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <input type="text" class="form-control" id="phone" name="phone" placeholder="Phone Number">
+                                <div id="error3" class="error-message"></div>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <div class="password-wrapper" style="position: relative;">
+                                    <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                                    <i onclick="togglePassword('password', this)" class="bi bi-eye-fill toggle-password" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;"></i>
+                                </div>
+                                <div id="error4" class="error-message"></div>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <div class="password-wrapper" style="position: relative;">
+                                    <input type="password" class="form-control" id="confirm-password" name="cPassword" placeholder="Confirm Password">
+                                    <i onclick="togglePassword('confirm-password', this)" class="bi bi-eye-fill toggle-password" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;"></i>
+                                </div>
+                                <div id="error5" class="error-message"></div>
+                            </div>
+                             <div class="col-md-12 form-group">
+                                <input type="text" class="form-control" id="code" name="code" placeholder="Referral code(Optional)">
+                                <div id="error3" class="error-message"></div>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <button type="submit" value="submit" class="primary-btn">Sign Up</button>
+                            </div>
+                            <div id="flex-clm">
+                                <div class="or-divider">Or</div>
+                                <a href="/auth/google" class="google-button">
+                                    <svg width="24" height="24" viewBox="0 0 24 24">
+                                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                                    </svg>
+                                    Sign up with Google
+                                </a>
+                            </div>
+                        </form>
+                        <!-- Add mobile-only Login button -->
+                        <div class="mobile-login">
+                            <p>Already have an account?</p>
+                            <a class="primary-btn" href="/login">Login to your Account</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+	<!--================End Sign Up Box Area =================-->
+
+
+    <script>
+        function togglePassword(inputId, icon) {
+    const input = document.getElementById(inputId);
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.add('bi-eye-slash-fill');
+        icon.classList.remove('bi-eye-fill');
+    } else {
+        input.type = "password";
+        icon.classList.add('bi-eye-fill');
+        icon.classList.remove('bi-eye-slash-fill');
+    }
+}
+
+
+ document.getElementById('signForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);  // Use lowercase variable name here
+
+    const fields = ['name', 'email', 'phone', 'password', 'cPassword'];
+    const missing = [];
+
+    fields.forEach(function(field) {
+        if (!formData.get(field)?.trim()) {   // Notice the '!' to check if empty
+            missing.push(field);
+        }
+    });
+
+    if (missing.length === fields.length) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'All fields are required',
+            text: 'Please fill in all fields to proceed.'
+        });
+    }
+    else if (missing.length > 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Missing Fields',
+            text: `Please fill in the following fields: ${missing.join(', ')}.`
+        });
+    } else {
+        // If all required fields are filled, submit the form
+        this.submit();
+    }
+});
+
+    </script>
+
+
+
+
+	<script src="js/vendor/jquery-2.2.4.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+	 crossorigin="anonymous"></script>
+	<script src="js/vendor/bootstrap.min.js"></script>
+	<script src="js/jquery.ajaxchimp.min.js"></script>
+	<script src="js/jquery.nice-select.min.js"></script>
+	<script src="js/jquery.sticky.js"></script>
+	<script src="js/nouislider.min.js"></script>
+	<script src="js/jquery.magnific-popup.min.js"></script>
+	<script src="js/owl.carousel.min.js"></script>
+	<!--gmaps Js-->
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjCGmQ0Uq4exrzdcL6rvxywDDOvfAu6eE"></script>
+	<script src="js/gmaps.min.js"></script>
+	<script src="js/main.js"></script>
+    <script>
+        const nameid = document.getElementById('name');
+        const emailid = document.getElementById('email');
+        const phoneid = document.getElementById('phone');
+        const passid = document.getElementById('password');
+        const cpassid = document.getElementById('confirm-password');
+
+        const error1 = document.getElementById('error1');
+        const error2 = document.getElementById('error2');
+        const error3 = document.getElementById('error3');
+        const error4 = document.getElementById('error4');
+        const error5 = document.getElementById('error5');
+
+        const signForm = document.getElementById('signForm');
+
+        function nameValidateChecking(e){
+            const nameval = nameid.value;
+            const namepattern = /^[a-zA-Z\s]{2,30}$/;
+
+            if(nameval.trim() == ''){
+                error1.style.display = 'block';
+                error1.innerHTML = 'Please Enter a Valid Name';
+            } else if(!namepattern.test(nameval)){
+                error1.style.display = 'block';
+                error1.innerHTML = 'Name can only contain alphabets and spaces';
+            } else {
+                error1.style.display = 'none';
+                error1.innerHTML = '';
+            }
+        }
+
+        function emailValidateChecking(e){
+            const emailval = emailid.value;
+            const emailpattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+            if(!emailpattern.test(emailval)){
+                error2.style.display = 'block';
+                error2.innerHTML = 'Please Enter a Valid Email';
+            } else {
+                error2.style.display = 'none';
+                error2.innerHTML = '';
+            }
+        }
+
+        function phoneValidateChecking(e){
+            const phoneval = phoneid.value;
+            const phonepattern = /^[0-9]{10}$/;
+
+            if(phoneval.trim() == ''){
+                error3.style.display = 'block';
+                error3.innerHTML = 'Please Enter a Valid Phone Number';
+            } else if(!phonepattern.test(phoneval)){
+                error3.style.display = 'block';
+                error3.innerHTML = 'Please Enter a Valid Phone Number';
+            } else {
+                error3.style.display = 'none';
+                error3.innerHTML = '';
+            }
+        }
+
+        function passValidateChecking(e){
+            const passval = passid.value;
+            const cpassval = cpassid.value;
+            const alpha = /[a-zA-Z]/;
+            const digit = /\d/;
+
+            if(passval.trim() == ''){
+                error4.style.display = 'block';
+                error4.innerHTML = 'Please Enter a Valid Password';
+            } else if(passval.length < 8){
+                error4.style.display = 'block';
+                error4.innerHTML = 'Password must be at least 8 characters long';
+            } else if(!alpha.test(passval) || !digit.test(passval)){
+                error4.style.display = 'block';
+                error4.innerHTML = 'Password must contain at least one alphabet and one digit';
+            } else {
+                error4.style.display = 'none';
+                error4.innerHTML = '';
+            }
+
+            if(passval !== cpassval){
+                error5.style.display = 'block';
+                error5.innerHTML = 'Passwords do not match';
+            } else {
+                error5.style.display = 'none';
+                error5.innerHTML = '';
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function(){
+            signForm.addEventListener('submit', function(e){
+                nameValidateChecking();
+                emailValidateChecking();
+                phoneValidateChecking();
+                passValidateChecking();
+
+                if(!nameid ||
+                    !emailid ||
+                    !phoneid ||
+                    !passid ||
+                    !error1 ||
+                    !error2 ||
+                    !error3 ||
+                    !error4 ||
+                    !error5 ||
+                    !signForm){
+                        console.error("One or more elements not found");
+                    }
+                if(
+                    error1.innerHTML ||
+                    error2.innerHTML ||
+                    error3.innerHTML ||
+                    error4.innerHTML ||
+                    error5.innerHTML
+                ){
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

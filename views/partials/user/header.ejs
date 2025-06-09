@@ -1,3 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap 5 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+   .dropdown  {
+    position: relative;
+    display: inline-block;
+
+   }
+   .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(95, 14, 14, 0.126);
+    z-index: 1000;
+    right: 0;
+
+   }
+
+   .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+
+   }
+   .dropdown-content a:hover{
+    background-color: #f1f1f1;
+
+   }
+   .dropdown:hover .dropdown-content {
+    display: block;
+
+   }
+   .header {
+    position: relative;
+    z-index: 500;
+
+   }
+</style>
+
+
+</head>
+<body>
+    
+
+
+
 <!-- Start Header Area -->
 <header class="header_area sticky-header">
     <div class="main_menu">
@@ -14,55 +68,58 @@
                 <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse offset" id="navbarSupportedContent">
                     <ul class="nav navbar-nav menu_nav ml-auto">
-                        <li class="nav-item active"><a class="nav-link" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
                         <li class="nav-item submenu dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                             aria-expanded="false">Shop</a>
-                            <ul class="dropdown-menu">
-                                <li class="nav-item"><a class="nav-link" href="category.html">Shop Category</a></li>
-                                <li class="nav-item"><a class="nav-link" href="single-product.html">Product Details</a></li>
-                                <li class="nav-item"><a class="nav-link" href="checkout.html">Product Checkout</a></li>
-                                <li class="nav-item"><a class="nav-link" href="cart.html">Shopping Cart</a></li>
-                                <li class="nav-item"><a class="nav-link" href="confirmation.html">Confirmation</a></li>
-                            </ul>
+                            <a href="/shop" class="nav-link active" role="button" aria-haspopup="true" aria-expanded="false">Shop</a>
                         </li>
-                        <li class="nav-item submenu dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                             aria-expanded="false">Blog</a>
-                            <ul class="dropdown-menu">
-                                <li class="nav-item"><a class="nav-link" href="blog.html">Blog</a></li>
-                                <li class="nav-item"><a class="nav-link" href="single-blog.html">Blog Details</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item submenu dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                             aria-expanded="false">Pages</a>
-                            <ul class="dropdown-menu">
-                                <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
-                                <li class="nav-item"><a class="nav-link" href="tracking.html">Tracking</a></li>
-                                <li class="nav-item"><a class="nav-link" href="elements.html">Elements</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+                        <% if (locals.user) { %>
+                            <div class="dropdown">
+                                <a href="#"class='sign-in-link'><%=locals.user.name%></a>
+                                <div class="dropdown-content">
+                                    <a href="/userProfile">Profile</a>
+                                    <a href="/logout">Logout</a>
+
+                                </div>
+                            </div>
+                           
+                        <% } else { %>
+                           
+                                <a href="/login" class="nav-link">Login</a>
+                         
+                        <% } %>
+                        
                     </ul>
+                    <!-- Right-aligned items moved inside collapse -->
                     <ul class="nav navbar-nav navbar-right">
-                        <li class="nav-item"><a href="#" class="cart"><span class="ti-bag"></span></a></li>
                         <li class="nav-item">
-                            <button class="search"><span class="lnr lnr-magnifier" id="search"></span></button>
+                            <a href="" class="cart" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cart">
+                                <span></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/wishlist" class="wishlist" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Wishlist">
+                                <span class="ti-heart"></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/cart" class="wishlist" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cart">
+                                <span class="ti-bag"></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/shop#advanced-search-glow">
+                                <button data-bs-toggle="tooltip" data-bs-placement="top" title="Search" class="search">
+                                    <span class="lnr lnr-magnifier" id="search"></span>
+                                </button>
+                            </a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </div>
-    <div class="search_input" id="search_input_box">
-        <div class="container">
-            <form class="d-flex justify-content-between">
-                <input type="text" class="form-control" id="search_input" placeholder="Search Here">
-                <button type="submit" class="btn"></button>
-                <span class="lnr lnr-cross" id="close_search" title="Close Search"></span>
-            </form>
-        </div>
-    </div>
 </header>
+</body>
 <!-- End Header Area -->

@@ -1,0 +1,577 @@
+<%- include('../partials/user/header') %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <head>
+    <link rel="stylesheet" href="css/linearicons.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/themify-icons.css">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/owl.carousel.css">
+    <link rel="stylesheet" href="css/nice-select.css">
+    <link rel="stylesheet" href="css/nouislider.min.css">
+    <link rel="stylesheet" href="css/ion.rangeSlider.css" />
+    <link rel="stylesheet" href="css/ion.rangeSlider.skinFlat.css" />
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+
+<style>
+ .card-green {
+   background-color: #ADD8E6;
+ }
+ .main {
+   padding: 30px 0;
+ }
+
+
+ .dashboard-menu {
+   background-color: #cce3e6;
+   border-radius: 10px;
+   padding: 15px;
+   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+ }
+
+
+ .dashboard-menu .nav-link {
+ font-weight: bold;
+ color: #30683c;
+ box-shadow: 0 4px 10px rgba(123, 131, 112, 0.3), 0 4px 20px rgba(0, 191, 255, 0.2);
+ transition: box-shadow 0.3s ease;
+}
+
+
+.dashboard-menu .nav-link:hover {
+ color: #00bfff;
+ box-shadow: 0 4px 15px rgba(173, 255, 47, 0.5), 0 6px 25px rgba(0, 191, 255, 0.4);
+}
+
+
+ .card {
+   border-radius: 10px;
+   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+   margin-bottom: 20px;
+ }
+
+
+ .card-header {
+   background-color: #487379;
+   color: white;
+   border-radius: 10px 10px 0 0;
+ }
+
+
+ .btn-success {
+   background-color: #577194;
+   border-color: #6bb87d;
+ }
+
+
+ .btn-success:hover {
+   background-color: #506955;
+ }
+
+
+ .form-group {
+   margin-bottom: 15px;
+ }
+
+
+ .required {
+   color: red;
+ }
+
+
+  @media (max-width: 768px) {
+   .dashboard-menu {
+     padding: 10px;
+   }
+
+
+   .card {
+     margin-bottom: 15px;
+   }
+ }
+ .page-header.breadcrumb-wrap {
+ background-color: #eee2e9;
+ padding: 15px 0;
+}
+
+
+.breadcrumb {
+ display: flex;
+ align-items: center;
+ font-family: 'Arial', sans-serif;
+ font-size: 16px;
+ color: #121311;
+}
+
+
+.breadcrumb a {
+ color: #007bff;
+ text-decoration: none;
+ position: relative;
+ margin: 0 5px;
+}
+
+
+.breadcrumb a:hover {
+ color: #0056b3;
+}
+
+
+.breadcrumb span {
+ margin: 0 5px;
+ color: #999;
+}
+
+
+.breadcrumb a::after {
+ content: '';
+ position: absolute;
+ width: 100%;
+ height: 2px;
+ background: #6e6e3a;
+ left: 0;
+ bottom: -2px;
+ transform: scaleX(0);
+ transition: transform 0.3s ease;
+}
+
+
+.breadcrumb a:hover::after {
+ transform: scaleX(1);
+}
+
+.profile-image-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .rounded-circle {
+        border-radius: 50%;
+        border: 2px solid #fff; /* Optional: Add a border to the image */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Optional: Add a shadow effect */
+    }
+
+    .ml-3 {
+        margin-left: 15px; /* Space between image and text */
+    }
+
+
+    .order-details-card {
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    .status-timeline {
+        display: flex;
+        justify-content: space-between;
+        margin: 30px 0;
+        position: relative;
+    }
+    .status-point {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 1;
+    }
+    .status-dot {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        margin-bottom: 10px;
+    }
+    .status-line {
+        position: absolute;
+        top: 10px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background-color: #e0e0e0;
+        z-index: 0;
+    }
+    .status-active {
+        background-color: #28a745;
+    }
+    .status-inactive {
+        background-color: #e0e0e0;
+    }
+    .address-card {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    .product-image {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 5px;
+    }
+    .order-timeline {
+  margin: 20px 0;
+}
+
+.timeline-step {
+  position: relative;
+}
+
+.dot {
+  width: 16px;
+  height: 16px;
+  background-color: #ccc;
+  border-radius: 50%;
+  margin: 0 auto;
+  z-index: 2;
+  position: relative;
+}
+
+.dot.active {
+  background-color: green;
+}
+
+.timeline-line {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  height: 2px;
+  width: 100%;
+  background-color: #ccc;
+  z-index: 1;
+}
+
+.line-active {
+  background-color: green;
+}
+
+.timeline-step:not(:last-child) .timeline-line {
+  right: -50%;
+}
+ #Invoice {
+
+}
+
+</style>
+
+<section class="banner-area organic-breadcrumb">
+    <div class="container">
+        <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+            <div class="col-first">
+                <h1>Order Details</h1>
+                <nav class="d-flex align-items-center">
+                    <a href="/">Home<span class="lnr lnr-arrow-right"></span></a>
+                    <a href="/userProfile">Profile<span class="lnr lnr-arrow-right"></span></a>
+                    <a href="/orders">Orders<span class="lnr lnr-arrow-right"></span></a>
+                    <a href="#">Order Details</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/orders">Orders</a></li>
+                    <li class="breadcrumb-item active">Order #<%= order.orderId %></li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="order-details-card">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Order #<%= order.orderId %></h5>
+                    <span class="badge bg-light text-dark">
+                        <%= new Date(order.createdOn).toLocaleDateString() %>
+                    </span>
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <!-- Order Status Timeline -->
+      <% order.orderedItems.forEach(function(item) { %>
+  <!--  Start of Single Product Card -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+
+      <!--  Timeline (Order Status Progress) -->
+      <div class="order-timeline d-flex justify-content-between position-relative mb-4">
+        <% const statuses = ['pending', 'confirmed', 'shipped', 'delivered']; %>
+        <% statuses.forEach((status, index) => { %>
+          <div class="timeline-step text-center flex-fill position-relative">
+            <div class="dot <%= item.status === status || statuses.indexOf(item.status) > index ? 'active' : '' %>"></div>
+            <small class="d-block mt-1"><%= status.toUpperCase() %></small>
+
+            <% if (index < statuses.length - 1) { %>
+              <div class="timeline-line <%= statuses.indexOf(item.status) > index ? 'line-active' : '' %>"></div>
+            <% } %>
+          </div>
+        <% }); %>
+      </div>
+
+      <!--  Product Info -->
+      <div class="d-flex mb-3">
+        <img src="<%= item.productImages[0] %>" alt="<%= item.productName %>" class="me-3" style="width: 100px; height: 100px; object-fit: cover;">
+        <div>
+          <h5><%= item.productName %></h5>
+          <p>Size : <%= item.size%></p>
+          <p>Quantity: <%= item.quantity %></p>
+          <p>Price: ₹<%= item.price %></p>
+          <p>Total: ₹<%= item.price * item.quantity %></p>
+          <p>Status: 
+            <span class="badge <%= item.status === 'delivered' ? 'bg-success' : 'bg-warning' %>">
+              <%= item.status.toUpperCase() %>
+            </span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Return Button  -->
+      <% if (item.status === 'delivered' && !item.returnReason && item.requestStatus !== "rejected") { %>
+        <button class="btn btn-warning mb-2" onclick="initiateReturn('<%= order._id %>','<%= item.product %>')">Request Return</button>
+      <% } %>
+
+      <!--  Return Status Message -->
+      <% if (['return_requested', 'approved', 'rejected'].includes(item.status)) { %>
+        <div class="alert alert-<%= item.status === 'approved' ? 'success' : item.status === 'rejected' ? 'danger' : 'info' %> mb-2">
+          <strong>Return Status:</strong> <%= item.status.replace('_', ' ').toUpperCase() %><br>
+        </div>
+      <% } %>
+
+      <!--  Action Buttons -->
+
+
+        <% if (item.status === 'return_requested') { %>
+          <button class="btn btn-danger" onclick="cancelReturn('<%= order._id %>', '<%= item.product %>')">Cancel Return</button>
+        <% } else if (!['delivered', 'cancelled', 'return_requested', 'approved', 'rejected', 'shipped'].includes(item.status)) { %>
+          <button class="btn btn-danger" onclick="cancelOrder('<%= order._id %>', '<%= item.product %>','<%= item.size %>')">Cancel Order</button>
+        <% } %>
+      </div>
+
+    </div> <!-- End of .card-body -->
+  </div> <!-- End of .card -->
+<% }); %>
+
+
+
+                <!-- Shipping Address -->
+                <div class="address-card">
+                    <h5 class="mb-3">Shipping Address</h5>
+                    <p class="mb-1"><strong><%= order.address.name %></strong></p>
+                    <p class="mb-1"><%= order.address.streetAddress %></p>
+                    <p class="mb-1"><%= order.address.city %>, <%= order.address.state %> <%= order.address.pincode %></p>
+                    <p class="mb-1">Phone: <%= order.address.phone %></p>
+                   
+                </div>
+                <div class="d-flex flex-wrap gap-2" id = "Invoice">
+                <% if (order.paymentMethod === "cod") { %>
+                  <% if (order.orderedItems.some(item => item.status === "delivered")) { %>
+                    <a href="/download-invoice/<%= order._id %>" class="btn btn-primary">Download Invoice</a>
+                  <% } %>
+                <% } else { %>
+                  <a href="/download-invoice/<%= order._id %>" class="btn btn-primary">Download Invoice</a>
+                <% } %>
+              </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+async function cancelOrder(orderId, productId, size) {
+    const { value: reasonOption } = await Swal.fire({
+        title: 'Cancel Order',
+        input: 'select',
+        inputLabel: 'Select a reason for cancellation',
+        inputOptions: {
+            'Ordered by mistake': 'Ordered by mistake',
+            'Found a better price': 'Found a better price',
+            'Delivery took too long': 'Delivery took too long',
+            'Item no longer needed': 'Item no longer needed',
+            'Changed my mind': 'Changed my mind',
+            'Wrong item ordered': 'Wrong item ordered',
+            'Other': 'Other'
+        },
+        showCancelButton: true
+    });
+
+    if (!reasonOption) return;
+
+    let finalReason = reasonOption;
+
+    if (reasonOption === 'Other') {
+        const { value: otherReason } = await Swal.fire({
+            title: 'Cancel Order',
+            input: 'textarea',
+            inputLabel: 'Please provide a reason for cancellation',
+            inputPlaceholder: 'Type your reason here...',
+            showCancelButton: true,
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'You need to provide a reason!';
+                }
+            }
+        });
+
+        if (!otherReason) return;
+        finalReason = otherReason;
+    }
+
+    try {
+        const response = await fetch('/orders/cancel', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ orderId, reason: finalReason , productId , size}),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            await Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Order cancelled successfully',
+                timer: 1500
+            });
+            location.reload();
+        } else {
+            throw new Error(data.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        await Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'Failed to cancel order'
+        });
+    }
+}
+
+
+
+ function initiateReturn( orderId, productId) {
+  Swal.fire({
+    title: 'Request Return',
+    input: 'textarea',
+    inputLabel: 'Reason for return',
+    inputPlaceholder: 'Please describe the reason for return...',
+    inputAttributes: {
+      'aria-label': 'Reason for return',
+      required: true,
+      minlength: 5,
+    },
+    showCancelButton: true,
+    confirmButtonText: 'Submit Request',
+    cancelButtonText: 'Cancel',
+    preConfirm: (reason) => {
+      if (!reason || reason.trim().length < 5) {
+        Swal.showValidationMessage('Please enter a reason (at least 5 characters)');
+      }
+      return reason;
+    }
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const reason = result.value.trim();
+      // Make the API call using fetch with orderId and reason
+      fetch('/request-return', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ orderId, productId, returnReason: reason }) // if applicable
+
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          Swal.fire({
+            title: 'Return Requested!',
+            text: 'Your return request has been submitted.',
+            icon: 'success'
+          }).then(() => {
+            location.reload();  // reload to update counts or UI
+          });
+        } else {
+          Swal.fire({
+            title: 'Something went wrong!',
+            text: data.message || 'Unable to request return.',
+            icon: 'error'
+          });
+        }
+      })
+      .catch(err => {
+        Swal.fire({
+          title: 'Request Failed!',
+          text: 'Please try again later.',
+          icon: 'error'
+        });
+        console.error(err);
+      });
+    }
+  });
+}
+
+
+
+
+async function cancelReturn(orderId, productId) {
+    try {
+        const result = await Swal.fire({
+            title: 'Cancel Return Request',
+            text: 'Are you sure you want to cancel your return request?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, cancel it!'
+        });
+
+        if (result.isConfirmed) {
+            const response = await fetch('/orders/cancel-return', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ orderId , productId}),
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Return request cancelled successfully',
+                    timer: 1500
+                });
+                location.reload();
+            } else {
+                throw new Error(data.message);
+            }
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        await Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'Failed to cancel return request'
+        });
+    }
+}
+</script>
+
+<%- include('../partials/user/footer') %>
