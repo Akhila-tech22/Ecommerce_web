@@ -408,18 +408,7 @@
             <p>Available Balance</p>
         </div>
     </div>
-    <div class="col-md-4 mb-3">
-        <div class="unique-balance-card reward">
-            <p class="amount">₹<%= wallet.refundAmount.toFixed(2) %></p>
-            <p>Wallet Top-ups</p>
-        </div>
-    </div>
-    <div class="col-md-4 mb-3">
-        <div class="unique-balance-card pending">
-            <p class="amount">₹<%= wallet.totalDebited.toFixed(2) %></p>
-            <p>Total Refunded</p>
-        </div>
-    </div>
+   
 </div>
               
                 <div class="unique-transaction-history">
@@ -460,54 +449,6 @@
     </div>
 </div>
 
-<!-- Add Money Modal -->
-<div class="modal fade" id="addMoneyModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Add Money to Wallet</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-4">
-                    <input type="number" id="amount" class="form-control form-control-lg text-center" placeholder="Enter Amount (₹)" min="1" step="1">
-                </div>
-                <div class="text-center mb-4">
-                    <div class="quick-amount" onclick="setAmount(10000)">₹10000</div>
-                    <div class="quick-amount" onclick="setAmount(50000)">₹50000</div>
-                    <div class="quick-amount" onclick="setAmount(100000)">₹100000</div>
-                    <div class="quick-amount" onclick="setAmount(200000)">₹200000</div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="payButton">Proceed to Pay</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Withdraw Money Modal -->
-<div class="modal fade" id="withdrawModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Withdraw Money</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label for="withdrawAmount" class="form-label">Enter Amount to Withdraw</label>
-                    <input type="number" id="withdrawAmount" class="form-control" min="1" step="1">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="withdrawButton">Withdraw</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <style>
     .pagination .page-link {
@@ -551,161 +492,9 @@
 
 
 
-
-<!-- <button class="wallet-action-button" data-bs-toggle="modal" data-bs-target="#addMoneyModal">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
-        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
-        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
-    </svg> Add Balance
-</button> -->
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
 
-
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script>
-function setAmount(amount) {
-    document.getElementById('amount').value = amount;
-}
-
-document.getElementById('payButton').addEventListener('click', async () => {
-    const amount = document.getElementById('amount').value;
-    
-    if (!amount || amount < 1) {
-        alert('Please enter a valid amount');
-        return;
-    }
-
-    try {
-        const response = await fetch('/wallet/create-razorpay-order', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ amount })
-        });
-
-        const data = await response.json();
-        
-        if (!data.success) {
-            throw new Error(data.message);
-        }
-
-        const options = {
-            key: data.key_id,
-            amount: data.amount,
-            currency: "INR",
-            name: "Wallet Recharge",
-            image: 'img/pc-logo.png',
-            description: "Add money to wallet",
-            order_id: data.order_id,
-            handler: async function (response) {
-                try {
-                    const verifyResponse = await fetch('/wallet/verify-payment', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(response)
-                    });
-
-                    const verifyData = await verifyResponse.json();
-                    
-                    if (verifyData.success) {
-                        Swal.fire({
-                            title: 'Success!',
-                            text: 'Payment successful! Your wallet has been updated.',
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.reload();
-                            }
-                        });
-                    } else {
-                        Swal.fire({
-                            title: 'Error!',
-                            text: 'Payment verification failed. Please contact support.',
-                            icon: 'error',
-                            confirmButtonText: 'OK'
-                        });
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Payment verification failed. Please contact support.',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            },
-            prefill: {
-                name: "<%= user.name %>",
-                email: "<%= user.email %>"
-            },
-            theme: {
-                color: "#4a5568"
-            }
-        };
-
-        const rzp = new Razorpay(options);
-        rzp.open();
-        
-        // Close the modal after opening Razorpay
-        const modal = bootstrap.Modal.getInstance(document.getElementById('addMoneyModal'));
-        modal.hide();
-    } catch (error) {
-        console.error('Error:', error);
-       
-    }
-});
-
-document.getElementById('withdrawButton').addEventListener('click', async () => {
-    const amount = document.getElementById('withdrawAmount').value;
-    
-    if (!amount || amount < 1) {
-        alert('Please enter a valid amount');
-        return;
-    }
-
-    try {
-        const response = await fetch('/wallet/withdraw-money', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ amount })
-        });
-
-        const data = await response.json();
-        
-        if (data.success) {
-    Swal.fire({
-        title: 'Success!',
-        text: 'Money withdrawn successfully!',
-        icon: 'success',
-        confirmButtonText: 'OK'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.reload();
-        }
-    });
-} else {
-    Swal.fire({
-        title: 'Error!',
-        text: data.message || 'Failed to withdraw money. Please try again.',
-        icon: 'error',
-        confirmButtonText: 'OK'
-    });
-}
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Failed to withdraw money. Please try again.');
-    }
-});
-</script>
 
 
 <br><br>

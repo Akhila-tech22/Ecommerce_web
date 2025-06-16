@@ -9,6 +9,7 @@ const generateInvoice = require("../utils/generateInvoice");
 const Coupon = require('../models/couponSchema')
 const Transaction = require('../models/transactionSchema'); // Adjust path as needed
 const mongoose = require('mongoose');
+const Wallet = require('../models/walletSchema');
 
 // Get all orders of logged-in user
 const getOrders = async (req, res) => {
@@ -218,7 +219,7 @@ const requestReturn = async (req, res) => {
       return res.status(400).json({ success: false, message: "Return request not allowed" });
     }
 
-    orderedProduct.status = "return_requested"; // from db
+    orderedProduct.status = "return_requested";
     orderedProduct.returnReason = returnReason;  
     order.updatedOn = new Date();
 
@@ -335,10 +336,12 @@ const downloadInvoice = async (req, res) => {
       orderedItems,
       subtotal: order.totalPrice,
       totalRefund,
-      finalAmount: order.finalAmount + 50,
-      couponApplied: order.couponApplied,
-      discount: order.discount,
-      deliveryCharge: order.deliveryCharge || 50
+        couponApplied: order.couponApplied,
+      discount: order.couponDetails?.discountAmount || 0,
+
+      deliveryCharge: order.deliveryCharge || 50,
+      couponCode: order.couponDetails?.couponCode || '',
+         finalAmount: order.finalAmount,
     };
 
     const invoicePath = path.join(__dirname, `../invoices/invoice-${orderId}.pdf`);
@@ -352,126 +355,6 @@ const downloadInvoice = async (req, res) => {
     res.status(500).send('Server error');
   }
 };
-
-// Helper function to get refund amount from wallet for specific item
-async function getRefundFromWallet(orderId, item) {
-  try {
-    // Look for wallet credit transaction for this specific item
-    const transaction = await Transaction.findOne({
-      'orders.orderId': orderId,
-      'metadata.productId': item.product?.toString(),
-      'metadata.size': item.size,
-      transactionType: 'credit',
-      purpose: { $in: ['cancellation', 'return'] }
-    });
-    
-    return transaction ? transaction.amount : 0;
-  } catch (error) {
-    console.error('Error getting refund from wallet:', error);
-    return 0;
-  }
-}
-
-// Helper function to get total refund from wallet for entire order (when coupon applied)
-async function getTotalRefundFromWalletForOrder(orderId) {
-  try {
-    const transactions = await Transaction.find({
-      'orders.orderId': orderId,
-      transactionType: 'credit',
-      purpose: { $in: ['cancellation', 'return'] }
-    });
-    
-    return transactions.reduce((total, transaction) => total + transaction.amount, 0);
-  } catch (error) {
-    console.error('Error getting total refund from wallet:', error);
-    return 0;
-  }
-}
-
-
-
-
-
-// Helper function to find refund transaction
-async function findRefundTransaction(orderId, item) {
-  // Try multiple query approaches to find the transaction
-  let transaction = await Transaction.findOne({
-    'orders.orderId': orderId,
-    'metadata.productId': item.product?.toString() || item.productId,
-    'metadata.size': item.size,
-    transactionType: 'credit',
-    purpose: { $in: ['cancellation', 'return', 'refund'] }
-  });
-
-  // If not found, try without size filter
-  if (!transaction) {
-    transaction = await Transaction.findOne({
-      'orders.orderId': orderId,
-      'metadata.productId': item.product?.toString() || item.productId,
-      transactionType: 'credit',
-      purpose: { $in: ['cancellation', 'return', 'refund'] }
-    });
-  }
-
-  // If still not found, try with productName
-  if (!transaction) {
-    transaction = await Transaction.findOne({
-      'orders.orderId': orderId,
-      'metadata.productName': item.productName,
-      transactionType: 'credit',
-      purpose: { $in: ['cancellation', 'return', 'refund'] }
-    });
-  }
-
-  // If still not found, try broader search by orderId only
-  if (!transaction) {
-    transaction = await Transaction.findOne({
-      'orders.orderId': orderId,
-      transactionType: 'credit',
-      purpose: { $in: ['cancellation', 'return', 'refund'] }
-    });
-  }
-
-  return transaction;
-}
-
-// Helper function to calculate expected refund amount
-async function calculateExpectedRefund(order, item) {
-  // Base refund is the item total
-  let refundAmount = item.price * item.quantity;
-  
-  // Check if coupon needs to be recalculated
-  if (order.couponApplied && order.discount > 0) {
-    // Get all valid (non-cancelled, non-returned) items
-    const validItems = order.orderedItems.filter(orderItem => 
-      orderItem.status !== 'cancelled' && 
-      orderItem.status !== 'canceled' && 
-      orderItem.status !== 'returned' &&
-      orderItem._id.toString() !== item._id.toString() // Exclude current item being refunded
-    );
-    
-    const validItemsTotal = validItems.reduce((sum, validItem) => 
-      sum + (validItem.price * validItem.quantity), 0
-    );
-    
-    // Example logic: If valid items total is less than coupon minimum threshold,
-    // adjust the refund to account for loss of coupon discount
-    // You'll need to implement this based on your coupon rules
-    
-    // For now, we'll calculate proportional coupon impact
-    const totalItemsValue = order.orderedItems.reduce((sum, orderItem) => 
-      sum + (orderItem.price * orderItem.quantity), 0
-    );
-    
-    const itemCouponShare = (refundAmount / totalItemsValue) * order.discount;
-    
-    // The refund should be reduced by the coupon benefit this item received
-    refundAmount = refundAmount - itemCouponShare;
-  }
-  
-  return Math.max(0, refundAmount); // Ensure refund is not negative
-}
-
 
 
 
@@ -509,149 +392,6 @@ const cancelReturn = async (req, res) => {
   }
 };
 
-const placeWalletOrder = async (req, res) => {
-  try {
-    const userId = req.session.user
-    const { addressId, couponCode } = req.body
-
-    const user = await User.findById(userId).populate({
-      path: "cart.productId",
-      model: "Product",
-    })
-
-    if (!user || user.cart.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Cart is empty",
-      })
-    }
-
-    const address = await Address.findOne({ userId: userId, "address._id": addressId })
-    if (!address) {
-      return res.status(400).json({
-        success: false,
-        message: "Address not found",
-      })
-    }
-
-    const selectedAddress = address.address.find((addr) => addr._id.toString() === addressId)
-
-    const totalAmount = user.cart.reduce((sum, item) => sum + item.productId.salePrice * item.quantity, 0)
-    let discount = 0
-    let couponApplied = false
-
-    if (couponCode) {
-      const coupon = await Coupon.findOne({ name: couponCode, isList: true })
-      if (coupon && !coupon.userId.includes(userId)) {
-        discount = coupon.offerPrice
-        couponApplied = true
-        await Coupon.findByIdAndUpdate(coupon._id, {
-          $push: { userId: userId },
-        })
-      }
-    }
-
-    const finalAmount = totalAmount - discount + DELIVERY_CHARGE
-    const discountedItems = distributeDiscount(
-      user.cart.map((item) => ({
-        product: item.productId._id,
-        productName: item.productId.productName,
-        productImages: item.productId.productImage,
-        quantity: item.quantity,
-        price: item.productId.salePrice,
-      })),
-      discount,
-    )
-
-    const orders = await Promise.all(
-      discountedItems.map(async (item) => {
-        const product = await Product.findById(item.product).select("regularPrice productName productImage")
-        const order = new Order({
-          userId: userId,
-          orderedItems: [
-            {
-              product: item.product,
-              productName: product.productName,
-              productImages: product.productImage,
-              quantity: item.quantity,
-              price: item.discountedPrice,
-              regularPrice: product.regularPrice,
-              status: "pending",
-            },
-          ],
-          totalPrice: item.price * item.quantity,
-          discount: item.price * item.quantity - item.discountedPrice * item.quantity,
-          finalAmount: item.discountedPrice * item.quantity + DELIVERY_CHARGE / discountedItems.length,
-          address: selectedAddress,
-          status: "pending",
-          paymentMethod: "wallet",
-          couponApplied: couponApplied,
-          deliveryCharge: DELIVERY_CHARGE / discountedItems.length,
-          createdOn: new Date(),
-          updatedOn: new Date(), // Set initial updatedOn timestamp
-        })
-
-        await Product.findByIdAndUpdate(item.product, {
-          $inc: { quantity: -item.quantity },
-        })
-
-        return order.save()
-      }),
-    )
-
-    //rest of the code is same as placeOrder function.
-    const wallet = await Wallet.findOne({ userId })
-
-    if (!wallet || wallet.balance < finalAmount) {
-      return res.status(400).json({
-        success: false,
-        message: "Insufficient wallet balance",
-      })
-    }
-
-    wallet.balance -= finalAmount
-    wallet.totalDebited += finalAmount
-    wallet.transactions.push({
-      amount: finalAmount,
-      transactionType: "debit",
-      transactionPurpose: "purchase",
-      description: "Order payment from wallet",
-    })
-
-    await wallet.save()
-
-    await Transaction.create({
-      userId: userId,
-      amount: finalAmount,
-      transactionType: "debit",
-      paymentMethod: "wallet",
-      paymentGateway: "wallet",
-      status: "completed",
-      purpose: "purchase",
-      description: "Order payment from wallet",
-      orders: orders.map((order) => ({
-        orderId: order.orderId,
-        amount: order.finalAmount,
-      })),
-      walletBalanceAfter: wallet.balance,
-    })
-
-    // Clear cart
-    await User.findByIdAndUpdate(userId, { $set: { cart: [] } })
-
-    res.json({
-      success: true,
-      orderIds: orders.map((order) => order.orderId),
-      message: "Orders placed successfully",
-    })
-  } catch (error) {
-    console.error("Error in placeWalletOrder:", error)
-    res.status(500).json({
-      success: false,
-      message: "Failed to place order",
-    })
-  }
-}
 
 
 
@@ -663,6 +403,6 @@ module.exports = {
   requestReturn,
   downloadInvoice,
   cancelReturn,
-  placeWalletOrder,
+  
 
 };

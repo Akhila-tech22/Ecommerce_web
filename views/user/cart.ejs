@@ -300,9 +300,9 @@
                 <td class="text-center" data-title="Stock">
                     <div class="detail-qty border radius m-auto">
                         <div class="quantity-control">
-                            <button class="btn btn-sm increment-button" onclick="changeQuantity('<%= item.product._id %>', 'increase', '<%= item.size %>')">+</button>
+                            <button class="btn btn-sm increment-button" onclick="changeQuantity('<%= item.product._id %>', 'increase', '<%= item.size %>','<%= item.product.availableStock %>')">+</button>
                             <input class="quantity-input" id="cartProductQuantity<%= item.product._id %>_<%= item.size %>" value="<%= item.quantity %>" style="width: 45px;" type="text" readonly>
-                            <button class="btn btn-sm decrement-button" onclick="changeQuantity('<%= item.product._id %>', 'decrease', '<%= item.size %>')">-</button>
+                            <button class="btn btn-sm decrement-button" onclick="changeQuantity('<%= item.product._id %>', 'decrease', '<%= item.size %>', '<%= item.product.availableStock %>')">-</button>
                         </div>
                     </div>
                 </td>
@@ -362,19 +362,27 @@
 
 <script>
 // Updated changeQuantity function - now includes size parameter
-function changeQuantity(productId, action, size) {
+function changeQuantity(productId, action, size, maxStock) {
     const quantityElement = document.getElementById(`cartProductQuantity${productId}_${size}`);
     let currentQuantity = parseInt(quantityElement.value);
 
-    if (action === 'increase' && currentQuantity >= 5) {
-        Swal.fire('Error', 'Maximum 5 quantity per user', 'error');
-        return;
+    if (action === 'increase') {
+        if (currentQuantity >= 5) {
+            Swal.fire('Error', 'Maximum 5 quantity per user', 'error');
+            return;
+        }
+        if (currentQuantity >= maxStock) {
+            Swal.fire('Error', `Only ${maxStock} items available in stock`, 'error');
+            return;
+        }
     }
     
     if (action === 'decrease' && currentQuantity <= 1) {
         confirmRemove(productId, size);
         return;
     }
+
+    // Your existing AJAX call...
 
     $.ajax({
         url: '/changeQuantity',
@@ -449,6 +457,7 @@ function viewShippingCharge() {
         confirmButtonText: 'OK'
     });
 }
+
 </script>
 
 <%- include("../../views/partials/user/footer") %>

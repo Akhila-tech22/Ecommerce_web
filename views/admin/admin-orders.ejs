@@ -1,7 +1,7 @@
 <%- include('../partials/admin/header') %>
 <!-- Bootstrap 5 CSS CDN -->
+ 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
 
 <style>
   :root {
@@ -25,7 +25,7 @@
     font-family: var(--font-family);
     color: var(--secondary-color);
     margin-left: 116px;
-        margin-top: 82px;
+    margin-top: 82px;
   }
 
   h1 {
@@ -40,7 +40,7 @@
     border: none;
     background-color: var(--white);
     transition: var(--transition);
-        margin-left: 126px;
+    margin-left: 126px;
   }
 
   .card-header {
@@ -56,6 +56,27 @@
 
   .card-header i {
     color: var(--primary-color);
+  }
+
+  /* Search Section */
+  .search-section {
+    background-color: var(--white);
+    padding: 20px;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+    margin-left: 126px;
+  }
+
+  .search-section .form-control {
+    border-radius: 0.4rem;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s ease;
+  }
+
+  .search-section .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 6px rgba(30, 144, 255, 0.3);
   }
 
   .table-responsive {
@@ -75,6 +96,28 @@
     border-bottom: 2px solid var(--primary-color);
     padding: 12px 15px;
     background-color: transparent;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+  }
+
+  table.order-table thead th:hover {
+    background-color: rgba(30, 144, 255, 0.1);
+  }
+
+  table.order-table thead th .sort-icon {
+    margin-left: 5px;
+    opacity: 0.5;
+  }
+
+  table.order-table thead th.sort-asc .sort-icon:after {
+    content: "↑";
+    opacity: 1;
+  }
+
+  table.order-table thead th.sort-desc .sort-icon:after {
+    content: "↓";
+    opacity: 1;
   }
 
   table.order-table tbody tr {
@@ -172,379 +215,240 @@
     background-color: #0661c3;
   }
 
-  /* Modal styling */
-  .modal-content {
-    border-radius: 0.6rem;
-    box-shadow: var(--shadow);
-    font-family: var(--font-family);
-  }
-
-  .modal-header {
-    border-bottom: 1px solid var(--light-gray);
-    font-weight: 700;
-    color: var(--secondary-color);
-  }
-
-  .modal-title {
-    font-size: 1.25rem;
-  }
-
-  .form-label {
-    font-weight: 600;
-    color: var(--secondary-color);
-  }
-
-  .form-control, .form-select {
-    border-radius: 0.4rem;
-    border: 1px solid #ccc;
-    transition: border-color 0.3s ease;
-  }
-
-  .form-control:focus, .form-select:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 6px rgba(30, 144, 255, 0.3);
-  }
-
-  .btn-close {
-    filter: brightness(0.6);
-    transition: filter 0.3s ease;
-  }
-  .btn-close:hover {
-    filter: brightness(1);
-  }
-  .status-badge {
-  padding: 5px 10px;
-  color: white;
-  border-radius: 5px;
-  display: inline-block;
-  font-size: 0.75rem;
-}
- .bg-light {
-    background-color: #f9f9f9 !important; /* Light grey */
+  .bg-light {
+    background-color: #f9f9f9 !important;
   }
   .bg-white {
-    background-color: #ffffff !important; /* White */
+    background-color: #ffffff !important;
+  }
+
+  /* No results message */
+  .no-results {
+    text-align: center;
+    padding: 40px;
+    color: var(--secondary-bg);
   }
 </style>
 
-
-
-
-
-
-    
-    <div class="card mb-4">
-        <div class="card-header">
-            <i class="fas fa-table me-1"></i>
-            All Orders
-        </div>
-        <div class="card-body">
-          
-                <table class="table table-striped order-table">
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Date</th>
-                            <th>Customer</th>
-                            <th>Product</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-  <% orders.forEach((order, orderIndex) => { %>
-    <% const shadeClass = orderIndex % 2 === 0 ? 'bg-light' : 'bg-white'; %>
-
-    <% order.orderedItems.forEach((item, itemIndex) => { %>
-      <tr class="<%= shadeClass %>">
-        <% if (itemIndex === 0) { %>
-          <!-- Order ID -->
-          <td rowspan="<%= order.orderedItems.length %>">#<%= order.orderId %></td>
-
-          <!-- Date -->
-          <td rowspan="<%= order.orderedItems.length %>">
-            <%= new Date(order.createdOn).toLocaleDateString() %>
-          </td>
-
-          <!-- Customer -->
-          <td rowspan="<%= order.orderedItems.length %>">
-            <strong><%= order.address.name %></strong>
-          </td>
-        <% } %>
-
-        <!-- Product -->
-        <td>
-          <div class="d-flex align-items-center">
-            <img src="/<%= item.productImages[0] %>" 
-                 alt="<%= item.productName %>" 
-                 style="width: 50px; height: 50px; object-fit: cover;" 
-                 class="me-2 rounded">
-            <div>
-              <div><%= item.productName %></div>
-              <small class="text-muted">Qty: <%= item.quantity %></small>
-              <p>Size : <%= item.size%></p>
-            </div>
-          </div>
-        </td>
-
-        <!-- Amount -->
-        <td>₹<%= Math.round(item.price * item.quantity) %></td>
-
-        <!-- Status (Individual per item if applicable) -->
-        <td>
-          <span class="status-badge <%= 
-            item.status === 'delivered' ? 'bg-success' :
-            item.status === 'cancelled' ? 'bg-danger' :
-            item.status === 'shipped' ? 'bg-info' :
-            item.status === 'return_requested' ? 'bg-warning' :
-            item.status === 'approved' ? 'bg-info' :
-            item.status === 'rejected' ? 'bg-secondary' :
-            'bg-warning'
-          %>">
-            <%= item.status ? item.status.toUpperCase() : order.status.toUpperCase() %>
-          </span>
-        </td>
-
-        <!-- Actions (per item) -->
-        <td>
-          <a href="/admin/orders/<%= order._id %>?itemId=<%= item.productId %>" 
-             class="btn btn-primary btn-sm mb-1">
-            View Details
-          </a>
-
-          <% if (item.status === 'return_requested') { %>
-            <button onclick="handleReturn('<%= order._id %>', '<%= item.product %>', 'approved','<%= item.size%>')" 
-                    class="btn btn-success btn-sm mb-1">
-              Approve Return
-            </button>
-            <button onclick="handleReturn('<%= order._id %>', '<%= item.product %>', 'rejected','<%= item.size%>')" 
-                    class="btn btn-danger btn-sm mb-1">
-              Reject
-            </button>
-          <% } else if (!['cancelled', 'delivered', 'approved', 'return_requested', 'rejected'].includes(item.status)) { %>
-            <button onclick="updateStatus('<%= order._id %>', '<%= item.product %>','<%= item.size%>')" 
-                    class="btn btn-info btn-sm mb-1">
-              Update Status
-            </button>
-            <button onclick="cancelOrder('<%= order._id %>', '<%= item.product %>', '<%= item.size%>')" 
-                    class="btn btn-danger btn-sm">
-              Cancel
-            </button>
-          <% } %>
-        </td>
-      </tr>
-    <% }); %>
-  <% }); %>
-</tbody>
-
-                </table>
-            </div>
-        </div>
+<!-- Search Section -->
+<div class="search-section">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="mb-3">
+        <label for="searchInput" class="form-label">Search Orders</label>
+        <input type="text" class="form-control" id="searchInput" placeholder="Search by Order ID, Customer Name, or Product Name">
+      </div>
     </div>
+    <div class="col-md-2">
+      <div class="mb-3">
+        <label class="form-label">&nbsp;</label>
+        <button type="button" class="btn btn-secondary d-block w-100" id="clearSearch">
+          <i class="fas fa-times"></i> Clear
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
+<div class="card mb-4">
+  <div class="card-header">
+    <i class="fas fa-table me-1"></i>
+    All Orders
+    <span class="ms-auto" id="orderCount">Total: <%= orders.length %> orders</span>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-striped order-table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Products</th>
+            <th>Total Amount</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="orderTableBody">
+          <% orders.forEach((order, orderIndex) => { %>
+            <tr class="order-row" 
+                data-order-id="<%= order.orderId %>" 
+                data-customer="<%= order.address.name %>" 
+                data-date="<%= order.createdOn %>" 
+                data-amount="<%= order.finalAmount %>"
+                data-original-order-id="<%= order._id %>">
+              <!-- Order ID -->
+              <td class="fw-bold">#<%= order.orderId %></td>
+
+              <!-- Date -->
+              <td><%= new Date(order.createdOn).toLocaleDateString() %></td>
+
+              <!-- Customer -->
+              <td><strong><%= order.address.name %></strong></td>
+
+              <!-- Products - Show all products in this order -->
+              <td>
+                <div class="products-list">
+                  <% order.orderedItems.forEach((item, index) => { %>
+                    <div class="product-item d-flex align-items-center mb-2" 
+                         data-status="<%= item.status || order.status %>"
+                         data-product-name="<%= item.productName.toLowerCase() %>">
+                      <img src="/<%= item.productImages[0] %>" 
+                           alt="<%= item.productName %>" 
+                           style="width: 40px; height: 40px; object-fit: cover;" 
+                           class="me-2 rounded">
+                      <div class="product-info">
+                        <div class="product-name"><%= item.productName %></div>
+                        <small class="text-muted">Size: <%= item.size %> | Qty: <%= item.quantity %> | ₹<%= Math.round(item.price * item.quantity) %></small>
+                        <div>
+                          <span class="status-badge <%= 
+                            (item.status || order.status) === 'delivered' ? 'bg-success' :
+                            (item.status || order.status) === 'cancelled' ? 'bg-danger' :
+                            (item.status || order.status) === 'shipped' ? 'bg-info' :
+                            (item.status || order.status) === 'return_requested' ? 'bg-warning' :
+                            (item.status || order.status) === 'approved' ? 'bg-info' :
+                            (item.status || order.status) === 'rejected' ? 'bg-secondary' :
+                            'bg-warning'
+                          %>" style="font-size: 0.7rem; padding: 2px 8px; min-width: auto;">
+                            <%= (item.status || order.status).toUpperCase() %>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <% if (index < order.orderedItems.length - 1) { %>
+                      <hr class="my-2 product-separator">
+                    <% } %>
+                  <% }); %>
+                </div>
+              </td>
+
+              <!-- Total Amount -->
+              <td class="fw-bold">₹<%= Math.round(order.finalAmount) %></td>
+
+              <!-- Actions - One per Order -->
+              <td class="order-actions">
+                <a href="/admin/orders/<%= order._id %>" class="btn btn-primary btn-sm mb-1">
+                  View Details
+                </a>
+             
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+      <div id="noResults" class="no-results" style="display: none;">
+        <i class="fas fa-search fa-3x mb-3"></i>
+        <h5>No orders found</h5>
+        <p>Try adjusting your search criteria</p>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-let currentOrderId = null;
+// Global variables for search
+let allOrders = [];
+let filteredOrders = [];
 
-async function updateStatus(orderId, productId, size) {
-    const { value: status } = await Swal.fire({
-        title: 'Update Order Status',
-        input: 'select',
-        inputOptions: {
-            'pending': 'Pending',
-            'confirmed': 'Confirmed',
-            'shipped': 'Shipped',
-            'delivered': 'Delivered'
-        },
-        inputPlaceholder: 'Select status',
-        showCancelButton: true,
-        inputValidator: (value) => {
-            if (!value) {
-                return 'You need to select a status!';
-            }
-        }
-    });
-
-    if (status) {
-        try {
-            const response = await fetch('/admin/orders/update-status', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ orderId, productId, status , size}),
-            });
-
-            const data = await response.json();
-            
-            if (data.success) {
-                await Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: 'Order status updated successfully',
-                    timer: 1500
-                });
-                location.reload();
-            } else {
-                throw new Error(data.message);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            await Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: error.message || 'Failed to update status'
-            });
-        }
-    }
-}
-
-async function cancelOrder(orderId,productId,size ) {
-    const result = await Swal.fire({
-        title: 'Cancel Order',
-        text: 'Are you sure you want to cancel this order?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Yes, cancel it!'
-    });
-
-    if (result.isConfirmed) {
-        try {
-            const response = await fetch('/admin/orders/cancel', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ orderId,productId,size }),
-            });
-
-            const data = await response.json();
-            
-            if (data.success) {
-                await Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: 'Order cancelled successfully',
-                    timer: 1500
-                });
-                location.reload();
-            } else {
-                throw new Error(data.message);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            await Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: error.message || 'Failed to cancel order'
-            });
-        }
-    }
-}
-
-                      
-
-  function handleReturn(orderId,productId, newStatus,size) {
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+  // Store all orders data with their products
+  allOrders = Array.from(document.querySelectorAll('.order-row')).map(row => {
+    const products = Array.from(row.querySelectorAll('.product-item')).map(productEl => ({
+      element: productEl,
+      status: productEl.dataset.status,
+      name: productEl.dataset.productName
+    }));
     
-    Swal.fire({
-      title: `Are you sure you want to ${newStatus === 'approved' ? 'approve' : 'reject'} this return?`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: newStatus === 'approved' ? '#28a745' : '#dc3545',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: `Yes, ${newStatus}`
-    }).then((result) => {
-      if (result.isConfirmed) {
-        fetch('/admin/orders/handle-return', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ orderId, productId, newStatus , size })
-        })
-        .then(response => response.json())
-        .then(data => {
-          console.log("Server response:", data);
-          if (data.success) {
-            Swal.fire({
-              icon: 'success',
-              title: 'Success!',
-              text: data.message
-            }).then(() => location.reload());
-          } else {
-            Swal.fire({ icon: 'error', title: 'Error', text: data.message });
-          }
-        })
-        .catch(err => {
-          console.error("Fetch error:", err);
-          Swal.fire({ icon: 'error', title: 'Error', text: 'Something went wrong!' });
-        });
-      }
-    });
-  }
+    return {
+      element: row,
+      orderId: row.dataset.orderId,
+      customer: row.dataset.customer.toLowerCase(),
+      date: new Date(row.dataset.date),
+      amount: parseFloat(row.dataset.amount),
+      originalOrderId: row.dataset.originalOrderId,
+      products: products,
+      allProductNames: products.map(p => p.name).join(' ')
+    };
+  });
+  
+  filteredOrders = [...allOrders];
+  
+  // Add event listeners
+  document.getElementById('searchInput').addEventListener('input', applySearch);
+  document.getElementById('clearSearch').addEventListener('click', clearSearch);
+});
 
-
-
-
-
-async function submitRejection() {
-    const category = document.getElementById('rejectionCategory').value;
-    const reason = document.getElementById('rejectionReason').value;
-
-    if (!category || !reason.trim()) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Missing Information',
-            text: 'Please select a category and provide a detailed explanation.'
-        });
-        return;
-    }
-
-    try {
-        const response = await fetch('/admin/orders/handle-return', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                orderId: currentOrderId,
-                action: 'reject',
-                rejectionCategory: category,
-                rejectionReason: reason
-            })
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Rejected',
-                text: 'Return request has been rejected.'
-            }).then(() => {
-                const modal = bootstrap.Modal.getInstance(document.getElementById('rejectModal'));
-                modal.hide();
-                location.reload();
-            });
-        } else {
-            throw new Error(data.message || 'Something went wrong');
-        }
-    } catch (error) {
-        console.error('Rejection error:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: error.message || 'Failed to reject return request'
-        });
-    }
+function applySearch() {
+  const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+  
+  // Apply search filter
+  filteredOrders = allOrders.filter(order => {
+    // Search filter
+    const matchesSearch = !searchTerm || 
+      order.orderId.toLowerCase().includes(searchTerm) ||
+      order.customer.includes(searchTerm) ||
+      order.allProductNames.includes(searchTerm);
+    
+    return matchesSearch;
+  });
+  
+  renderTable();
+  updateOrderCount();
 }
 
 
+
+function updateOrderCount() {
+  const countText = `Total: ${filteredOrders.length} orders`;
+  document.getElementById('orderCount').textContent = countText;
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  applySearch();
+}
+
+
+
+// Return handling functions (keeping existing functionality)
+function handleReturn(orderId, productId, newStatus, size) {
+  Swal.fire({
+    title: `Are you sure you want to ${newStatus === 'approved' ? 'approve' : 'reject'} this return?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: newStatus === 'approved' ? '#28a745' : '#dc3545',
+    cancelButtonColor: '#6c757d',
+    confirmButtonText: `Yes, ${newStatus}`
+  }).then((result) => {
+    if (result.isConfirmed) {
+      fetch('/admin/orders/handle-return', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ orderId, productId, newStatus, size })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: data.message
+          }).then(() => location.reload());
+        } else {
+          Swal.fire({ icon: 'error', title: 'Error', text: data.message });
+        }
+      })
+      .catch(err => {
+        console.error("Fetch error:", err);
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Something went wrong!' });
+      });
+    }
+  });
+}
 </script>
 
 <%- include('../partials/admin/footer') %>

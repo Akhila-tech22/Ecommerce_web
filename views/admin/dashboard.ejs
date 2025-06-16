@@ -486,7 +486,7 @@
                                 <th>Discount Applied</th>
                                 <th>Coupon Code</th>
                                 <th>Final Amount</th>
-                                <th>Status</th>
+                                
                             </tr>
                         </thead>
                         <tbody id="salesReportTableBody">
@@ -517,31 +517,43 @@
                                     <th>Order ID</th>
                                     <th>Customer</th>
                                     <th>Amount</th>
-                                    <th>Status</th>
+                                    
                                 </tr>
                             </thead>
-                            <tbody>
-                                <% if (dashboardData.recentOrders?.length > 0) { %>
-                                    <% dashboardData.recentOrders.forEach(order => { %>
-                                        <tr>
-                                            <td>
-                                                <a href="/admin/orders/<%= order._id %>" class="order-link">
-                                                    #<%= order.orderId.slice(-6) %>
-                                                </a>
-                                            </td>
-                                            <td><%= order.customerName %></td>
-                                            <td>₹<%= order.finalAmount.toLocaleString() %></td>
-                                            <td>
-                                                <span class="status-badge status-<%= order.status %>">
-                                                    <%= order.status.charAt(0).toUpperCase() + order.status.slice(1) %>
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    <% }) %>
-                                <% } else { %>
-                                    <tr><td colspan="4" class="empty-state">No recent orders</td></tr>
-                                <% } %>
-                            </tbody>
+<tbody>
+    <% if (dashboardData.recentOrders?.length > 0) { %>
+        <% dashboardData.recentOrders.forEach(order => { 
+            // Determine overall status based on orderedItems.status
+            let overallStatus = 'pending';
+            const itemStatuses = order.orderedItems.map(item => item.status);
+            
+            if (itemStatuses.every(status => status === 'delivered')) {
+                overallStatus = 'delivered';
+            } else if (itemStatuses.every(status => status === 'cancelled')) {
+                overallStatus = 'cancelled';
+            } else if (itemStatuses.some(status => status === 'shipped')) {
+                overallStatus = 'shipped';
+            } else if (itemStatuses.some(status => status === 'confirmed')) {
+                overallStatus = 'confirmed';
+            } else {
+                overallStatus = itemStatuses[0] || 'pending';
+            }
+        %>
+            <tr>
+                <td>
+                    <a href="/admin/orders/<%= order._id %>" class="order-link">
+                        #<%= order.orderId.slice(-6) %>
+                    </a>
+                </td>
+                <td><%= order.customerName %></td>
+                <td>₹<%= order.finalAmount.toLocaleString() %></td>
+
+            </tr>
+        <% }) %>
+    <% } else { %>
+        <tr><td colspan="4" class="empty-state">No recent orders</td></tr>
+    <% } %>
+</tbody>
                         </table>
                     </div>
                 </div>
@@ -798,13 +810,10 @@
                 <td>${order.products.length} item(s)</td>
                 <td>₹${order.originalAmount.toLocaleString()}</td>
                 <td>₹${(order.discountAmount || 0).toLocaleString()}</td>
-                <td>${order.couponCode || 'N/A'}</td>
+                <td>${order.couponDetails?.couponCode || 'N/A'}</td>
+
                 <td>₹${order.finalAmount.toLocaleString()}</td>
-                <td>
-                    <span class="status-badge status-${order.status}">
-                        ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                    </span>
-                </td>
+              
             </tr>
         `).join('');
     }

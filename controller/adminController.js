@@ -165,8 +165,13 @@ const getRecentOrders = async (limit = 5) => {
       .limit(limit)
       .populate('userId', 'name email')
 
+    // Filter out orders that have any item with status 'payment_failed'
+    const filteredOrders = recentOrders.filter(order =>
+      !order.orderedItems.some(item => item.status === 'payment_failed')
+    )
+
     // Map orders with customer details
-    const ordersWithCustomers = recentOrders.map(order => ({
+    const ordersWithCustomers = filteredOrders.map(order => ({
       ...order.toObject(),
       customerName: order.userId ? `${order.userId.name}` : "Unknown Customer",
       customerEmail: order.userId ? order.userId.email : "Unknown Email"

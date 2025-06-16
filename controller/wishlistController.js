@@ -232,14 +232,14 @@ const removeProduct = async (req, res) => {
     }
 };
 
-
 const addToCartFromWishlist = async (req, res) => {
   try {
-    if (!req.user || !req.user._id) {
-      return res.status(401).json({ status: false, message: 'Please login to continue' });
+   
+    const userId = req.session.user;
+    if(!userId) {
+       return res.status(401).json({ status: false, message: 'Please login to continue' });
     }
-
-    const userId = req.user._id;
+   
     const { productId, size } = req.body;
 
     if (!productId || !size) {

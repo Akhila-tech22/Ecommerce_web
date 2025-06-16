@@ -75,10 +75,8 @@ router.get('/deleteProduct',adminAuth,productController.deleteProduct);
 router.get('/orders', adminAuth, adminOrderController.getOrders);
 router.get('/orders/:id', adminAuth, adminOrderController.getOrderDetails);
 router.post('/orders/update-status', adminAuth, adminOrderController.updateOrderStatus);
-router.post('/orders/handle-return', adminAuth, adminOrderController.updateReturnStatus);
+router.post('/orders/update-return-status', adminAuth, adminOrderController.updateReturnStatus);
 
-router.post('/orders/cancel', adminAuth, adminOrderController.cancelOrder);
-router.get('/return-requests', adminAuth, adminOrderController.getReturnRequests);  
 
 
 
@@ -88,6 +86,7 @@ router.post("/createCoupon",adminAuth,adminCouponController.createCoupon)
 router.get("/editCoupon",adminAuth,adminCouponController.editCoupon)
 router.post("/updateCoupon",adminAuth,adminCouponController.updateCoupon)
 router.get("/deletecoupon",adminAuth,adminCouponController.deleteCoupon)
+
 
 // Sales Routes - Corrected Version
 router.get('/sales', adminAuth, salesController.loadSalesPage);

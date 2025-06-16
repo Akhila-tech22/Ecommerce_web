@@ -2,10 +2,10 @@ const User = require("../models/userSchema");
 const Product = require("../models/productSchema");
 const Category = require("../models/categorySchema");
 
+
 const getCart = async (req, res) => {
   try {
     const userId = req.session.user;
-
     if (!userId) return res.redirect('/login');
 
     const user = await User.findById(userId).populate({
@@ -15,33 +15,43 @@ const getCart = async (req, res) => {
 
     if (!user) return res.redirect('/login');
 
-    // Remove any invalid items
-    const validCartItems = user.cart.filter(item =>
-      item.productId && item.size && item.price && item.quantity
-    );
+    const updatedCart = [];
 
-    // Prepare items for view
-    const cartItems = validCartItems.map(item => ({
-      product: {
-        _id: item.productId._id,
-        productName: item.productId.productName,
-        productImage: item.productId.productImage || [],
-        salePrice: item.price,
-        category: item.productId.category || { name: 'Unknown' },
-        brand: item.productId.brand || 'Unknown',
-        quantity: item.productId.quantity || 0
-      },
-      size: item.size,
-      quantity: item.quantity,
-      totalPrice: item.price * item.quantity
-    }));
+    for (const item of user.cart) {
+      if (!item.productId || !item.size || !item.price || !item.quantity || item.productId.isBlocked) {
+        continue;
+      }
 
-    // Grand total
-    const grandTotal = cartItems.reduce((sum, item) => sum + item.totalPrice, 0);
+      const variant = item.productId.variants.find(v => v.size === item.size);
+      const availableStock = variant ? variant.quantity : 0;
 
-    // Show cart
-    res.render('cart', { cartItems, grandTotal, user });
+      // Check if cart quantity exceeds stock
+      if (item.quantity > availableStock) {
+        item.quantity = availableStock; // Update cart quantity to available stock
+        await user.save(); // Save updated cart to user
+        // Optionally show message to user via flash/session
+      }
 
+      updatedCart.push({
+        product: {
+          _id: item.productId._id,
+          productName: item.productId.productName,
+          productImage: item.productId.productImage || [],
+          salePrice: item.price,
+          category: item.productId.category || { name: 'Unknown' },
+          brand: item.productId.brand || 'Unknown',
+          availableStock: availableStock
+        },
+        size: item.size,
+        quantity: item.quantity,
+        totalPrice: item.price * item.quantity
+      });
+    }
+
+    const grandTotal = updatedCart.reduce((sum, item) => sum + item.totalPrice, 0);
+
+    res.render('cart', { cartItems: updatedCart, grandTotal, user });
+    
   } catch (error) {
     console.error("Cart load error:", error);
     res.status(500).render('error', { message: 'Something went wrong loading the cart.' });
@@ -123,7 +133,6 @@ const changeQuantity = async (req, res) => {
             return res.status(404).json({ status: false, message: "User not found" });
         }
 
-        // 🔧 FIXED: Ensure proper string comparison with trimming
         const cartItemIndex = user.cart.findIndex(item => {
             const productMatch = item.productId.toString() === productId.toString();
             const sizeMatch = item.size.toString().trim() === size.toString().trim();

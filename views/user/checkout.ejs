@@ -474,14 +474,14 @@
 </body>
 
 <script>
-// Fixed JavaScript with proper element targeting and coupon functionality
+
 let appliedCoupon = null;
-let originalSubtotal = <%= subtotal %>;
+let originalSubtotal = <%= subtotal %>;  
 let originalShipping = <%= shippingCharge %>;
 let originalGrandTotal = <%= grandTotal %>;
 
 function applyCoupon() {
-    const couponCode = document.getElementById('couponCode').value.trim();
+    const couponCode = document.getElementById('couponCode').value.trim(); //abcd
     
     if (!couponCode) {
         showCouponMessage('Please enter a coupon code', 'red');
@@ -500,8 +500,8 @@ function applyCoupon() {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-            couponCode: couponCode, 
-            subtotal: originalSubtotal 
+            couponCode: couponCode,   //abc
+            subtotal: originalSubtotal  // 1850
         }),
     })
     .then(response => response.json())
@@ -588,6 +588,8 @@ function updateOrderSummary() {
     }
 }
 
+
+
 // Initialize page
 document.addEventListener("DOMContentLoaded", function () {
     // Hide coupon discount row initially if no coupon is applied
@@ -619,140 +621,140 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-function placeOrder(event) {
-    event.preventDefault();
 
-    const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
-    const selectedPayment = document.querySelector('input[name="payment"]:checked');
+  function placeOrder(event) {
+      event.preventDefault();
 
-    if (!selectedAddress) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'No Address Selected',
-            text: 'Please select a shipping address before placing your order.',
-            confirmButtonColor: '#577194'
-        });
-        return;
-    }
+      const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
+      const selectedPayment = document.querySelector('input[name="payment"]:checked');
 
-    if (!selectedPayment) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'No Payment Method Selected',
-            text: 'Please select a payment method before placing your order.',
-            confirmButtonColor: '#577194'
-        });
-        return;
-    }
+      if (!selectedAddress) {
+          Swal.fire({
+              icon: 'warning',
+              title: 'No Address Selected',
+              text: 'Please select a shipping address before placing your order.',
+              confirmButtonColor: '#577194'
+          });
+          return;
+      }
 
-    const addressId = selectedAddress.value;
-    const paymentMethod = selectedPayment.value;
+      if (!selectedPayment) {
+          Swal.fire({
+              icon: 'warning',
+              title: 'No Payment Method Selected',
+              text: 'Please select a payment method before placing your order.',
+              confirmButtonColor: '#577194'
+          });
+          return;
+      }
 
-    // Show loading
-    Swal.fire({
-        title: 'Processing Order...',
-        text: 'Please wait while we process your order.',
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
+      const addressId = selectedAddress.value;
+      const paymentMethod = selectedPayment.value;
 
-    // Include coupon information in order data
-    const orderData = { 
-        addressId, 
-        paymentMethod,
-        appliedCoupon: appliedCoupon
-    };
+      // Show loading
+      Swal.fire({
+          title: 'Processing Order...',
+          text: 'Please wait while we process your order.',
+          allowOutsideClick: false,
+          didOpen: () => {
+              Swal.showLoading();
+          }
+      });
 
-    // Proceed with order placement
-    fetch('/placeOrder', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(orderData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        Swal.close();
-        
-        if (data.success) {
-            if (paymentMethod === 'online') {
-                // Handle Razorpay payment
-                const options = {
-                    key: '<%= razorpayKeyId %>',
-                    amount: data.amount * 100,
-                    currency: data.currency,
-                    name: 'Karma',
-                    description: 'Order Payment',
-                    order_id: data.razorpayOrderId,
+      // Include coupon information in order data
+      const orderData = { 
+          addressId, 
+          paymentMethod,
+          appliedCoupon: appliedCoupon
+      };
+
+      // Proceed with order placement
+      fetch('/placeOrder', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(orderData)
+      })
+      .then(response => response.json())
+      .then(data => {
+          Swal.close();
+          
+          if (data.success) {
+              if (paymentMethod === 'online') {
+                  // Handle Razorpay payment
+                  const options = {
+                      key: '<%= razorpayKeyId %>',
+                      amount: data.amount * 100,   // amount in paise (₹1 = 100 paise)
+                      currency: data.currency,
+                      name: 'Karma',
+                      description: 'Order Payment',
+                      order_id: data.razorpayOrderId,
                     handler: function (response) {
-                        // Verify payment
-                        fetch('/verifyPayment', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                razorpay_order_id: response.razorpay_order_id,
-                                razorpay_payment_id: response.razorpay_payment_id,
-                                razorpay_signature: response.razorpay_signature,
-                                orderId: data.orderId
-                            })
-                        })
-                        .then(res => res.json())
-                        .then(verifyData => {
-                            if (verifyData.success) {
-                                window.location.href = `/orderSuccess?orderId=${data.orderId}`;
-                            } else {
-                                window.location.href = `/orderFailure?orderId=${data.orderId}`;
-                            }
-                        })
-                        .catch(err => {
-                            console.error('Verification error:', err);
-                            window.location.href = `/orderFailure?orderId=${data.orderId}`;
-                        });
-                    },
-                    prefill: {
-                        name: data.name,
-                        email: data.email,
-                        contact: data.contact
-                    },
-                    theme: {
-                        color: '#577194'
-                    },
-                    modal: {
-                        ondismiss: function() {
-                            window.location.href = `/orderFailure?orderId=${data.orderId}`;
-                        }
-                    }
-                };
-                const razorpay = new Razorpay(options);
-                razorpay.open();
-            } else if (paymentMethod === 'cod') {
-                window.location.href = `/orderSuccess?orderId=${data.orderId}`;
-            }
-        } else {
-            Swal.fire({
-                icon: 'error',
-                title: 'Order Failed',
-                text: data.message || 'Something went wrong.',
-                confirmButtonColor: '#577194'
-            });
-        }
-    })
-    .catch(err => {
-        Swal.close();
-        console.error('Order error:', err);
-        Swal.fire({
-            icon: 'error',
-            title: 'Order Error',
-            text: 'An unexpected error occurred.',
-            confirmButtonColor: '#577194'
-        });
-    });
-}
+  fetch('/verifyPayment', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+   body: JSON.stringify({
+  razorpay_order_id: response.razorpay_order_id,
+  razorpay_payment_id: response.razorpay_payment_id,
+  razorpay_signature: response.razorpay_signature,
+  orderId: data.orderId   
+})
+
+  })
+  .then(res => res.json())
+  .then(verifyData => {
+    if (verifyData.success) {
+      window.location.href = `/orderSuccess?orderId=${verifyData.orderId}`;
+    } else {
+      window.location.href = `/orderFailure`;
+    }
+  })
+  .catch(err => {
+    window.location.href = `/orderFailure`;
+  });
+},
+
+                      prefill: {
+                          name: data.name,
+                          email: data.email,
+                          contact: data.contact
+                      },
+                      theme: {
+                          color: '#577194'
+                      },
+                      modal: {
+                          ondismiss: function() {
+                              window.location.href = `/orderFailure`;
+                          }
+                      }
+                  };
+                  const razorpay = new Razorpay(options);
+                  razorpay.open();
+              } else if (paymentMethod === 'cod') {
+                  window.location.href = `/orderSuccess?orderId=${data.orderId}`;
+              }
+          } else {
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Order Failed',
+                  text: data.message || 'Something went wrong.',
+                  confirmButtonColor: '#577194'
+              });
+          }
+      })
+      .catch(err => {
+          Swal.close();
+          console.error('Order error:', err);
+          Swal.fire({
+              icon: 'error',
+              title: 'Order Error',
+              text: 'An unexpected error occurred.',
+              confirmButtonColor: '#577194'
+          });
+      });
+  }
+
 
 function confirmEdit(id) {
     Swal.fire({

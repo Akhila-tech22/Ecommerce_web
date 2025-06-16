@@ -434,23 +434,29 @@
                                         item.status === 'shipped' ? 'bg-info' :
                                         item.status === 'approved' ? 'bg-info' :
                                         item.status === 'rejected' ? 'bg-danger' :
+                                        item.status === 'payment_failed'? 'bg-danger' :
                                         'bg-warning'
                                     %>">
                                         <%= item.status.toUpperCase() %>
                                     </span>
                                 </p>
                             </div>
+                            
                         </div>   
                     </div>
                 <% }) %>
 
-                <!-- Buttons only once per order -->
-                <div class="order-footer text-end my-3">
+ <div class="order-footer text-end my-3">
                     <a href="/order-details?orderId=<%= order.orderId %>" 
-                       class="btn btn-outline-primary btn-sm">View Details</a>
+                       class="btn btn-outline-primary btn-sm me-2">View Details</a>
                     
-                    </div>
-
+                    <% if (order.paymentStatus === 'failed' || order.orderedItems.some(item => item.status === 'payment_failed')) { %>
+                        <a href="/retry?orderId=<%= order.orderId %>" 
+                           class="btn btn-danger btn-sm">
+                            <i class="fas fa-redo me-1"></i>Retry Payment
+                        </a>
+                    <% } %>
+                </div>
             </div>
         <% }) %>
     <% } else { %>
@@ -464,9 +470,6 @@
         </div>
     <% } %>
 </div>
-
-
-
 
 
 <!-- SweetAlert2 for dialogs -->

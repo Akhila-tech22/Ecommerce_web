@@ -97,13 +97,19 @@ function generateInvoice(data, filepath) {
         doc.fillColor('black').text(item.status, 420, currentY);
       }
       
-      // Smart Refund Display
-      doc.fillColor('black');
-      if (item.refund && item.refund > 0) {
-        doc.fillColor('red').text(`₹${item.refund.toFixed(2)}`, 490, currentY);
-      } else {
-        doc.text('-', 490, currentY);
-      }
+      // Set refund if status is 'cancelled' or 'approved'
+if ((item.status === 'cancelled' || item.status === 'approved') && !item.refund) {
+  item.refund = item.price;
+}
+
+// Smart Refund Display
+doc.fillColor('black');
+if (item.refund && item.refund > 0) {
+  doc.fillColor('red').text(`₹${item.refund.toFixed(2)}`, 490, currentY);
+} else {
+  doc.text('-', 490, currentY);
+}
+
       
       currentY += 20;
     });
@@ -113,40 +119,35 @@ function generateInvoice(data, filepath) {
     let summaryLineY = summaryStartY;
     
     // Get shipping charge and coupon info
-    const shippingCharge = data.debugInfo?.deliveryCharge || 50;
-    const discount = data.debugInfo?.discount || 0;
-    const couponApplied = data.debugInfo?.couponApplied || data.coupon || false;
-    const couponCode = data.debugInfo?.couponCode || data.couponCode || '';
-    
+    const shippingCharge = data.deliveryCharge || 50;
+const discount = data.discount || 0;
+const couponApplied = data.couponApplied || false;
+const couponCode = data.couponCode || '';
+
     doc.fillColor('black').fontSize(10).font('Helvetica');
     
-    // Show subtotal (items only)
-    doc.text('Subtotal:', 420, summaryLineY);
-    doc.text(`₹${data.subtotal.toFixed(2)}`, 490, summaryLineY);
-    summaryLineY += 15;
-    
-    // Show shipping charge
-    doc.text('Shipping Charge:  ', 420, summaryLineY);
-    doc.text(`₹${shippingCharge.toFixed(2)}`, 490, summaryLineY);
-    summaryLineY += 15;
-    
-    // Show coupon applied if applicable
-    if (couponApplied && discount > 0) {
-      doc.fillColor('blue');
-      const couponText = couponCode ? `Coupon Applied (${couponCode}):` : 'Coupon Applied:';
-      doc.text(couponText, 420, summaryLineY);
-      doc.fillColor('green');
-      doc.text(`-₹${discount.toFixed(2)}`, 490, summaryLineY);
-      summaryLineY += 15;
-    }
-    
-    // Show total refund
-    if (data.totalRefund && data.totalRefund > 0) {
-      doc.fillColor('red');
-      doc.text('Total Refund:', 420, summaryLineY);
-      doc.text(`-₹${data.totalRefund.toFixed(2)}`, 490, summaryLineY);
-      summaryLineY += 15;
-    }
+ // Subtotal
+doc.fillColor('black');
+doc.text('Subtotal:', 420, summaryLineY);
+doc.text(`₹${data.subtotal.toFixed(2)}`, 490, summaryLineY);
+summaryLineY += 15;
+
+// Shipping Charge
+doc.text('Shipping Charge:', 420, summaryLineY);
+doc.text(`₹${shippingCharge.toFixed(2)}`, 490, summaryLineY);
+summaryLineY += 15;
+
+// Coupon Amount
+    if (discount > 0) {
+  doc.fillColor('black');
+  doc.text('Coupon amt:', 420, summaryLineY);
+  doc.fillColor('green');
+  doc.text(`-₹${discount.toFixed(2)}`, 490, summaryLineY);
+  summaryLineY += 15;
+}
+
+
+ 
     
     // Add separator line
     doc.strokeColor('#E0E0E0').lineWidth(1)

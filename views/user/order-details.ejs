@@ -248,7 +248,9 @@
 .timeline-step:not(:last-child) .timeline-line {
   right: -50%;
 }
- #Invoice {
+#price {
+margin-left: 540px;
+    margin-top: -201px;
 
 }
 
@@ -283,7 +285,7 @@
         </div>
     </div>
 
-    <div class="order-details-card">
+<div class="order-details-card">
         <div class="card">
             <div class="card-header bg-primary text-white">
                 <div class="d-flex justify-content-between align-items-center">
@@ -350,7 +352,7 @@
 
         <% if (item.status === 'return_requested') { %>
           <button class="btn btn-danger" onclick="cancelReturn('<%= order._id %>', '<%= item.product %>')">Cancel Return</button>
-        <% } else if (!['delivered', 'cancelled', 'return_requested', 'approved', 'rejected', 'shipped'].includes(item.status)) { %>
+        <% } else if (!['delivered', 'cancelled', 'return_requested', 'approved', 'rejected', 'shipped','payment_failed'].includes(item.status)) { %>
           <button class="btn btn-danger" onclick="cancelOrder('<%= order._id %>', '<%= item.product %>','<%= item.size %>')">Cancel Order</button>
         <% } %>
       </div>
@@ -359,27 +361,59 @@
   </div> <!-- End of .card -->
 <% }); %>
 
+                <!-- Address and Price Details Section -->
+                <div class="row">
+                    <!-- Shipping Address -->
+                    <div class="col-md-6">
+                        <div class="address-card">
+                            <h5 class="mb-3">Shipping Address</h5>
+                            <p class="mb-1"><strong><%= order.address.name %></strong></p>
+                            <p class="mb-1"><%= order.address.streetAddress %></p>
+                            <p class="mb-1"><%= order.address.city %>, <%= order.address.state %> <%= order.address.pincode %></p>
+                            <p class="mb-1">Phone: <%= order.address.phone %></p>
+                        </div>
+                    </div>
 
-
-                <!-- Shipping Address -->
-                <div class="address-card">
-                    <h5 class="mb-3">Shipping Address</h5>
-                    <p class="mb-1"><strong><%= order.address.name %></strong></p>
-                    <p class="mb-1"><%= order.address.streetAddress %></p>
-                    <p class="mb-1"><%= order.address.city %>, <%= order.address.state %> <%= order.address.pincode %></p>
-                    <p class="mb-1">Phone: <%= order.address.phone %></p>
-                   
+                    <!-- Order Summary -->
+                    <div class="col-md-6" id="price">
+                        <div class="order-summary-card">
+                            <h5 class="mb-3">Order Summary</h5>
+                            <div class="summary-details">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Subtotal:</span>
+                                    <span>₹<%= order.totalPrice %></span>
+                                </div>
+                                <% if (order.couponApplied && order.discount > 0) { %>
+                                <div class="d-flex justify-content-between mb-2 text-success">
+                                    <span>Coupon Discount:</span>
+                                    <span>- ₹<%= order.discount %></span>
+                                </div>
+                                <% } %>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Delivery Charge:</span>
+                                    <span>₹<%= order.deliveryCharge %></span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between fw-bold fs-5">
+                                    <span>Final Amount:</span>
+                                    <span>₹<%= order.finalAmount %></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="d-flex flex-wrap gap-2" id = "Invoice">
-                <% if (order.paymentMethod === "cod") { %>
-                  <% if (order.orderedItems.some(item => item.status === "delivered")) { %>
-                    <a href="/download-invoice/<%= order._id %>" class="btn btn-primary">Download Invoice</a>
-                  <% } %>
-                <% } else { %>
-                  <a href="/download-invoice/<%= order._id %>" class="btn btn-primary">Download Invoice</a>
-                <% } %>
-              </div>
 
+                <!-- Invoice Download Section -->
+                <div class="d-flex flex-wrap gap-2 mt-3" id="Invoice">
+                    <% if (order.paymentMethod === "cod") { %>
+                        <% if (order.orderedItems.some(item => item.status === "delivered")) { %>
+                            <a href="/download-invoice/<%= order._id %>" class="btn btn-primary">Download Invoice</a>
+                        <% } %>
+                    <% } else if ( order.paymentMethod === "online" && !order.orderedItems.some(item => item.status === "payment_failed")) { %>
+                        <a href="/download-invoice/<%= order._id %>" class="btn btn-primary">Download Invoice</a>
+                    <% } %>
+                </div>
+            </div>
         </div>
     </div>
 </div>

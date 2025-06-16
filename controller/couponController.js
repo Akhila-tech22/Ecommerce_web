@@ -9,19 +9,19 @@ const loadCoupons = async (req, res) => {
     // Get current date
     const currentDate = new Date();
 
-    // Fetch non-expired, listed coupons, sorted by createdOn (newest first)
+    // Fetch non-expired, listed coupons that haven't been used by this user
     const coupons = await Coupon.find({
       expireOn: { $gt: currentDate },
       isList: true,
+      userId: { $ne: userId } // Exclude coupons already used by this user
     }).sort({ createdOn: -1 }); // Sort by createdOn in descending order
 
-    // Enhance coupons with usage status
+    // Since we've already filtered out used coupons, all remaining ones are available
     const couponsWithStatus = coupons.map(coupon => {
-      const isUsed = coupon.userId.includes(userId);
       return {
-        ...coupon.toObject(), // Convert Mongoose document to plain object
-        isUsed: isUsed,
-        usageMessage: isUsed ? "Already used, can't use this coupon" : "Available to use"
+        ...coupon.toObject(),
+        isUsed: false,
+        usageMessage: "Available to use"
       };
     });
 
@@ -34,6 +34,7 @@ const loadCoupons = async (req, res) => {
     res.redirect("/pageerror");
   }
 };
+
 
 module.exports = {
   loadCoupons,

@@ -10,7 +10,7 @@ const crypto = require('crypto');
 
 // Helper function to generate unique referral code
 const generateReferralCode = () => {
-    return crypto.randomBytes(4).toString('hex').toUpperCase();
+    return crypto.randomBytes(4).toString('hex').toUpperCase(); // hexadecimal 
 };
 
 const signup = async (req, res) => {
@@ -101,9 +101,9 @@ const verifyOtp = async (req, res) => {
             if (userData.referralOwnerId) {
                 const referralOwner = await User.findById(userData.referralOwnerId);
                 if (referralOwner) {
-                    // Add 1000 RP to referral owner's wallet
+                  
                     const oldWalletBalance = referralOwner.wallet;
-                    referralOwner.wallet += 1000;
+                    referralOwner.wallet += 100;
                     const newWalletBalance = referralOwner.wallet;
                     
                     // Add new user to referral owner's redeemed users list
@@ -114,10 +114,10 @@ const verifyOtp = async (req, res) => {
                     // Create transaction record for referral reward
                     const transaction = new Transaction({
                         userId: referralOwner._id,
-                        amount: 1000,
+                        amount: 100,
                         transactionType: 'credit',
-                        paymentMethod: 'admin',
-                        paymentGateway: 'admin',
+                        paymentMethod: 'wallet',
+                        paymentGateway: 'wallet',
                         status: 'completed',
                         purpose: 'wallet_add',
                         description: `Referral bonus for ${saveUserData.name} joining with code ${referralOwner.referalCode}`,
@@ -132,7 +132,7 @@ const verifyOtp = async (req, res) => {
 
                     await transaction.save();
                     
-                    console.log(`Referral reward processed: ${referralOwner.name} received ₹1000 for referring ${saveUserData.name}`);
+                    console.log(`Referral reward processed: ${referralOwner.name} received ₹100 for referring ${saveUserData.name}`);
                 }
             }
 
@@ -476,7 +476,7 @@ const loadShoppingPage = async (req, res) => {
         const totalProducts = await Product.countDocuments(query);
         const totalPages = Math.ceil(totalProducts / limit);
 
-        // ✅ Fetch Latest Products
+        //  Fetch Latest Products
         const latestProducts = await Product.find({
             isBlocked: false,
             category: { $in: listedCategoryIds },
@@ -485,7 +485,7 @@ const loadShoppingPage = async (req, res) => {
         .sort({ createdAt: -1 })
         .limit(6);
 
-        // ✅ Fetch Best-Selling Products (assuming you have a 'sold' field)
+        // Fetch Best-Selling Products (assuming you have a 'sold' field)
         const bestSellingProducts = await Product.find({
             isBlocked: false,
             category: { $in: listedCategoryIds },

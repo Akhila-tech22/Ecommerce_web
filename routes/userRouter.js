@@ -93,7 +93,7 @@ router.get('/deleteItem', userAuth, cartController.deleteItem);
 router.get("/checkout",userAuth,checkoutController.loadCheckoutPage)
 router.get("/addAddressCheckout",userAuth,checkoutController.addAddressCheckout)
 router.post("/addAddressCheckout",userAuth,checkoutController.postAddAddressCheckout)
-
+router.get('/retry',userAuth,checkoutController.retry);
 router.post('/placeOrder', userAuth, checkoutController.placeOrder)
 
 
@@ -111,20 +111,19 @@ router.post("/orders/cancel", userAuth, orderController.cancelOrder);
 
 router.get('/orderSuccess', userAuth, checkoutController.orderSuccess);
 
-// Payment Failure Route  
 router.get('/orderFailure', userAuth, checkoutController.orderFailure);
 
-// Payment Verification Route
 router.post('/verifyPayment', userAuth, checkoutController.verifyPayment);
 
 
+//coupon management
 router.get("/mycoupons",userAuth,couponController.loadCoupons)
 router.post("/apply-coupon", userAuth, checkoutController.applyCoupon);
 
 
 // wallet Management
 router.get('/wallet',userAuth, walletController.getWalletPage);
-router.post('/getWalletPageRefundAsDebit', userAuth, walletController.getWalletPageRefundAsDebit);
+
 
 
 
