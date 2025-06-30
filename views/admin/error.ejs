@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error <%= typeof status !== 'undefined' ? status : 500 %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --error: #ef233c;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.6;
+            padding: 0 1rem;
+        }
+
+        .error-container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            text-align: center;
+        }
+
+        .error-code {
+            font-size: 5rem;
+            font-weight: 700;
+            color: var(--error);
+            margin-bottom: 1rem;
+        }
+
+        .error-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-message {
+            color: var(--gray);
+            margin-bottom: 2rem;
+        }
+
+        .error-details {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+            text-align: left;
+            margin-bottom: 2rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a56d4;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background-color: #f0f4ff;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 600px) {
+            .error-container {
+                padding: 1.5rem;
+            }
+
+            .error-code {
+                font-size: 3.5rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-code"><%= typeof status !== 'undefined' ? status : 500 %></div>
+        <h1 class="error-title">
+            <% if (status === 404) { %>
+                Page Not Found
+            <% } else { %>
+                Something Went Wrong
+            <% } %>
+        </h1>
+        <p class="error-message">
+            <% if (status === 404) { %>
+                The page you're looking for doesn't exist or has been moved.
+            <% } else { %>
+                We're sorry, but an unexpected error occurred.
+            <% } %>
+        </p>
+
+        <% if (typeof error !== 'undefined' && error && process.env.NODE_ENV === 'development') { %>
+            <div class="error-details">
+                <pre><%= error.stack %></pre>
+            </div>
+        <% } %>
+
+        <div class="action-buttons">
+            <a href="/" class="btn btn-primary">Go to Homepage</a>
+            <a href="#" onclick="window.history.back()" class="btn btn-secondary">Go Back</a>
+        </div>
+    </div>
+</body>
+</html>

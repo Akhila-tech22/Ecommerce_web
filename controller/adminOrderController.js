@@ -194,7 +194,7 @@ const updateReturnStatus = async (req, res) => {
 
      let actualRefundAmount = 0;
      
-     if (order.paymentMethod === "online" && refundAmount > 0) {
+     if (order.paymentMethod === "online" || order.paymentMethod === "wallet" && refundAmount > 0) {
        const user = await User.findById(order.userId);
        if (!user) {
          return res.status(404).json({ success: false, message: "User not found" });

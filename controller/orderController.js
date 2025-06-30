@@ -7,7 +7,7 @@ const path = require("path");
 const fs = require("fs");
 const generateInvoice = require("../utils/generateInvoice"); 
 const Coupon = require('../models/couponSchema')
-const Transaction = require('../models/transactionSchema'); // Adjust path as needed
+const Transaction = require('../models/transactionSchema'); 
 const mongoose = require('mongoose');
 const Wallet = require('../models/walletSchema');
 
@@ -57,6 +57,7 @@ const loadOrderDetails = async (req, res) => {
     res.status(500).send("Internal server error");
   }
 };
+
 
 const cancelOrder = async (req, res) => {
   try {
@@ -130,7 +131,8 @@ const cancelOrder = async (req, res) => {
     // Handle refund based on payment method
     let actualRefundAmount = 0;
     
-    if (order.paymentMethod === "online" && refundAmount > 0) {
+    // Handle refunds for online and wallet payments
+    if ((order.paymentMethod === "online" || order.paymentMethod === "wallet") && refundAmount > 0) {
       // Add refund to user's wallet
       const user = await User.findById(userId);
       if (!user) return res.status(404).json({ success: false, message: "User not found" });
@@ -160,7 +162,8 @@ const cancelOrder = async (req, res) => {
           refundAmount,
           couponWasApplied: order.couponApplied || false,
           couponStillValid,
-          remainingItemsTotal
+          remainingItemsTotal,
+          paymentMethod: order.paymentMethod // Track original payment method
         },
         walletBalanceAfter: user.wallet,
       });
@@ -187,7 +190,8 @@ const cancelOrder = async (req, res) => {
       couponStillValid,
       originalAmountPaid,
       newFinalAmount,
-      remainingItemsTotal
+      remainingItemsTotal,
+      paymentMethod: order.paymentMethod
     });
 
   } catch (error) {

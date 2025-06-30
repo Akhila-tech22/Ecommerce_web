@@ -292,6 +292,162 @@
         margin-right: 0;
     }
 }
+.profile-image-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 15px;
+}
+
+.profile-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #fff;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.profile-image:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+}
+
+.image-overlay {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: #487379;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  border: 3px solid #fff;
+}
+
+.image-overlay:hover {
+  background: #577194;
+  transform: scale(1.1);
+}
+
+.image-overlay i {
+  font-size: 18px;
+}
+
+.profile-info {
+  margin: 20px 0;
+}
+
+.profile-name {
+  color: #487379;
+  font-weight: 600;
+  margin: 0;
+}
+
+.profile-email {
+  color: #6c757d;
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+.profile-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-profile-primary {
+  background: linear-gradient(135deg, #487379, #577194);
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(72, 115, 121, 0.3);
+}
+
+.btn-profile-primary:hover {
+  background: linear-gradient(135deg, #577194, #487379);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(72, 115, 121, 0.4);
+  color: white;
+}
+
+.btn-profile-secondary {
+  background: linear-gradient(135deg, #6c757d, #5a6268);
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(108, 117, 125, 0.3);
+}
+
+.btn-profile-secondary:hover {
+  background: linear-gradient(135deg, #5a6268, #6c757d);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+  color: white;
+}
+
+.btn-profile-danger {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(220, 53, 69, 0.3);
+}
+
+.btn-profile-danger:hover {
+  background: linear-gradient(135deg, #c82333, #dc3545);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+  color: white;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .profile-image {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .image-overlay {
+    width: 35px;
+    height: 35px;
+    bottom: 5px;
+    right: 5px;
+  }
+  
+  .image-overlay i {
+    font-size: 16px;
+  }
+  
+  .profile-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .profile-actions .btn {
+    width: 200px;
+    margin: 5px 0;
+  }
+}
 
         
  
@@ -357,38 +513,57 @@
                 
                     
            
-                <div class="profile-image-container text-center mb-4">
-  <!-- Profile image in circle -->
-  <img id="profilePreview"
-       src="<%= user.profilePicture ? '/uploads/' + user.profilePicture : '/default-avatar.png' %>"
-       alt="Profile Image"
-       class="rounded-circle"
-       style="width: 150px; height: 150px; object-fit: cover;">
+<div class="profile-image-container text-center mb-4">
+  <div class="profile-image-wrapper">
+    <!-- Profile image in circle with enhanced styling -->
+    <img id="profilePreview"
+         src="<%= user.profilePicture ? '/uploads/' + user.profilePicture : '/default-avatar.png' %>"
+         alt="Profile Image"
+         class="profile-image">
+    
+    <!-- Camera overlay icon -->
+    <div class="image-overlay" onclick="document.getElementById('profileImageInput').click()">
+      <i class="bi bi-camera-fill"></i>
+    </div>
+  </div>
 
-  <br><br>
+  <!-- Profile name and email under image -->
+  <div class="profile-info mt-3">
+    <h4 class="profile-name mb-1"><%= user.name %></h4>
+    <p class="profile-email text-muted mb-2"><%= user.email %></p>
+  </div>
 
   <!-- Hidden form for file upload -->
   <form id="uploadForm" action="/upload-profile-image" method="POST" enctype="multipart/form-data" style="display: none;">
     <input type="file" name="profileImage" id="profileImageInput" accept="image/*">
   </form>
 
-  <!-- Conditional buttons -->
-  <% if (!user.profilePicture) { %>
-    <button class="btn btn-sm btn-success mt-2" onclick="document.getElementById('profileImageInput').click()">Edit Image</button>
-  <% } else { %>
-    <button class="btn btn-sm btn-warning mt-2" onclick="document.getElementById('profileImageInput').click()">Edit Image</button>
-  <% } %>
+  <!-- Action buttons -->
+  <div class="profile-actions">
+    <% if (!user.profilePicture) { %>
+      <button class="btn btn-profile-primary" onclick="document.getElementById('profileImageInput').click()">
+        <i class="bi bi-plus-circle me-2"></i>Add Photo
+      </button>
+    <% } else { %>
+      <button class="btn btn-profile-secondary me-2" onclick="document.getElementById('profileImageInput').click()">
+        <i class="bi bi-pencil-square me-2"></i>Change Photo
+      </button>
+      <button class="btn btn-profile-danger" onclick="removeProfileImage()">
+        <i class="bi bi-trash me-2"></i>Remove
+      </button>
+    <% } %>
+  </div>
 </div>
                 <form id="profileForm">
 
                     <div class="form-row" id = "profile-details">
                         <div class="form-group col-md-6">
                             <label>Full Name <span class="text-danger">*</span></label>
-                            <input name="name" type="text" value="<%= user.name %>" class="form-control" required>
+                            <input name="name" type="text" value="<%= user.name %>" class="form-control">
                         </div>
                         <div class="form-group col-md-6">
                             <label>Username <span class="text-danger">*</span></label>
-                            <input name="username" type="text" value="<%= user.username %>" placeholder="Set your Username" class="form-control" required>
+                            <input name="username" type="text" value="<%= user.username %>" placeholder="Set your Username" class="form-control">
                             <small class="text-muted">Choose a unique username</small>
                         </div>
                         <div class="form-group col-md-6">
@@ -406,7 +581,7 @@
                                 </div>
                                 <input type="text" name="phone" class="form-control" value="<%= user.phone %>" 
                                        pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number"
-                                       placeholder="Enter phone number" required>
+                                       placeholder="Enter phone number">
                             </div>
                         </div>
                         
@@ -422,7 +597,7 @@
                     <div class="form-group">
                         <label for="currentPassword">Current Password</label><br>
                         <div class="password-wrapper">
-                            <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
+                            <input type="password" class="form-control" id="currentPassword" name="currentPassword">
                             <i onclick="togglePassword('currentPassword', this)" class="bi bi-eye-fill toggle-password"></i>
                         </div><br>
                         <small id="currentPasswordError" class="text-danger"></small>
@@ -430,7 +605,7 @@
                     <div class="form-group mt-3">
                         <label for="newPassword">New Password</label><br>
                         <div class="password-wrapper">
-                            <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                            <input type="password" class="form-control" id="newPassword" name="newPassword">
                             <i onclick="togglePassword('newPassword', this)" class="bi bi-eye-fill toggle-password"></i>
                         </div><br>
                         <small id="newPasswordError" class="text-danger"></small>
@@ -438,7 +613,7 @@
                     <div class="form-group mt-3">
                         <label for="confirmPassword">Confirm New Password</label><br>
                         <div class="password-wrapper">
-                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
                             <i onclick="togglePassword('confirmPassword', this)" class="bi bi-eye-fill toggle-password"></i>
                         </div><br>
                         <small id="confirmPasswordError" class="text-danger"></small>
@@ -471,7 +646,7 @@
                     </div>
                     <p class="text-muted">
                         <i class="bi bi-info-circle"></i> 
-                        Share this code with your friends and earn <strong>₹1000</strong> when they sign up using your code!
+                        Share this code with your friends and earn <strong>₹100</strong> when they sign up using your code!
                     </p>
                 </div>
                 <div class="col-md-4 text-center">
@@ -498,6 +673,55 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
     <script>
+        function removeProfileImage() {
+  Swal.fire({
+    title: 'Remove Profile Picture?',
+    text: "This will remove your current profile picture",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#dc3545',
+    cancelButtonColor: '#6c757d',
+    confirmButtonText: 'Yes, remove it!'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      fetch('/remove-profile-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById('profilePreview').src = '/default-avatar.png';
+          Swal.fire({
+            icon: 'success',
+            title: 'Removed!',
+            text: 'Profile picture has been removed.',
+            timer: 2000,
+            showConfirmButton: false
+          }).then(() => {
+            location.reload(); // Reload to update the buttons
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: data.message || 'Failed to remove profile picture'
+          });
+        }
+      })
+      .catch(error => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Something went wrong'
+        });
+      });
+    }
+  });
+}
+
   const fileInput = document.getElementById('profileImageInput');
   const preview = document.getElementById('profilePreview');
   const form = document.getElementById('uploadForm');
@@ -567,19 +791,33 @@ function togglePassword(inputId, icon) {
     document.getElementById('newPasswordError').textContent = '';
     document.getElementById('confirmPasswordError').textContent = '';
 
-    const currentPassword = document.getElementById('currentPassword').value;
-    const newPassword = document.getElementById('newPassword').value;
-    const confirmPassword = document.getElementById('confirmPassword').value;
+    const currentPassword = document.getElementById('currentPassword').value.trim();
+    const newPassword = document.getElementById('newPassword').value.trim();
+    const confirmPassword = document.getElementById('confirmPassword').value.trim();
 
     // Client-side validation
     let isValid = true;
 
-    if (newPassword.length < 8 || !/[a-zA-Z]/.test(newPassword) || !/\d/.test(newPassword)) {
+    // Check if current password is empty
+    if (!currentPassword) {
+        document.getElementById('currentPasswordError').textContent = 'Current password is required.';
+        isValid = false;
+    }
+
+    // Check if new password is empty
+    if (!newPassword) {
+        document.getElementById('newPasswordError').textContent = 'New password is required.';
+        isValid = false;
+    } else if (newPassword.length < 8 || !/[a-zA-Z]/.test(newPassword) || !/\d/.test(newPassword)) {
         document.getElementById('newPasswordError').textContent = 'Password must be at least 8 characters long and contain both letters and numbers.';
         isValid = false;
     }
 
-    if (newPassword !== confirmPassword) {
+    // Check if confirm password is empty
+    if (!confirmPassword) {
+        document.getElementById('confirmPasswordError').textContent = 'Please confirm your new password.';
+        isValid = false;
+    } else if (newPassword !== confirmPassword) {
         document.getElementById('confirmPasswordError').textContent = 'Passwords do not match.';
         isValid = false;
     }

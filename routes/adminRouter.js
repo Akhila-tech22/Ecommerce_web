@@ -14,7 +14,7 @@ const salesController = require('../controller/salesController')
 const upload = require('../helper/multer'); 
 
 // ------------------ Login Management ------------------ //
-router.get('/pageerror', adminController.pageerror);
+//router.get('/pageerror', adminController.pageerror);
 router.get('/login', adminController.loadLogin);
 router.post('/login', adminController.login);
 router.get('/', adminAuth, adminController.loadDashboard);
@@ -79,7 +79,6 @@ router.post('/orders/update-return-status', adminAuth, adminOrderController.upda
 
 
 
-
 // Coupon Management
 router.get("/coupon",adminAuth,adminCouponController.loadCoupon)
 router.post("/createCoupon",adminAuth,adminCouponController.createCoupon)
@@ -97,8 +96,14 @@ router.get('/api/sales-data', adminAuth, salesController.getSalesData);
 router.post('/api/sales-report', adminAuth, salesController.getSalesReport);
 router.post('/api/download-sales-report', adminAuth, salesController.downloadSalesReport);
 
-// Keep these if they exist in adminController, otherwise remove or move to salesController
-router.get("/api/top-selling", adminAuth, adminController.getTopSelling);
+router.get('/sales-report', salesController.loadSalesPage);
+router.get('/api/top-selling', salesController.getTopSelling);
+
+
+
+
+
+
 
 // Dashboard route
 router.get("/dashboard", adminAuth, async (req, res) => {

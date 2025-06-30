@@ -19,6 +19,7 @@
             align-items: center;
             justify-content: center;
             background-color: #ffffff;
+            padding: 20px;
         }
 
         .container {
@@ -26,6 +27,9 @@
             max-width: 400px;
             padding: 40px 20px;
             text-align: center;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
         }
 
         h1 {
@@ -56,17 +60,18 @@
             border-radius: 8px;
             font-size: 24px;
             text-align: center;
-            margin: 0 5px;
             font-weight: 600;
+            transition: all 0.3s ease;
         }
 
         .otp-input:focus {
             border-color: #8B5CF6;
             outline: none;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
         }
 
         .resend-timer {
-            color: #8B5CF6;
+            color: #666;
             font-size: 14px;
             margin: 20px 0;
         }
@@ -82,6 +87,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.3s;
+            margin-top: 10px;
         }
 
         .verify-btn:hover {
@@ -94,6 +100,7 @@
             font-size: 14px;
             margin-top: 20px;
             display: inline-block;
+            transition: color 0.3s;
         }
 
         .resend-link:hover {
@@ -107,6 +114,19 @@
             border-radius: 6px;
             margin: 20px 0;
             font-size: 14px;
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 15px;
+            }
+            
+            .otp-input {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
         }
     </style>
 </head>
@@ -115,25 +135,25 @@
         <h1>OTP</h1>
         <h2>Verification Code</h2>
 
-        <form id="otpForm" onsubmit="return validateOtpForm()">
+        <form id="otpForm">
             <div class="otp-container">
-                <input type="text" class="otp-input" maxlength="1" pattern="\d*">
-                <input type="text" class="otp-input" maxlength="1" pattern="\d*">
-                <input type="text" class="otp-input" maxlength="1" pattern="\d*">
-                <input type="text" class="otp-input" maxlength="1" pattern="\d*">
-                <input type="text" class="otp-input" maxlength="1" pattern="\d*">
-                <input type="text" class="otp-input" maxlength="1" pattern="\d*">
+                <input type="text" class="otp-input" maxlength="1" pattern="\d*" data-index="0">
+                <input type="text" class="otp-input" maxlength="1" pattern="\d*" data-index="1">
+                <input type="text" class="otp-input" maxlength="1" pattern="\d*" data-index="2">
+                <input type="text" class="otp-input" maxlength="1" pattern="\d*" data-index="3">
+                <input type="text" class="otp-input" maxlength="1" pattern="\d*" data-index="4">
+                <input type="text" class="otp-input" maxlength="1" pattern="\d*" data-index="5">
             </div>
 
             <div class="resend-timer">
                 Resend OTP in: <span id="timerValue">60</span>sec
             </div>
 
-            <button type="submit" class="verify-btn">Verify OTP</button>
+            <button type="button" class="verify-btn" id="verifyBtn">Verify OTP</button>
 
-            <div id="errorMessage" class="alert-danger" style="display:none;"></div>
+            <div id="errorMessage" class="alert-danger"></div>
 
-            <a href="#" class="resend-link" onclick="resendOtp(); return false;">
+            <a href="#" class="resend-link" id="resendLink">
                 Resend OTP after The 60 Seconds
             </a>
         </form>
@@ -141,54 +161,73 @@
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        const inputs = document.querySelectorAll('.otp-input');
+<script>
+    $(document).ready(function() {
+        const inputs = $('.otp-input');
         let timer = 60;
         let timerInterval;
+        let canResend = false;
 
-        // Auto-focus and move to next input
-        inputs.forEach((input, index) => {
-            input.addEventListener('inpdut', function() {
-                if (this.value.length === 1) {
-                    if (index < inputs.length - 1) inputs[index + 1].focus();
+        // Auto-focus and move between inputs
+        inputs.on('input', function() {
+            const index = parseInt($(this).data('index'));
+            const value = $(this).val();
+            
+            if (value.length === 1) {
+                if (index < inputs.length - 1) {
+                    inputs.eq(index + 1).focus();
                 }
-            });
-
-            input.addEventListener('keydown', function(e) {
-                if (e.key === 'Backspace' && !this.value) {
-                    if (index > 0) inputs[index - 1].focus();
-                }
-            });
+            }
         });
 
+        // Handle backspace
+        inputs.on('keydown', function(e) {
+            const index = parseInt($(this).data('index'));
+            if (e.key === 'Backspace' && !$(this).val() && index > 0) {
+                inputs.eq(index - 1).focus();
+            }
+        });
+
+        // Start timer
         function startTimer() {
             clearInterval(timerInterval);
             timer = 60;
+            canResend = false;
+            $('#resendLink').css('color', '#666');
+            $('#timerValue').text(timer);
+            
             timerInterval = setInterval(() => {
                 timer--;
-                document.getElementById("timerValue").textContent = timer;
+                $('#timerValue').text(timer);
                 
                 if (timer <= 0) {
                     clearInterval(timerInterval);
-                    document.querySelector('.resend-link').style.color = '#8B5CF6';
+                    canResend = true;
+                    $('#resendLink').css('color', '#8B5CF6');
                 }
             }, 1000);
         }
 
-        // Initialize timer on page load
+        // Initialize timer
         startTimer();
 
-        function validateOtpForm() {
-            const otpValue = Array.from(inputs).map(input => input.value).join('');
-            const errorMessage = document.getElementById('errorMessage');
+        // Verify OTP
+        $('#verifyBtn').click(function() {
+            const otpValue = inputs.map(function() {
+                return $(this).val();
+            }).get().join('');
+            
+            const errorMessage = $('#errorMessage');
 
             // Basic validation
             if (otpValue.length !== 6 || !/^\d+$/.test(otpValue)) {
-                errorMessage.textContent = 'Please enter a valid 6-digit OTP';
-                errorMessage.style.display = 'block';
-                return false;
+                errorMessage.text('Please enter a valid 6-digit OTP');
+                errorMessage.show();
+                return;
             }
 
+            errorMessage.hide();
+            
             $.ajax({
                 type: "POST",
                 url: "/verify-passForgot-otp",
@@ -204,26 +243,30 @@
                             window.location.href = response.redirectUrl;
                         });
                     } else {
-                        errorMessage.textContent = response.message || 'Invalid OTP';
-                        errorMessage.style.display = 'block';
+                        errorMessage.text(response.message || 'Invalid OTP');
+                        errorMessage.show();
                     }
                 },
                 error: function() {
-                    errorMessage.textContent = 'Failed to verify OTP. Please try again.';
-                    errorMessage.style.display = 'block';
+                    errorMessage.text('Failed to verify OTP. Please try again.');
+                    errorMessage.show();
                 }
             });
-            return false;
-        }
+        });
 
-        function resendOtp() {
-            if (timer > 0) return;
-
-            startTimer();
+// Resend OTP - Fixed version
+        $('#resendLink').click(function(e) {
+            e.preventDefault();
             
+            if (!canResend) return;
+
+            const $link = $(this);
+            $link.text('Sending...');
+            $link.css('pointer-events', 'none');
+
             $.ajax({
                 type: 'POST',
-                url: "/resend-forgot-otp",
+                url: "/resend-forgot-otp", // Keep your existing route
                 success: function(response) {
                     if (response.success) {
                         Swal.fire({
@@ -232,23 +275,32 @@
                             showConfirmButton: false,
                             timer: 1500
                         });
+                        // Clear all input fields
+                        inputs.val('');
+                        inputs.first().focus();
+                        startTimer();
                     } else {
                         Swal.fire({
                             icon: "error",
                             title: "Error",
-                            text: "Failed to resend OTP. Please try again."
+                            text: response.message || "Failed to resend OTP"
                         });
                     }
                 },
-                error: function() {
+                error: function(xhr) {
                     Swal.fire({
                         icon: 'error',
                         title: "Error",
                         text: "Failed to resend OTP. Please try again."
                     });
+                },
+                complete: function() {
+                    $link.text('Resend OTP after The 60 Seconds');
+                    $link.css('pointer-events', 'auto');
                 }
             });
-        }
-    </script>
+        });
+    });
+</script>
 </body>
 </html>

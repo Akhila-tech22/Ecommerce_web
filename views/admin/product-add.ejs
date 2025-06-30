@@ -371,6 +371,7 @@
             border-radius: var(--radius);
             padding: 1.5rem;
             transition: var(--transition);
+            position: relative;
         }
 
         .image-upload-item:hover {
@@ -425,6 +426,7 @@
             border-radius: var(--radius);
             margin-top: 1rem;
             box-shadow: var(--shadow-md);
+            display: none;
         }
 
         .save-image-btn {
@@ -453,6 +455,38 @@
         .save-image-btn::before {
             content: "💾";
             font-size: 1rem;
+        }
+
+        .saved-btn {
+            background: linear-gradient(135deg, #059669, #047857) !important;
+            cursor: not-allowed !important;
+        }
+
+        .saved-btn::before {
+            content: "✓" !important;
+        }
+
+        .disabled-input {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .saved-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .cropper-container {
+            margin-top: 1rem;
+            max-width: 100%;
         }
 
         /* Form Actions */
@@ -567,7 +601,7 @@
     </div>
 
     <div class="form-wrapper">
-        <form id="productForm" method="POST" action="/admin/addProducts" enctype="multipart/form-data">
+        <form id="productForm" method="POST" enctype="multipart/form-data">
             <div class="form-container">
                 <!-- Basic Product Information -->
                 <div class="form-section">
@@ -693,10 +727,12 @@
                                     <label for="image<%= i %>" class="file-input-label">Choose Image <%= i %></label>
                                 </div>
                                 <div class="preview-container" id="cropping<%= i %>" style="display: none;">
+                                    <div id="cropper-container<%= i %>"></div>
                                     <img id="preview<%= i %>" src="#" alt="Image preview" class="image-preview">
+                                    <div class="saved-badge" id="savedBadge<%= i %>" style="display: none;">Saved</div>
                                 </div>
                                 <input type="hidden" name="croppedImage<%= i %>" id="croppedImage<%= i %>">
-                                <button type="button" class="save-image-btn" onclick="saveImage(<%= i %>)">Save Image <%= i %></button>
+                                <button type="button" class="save-image-btn" id="saveBtn<%= i %>" onclick="saveImage(<%= i %>)">Save Image <%= i %></button>
                                 <div id="image<%= i %>-error" class="error-message"></div>
                             </div>
                         </div>
@@ -716,6 +752,179 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
 
 <script>
+
+    // Add this script to your existing JavaScript section
+
+// Real-time price validation
+function validatePrices() {
+    const regularPrice = parseFloat(document.getElementById('regularPrice').value) || 0;
+    const salePrice = parseFloat(document.getElementById('salePrice').value) || 0;
+    const regularPriceError = document.getElementById('regularPrice-error');
+    const salePriceError = document.getElementById('salePrice-error');
+    
+    let isValid = true;
+    
+    // Clear previous errors
+    regularPriceError.textContent = '';
+    salePriceError.textContent = '';
+    
+    // Check for negative prices
+    if (regularPrice < 0) {
+        regularPriceError.textContent = 'Regular price cannot be negative.';
+        isValid = false;
+    }
+    
+    if (salePrice < 0) {
+        salePriceError.textContent = 'Sale price cannot be negative.';
+        isValid = false;
+    }
+    
+    // Check if sale price is greater than regular price
+    if (regularPrice > 0 && salePrice > 0 && salePrice > regularPrice) {
+        salePriceError.textContent = 'Sale price cannot be greater than regular price.';
+        isValid = false;
+    }
+    
+    return isValid;
+}
+
+// Add event listeners for real-time validation
+document.addEventListener('DOMContentLoaded', function() {
+    const regularPriceInput = document.getElementById('regularPrice');
+    const salePriceInput = document.getElementById('salePrice');
+    
+    // Add event listeners for real-time validation
+    regularPriceInput.addEventListener('input', validatePrices);
+    regularPriceInput.addEventListener('blur', validatePrices);
+    salePriceInput.addEventListener('input', validatePrices);
+    salePriceInput.addEventListener('blur', validatePrices);
+    
+    // Initialize with one size variant
+    addSizeVariant();
+});
+
+// Update the form submission validation
+document.getElementById('productForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    let isValid = true;
+    const fields = ['productName', 'description', 'brand', 'regularPrice', 'salePrice', 'category', 'color'];
+
+    // Validate basic fields
+    fields.forEach(field => {
+        const input = document.getElementsByName(field)[0];
+        const error = document.getElementById(`${field}-error`);
+        if (!input.value.trim()) {
+            error.textContent = 'This field is required.';
+            isValid = false;
+        } else {
+            error.textContent = '';
+        }
+    });
+
+    // Validate prices
+    if (!validatePrices()) {
+        isValid = false;
+    }
+
+    // Additional price validation
+    const regularPrice = parseFloat(document.getElementById('regularPrice').value) || 0;
+    const salePrice = parseFloat(document.getElementById('salePrice').value) || 0;
+    
+    if (regularPrice <= 0) {
+        document.getElementById('regularPrice-error').textContent = 'Regular price must be greater than 0.';
+        isValid = false;
+    }
+    
+    if (salePrice <= 0) {
+        document.getElementById('salePrice-error').textContent = 'Sale price must be greater than 0.';
+        isValid = false;
+    }
+
+    // Validate size variants
+    const sizeSelects = document.querySelectorAll('[name*="[size]"]');
+    const quantityInputs = document.querySelectorAll('[name*="[quantity]"]');
+    const variantsError = document.getElementById('variants-error');
+    
+    let hasValidVariant = false;
+    let totalQuantity = 0;
+    
+    sizeSelects.forEach((sizeSelect, index) => {
+        const quantityInput = quantityInputs[index];
+        
+        if (sizeSelect.value && quantityInput.value && parseInt(quantityInput.value) > 0) {
+            hasValidVariant = true;
+            totalQuantity += parseInt(quantityInput.value);
+        }
+    });
+    
+    if (!hasValidVariant) {
+        variantsError.textContent = 'At least one complete variant (size and quantity) is required.';
+        isValid = false;
+    } else if (!validateVariants()) {
+        isValid = false;
+    } else {
+        variantsError.textContent = '';
+    }
+    
+    // Validate images
+    for (let i = 1; i <= 4; i++) {
+        const imageInput = document.getElementById(`image${i}`);
+        const croppedInput = document.getElementById(`croppedImage${i}`);
+        const errorDiv = document.getElementById(`image${i}-error`);
+        
+        if (!imageInput.files.length && !croppedInput.value) {
+            errorDiv.textContent = 'Image is required.';
+            isValid = false;
+        } else {
+            errorDiv.textContent = '';
+        }
+    }
+
+    if (isValid) {
+        const formData = new FormData(this);
+        
+        // Show loading state
+        const submitBtn = document.querySelector('.submit-btn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+        
+        fetch('/admin/addProducts', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Product added successfully!',
+                }).then(() => {
+                    window.location.href = '/admin/products';
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message || 'Failed to add product',
+                });
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '🚀 Publish Product';
+            }
+        })
+        .catch(() => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Something went wrong. Please try again.',
+            });
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-rocket"></i> Publish Product';
+        });
+    }
+});
+    
     let croppers = {};
     let sizeVariantCount = 0;
 
@@ -805,7 +1014,9 @@
         const input = event.target;
         const preview = document.getElementById(`preview${index}`);
         const container = document.getElementById(`cropping${index}`);
+        const cropperContainer = document.getElementById(`cropper-container${index}`);
         const errorDiv = document.getElementById(`image${index}-error`);
+        const saveBtn = document.getElementById(`saveBtn${index}`);
 
         errorDiv.textContent = '';
         if (croppers[index]) {
@@ -829,14 +1040,26 @@
                 return;
             }
 
+            // Reset save button state
+            saveBtn.innerHTML = 'Save Image ' + index;
+            saveBtn.className = 'save-image-btn';
+            saveBtn.disabled = false;
+
             const reader = new FileReader();
             reader.onload = function (e) {
-                preview.src = e.target.result;
                 container.style.display = 'block';
-
-                croppers[index] = new Cropper(preview, {
+                
+                // Create new image element for cropper
+                const img = document.createElement('img');
+                img.id = 'cropper-image-' + index;
+                img.src = e.target.result;
+                cropperContainer.innerHTML = '';
+                cropperContainer.appendChild(img);
+                
+                croppers[index] = new Cropper(img, {
                     aspectRatio: 1,
                     viewMode: 1,
+                    autoCropArea: 0.8,
                 });
             };
             reader.readAsDataURL(file);
@@ -845,105 +1068,76 @@
 
     function saveImage(index) {
         const croppedInput = document.getElementById(`croppedImage${index}`);
+        const preview = document.getElementById(`preview${index}`);
+        const container = document.getElementById(`cropping${index}`);
+        const saveBtn = document.getElementById(`saveBtn${index}`);
+        const fileInput = document.getElementById(`image${index}`);
+        const savedBadge = document.getElementById(`savedBadge${index}`);
+
         if (croppers[index]) {
-            const canvas = croppers[index].getCroppedCanvas();
-            canvas.toBlob(blob => {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    croppedInput.value = reader.result;
-                    Swal.fire({
-                        icon: 'success',
-                        title: `Image ${index} saved!`,
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-                };
-                reader.readAsDataURL(blob);
-            }, 'image/jpeg');
+            const canvas = croppers[index].getCroppedCanvas({
+                width: 800,
+                height: 800,
+                minWidth: 400,
+                minHeight: 400,
+                maxWidth: 2000,
+                maxHeight: 2000,
+                fillColor: '#fff',
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high',
+            });
+
+            if (canvas) {
+                canvas.toBlob(blob => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        // 1. Save the cropped image data
+                        croppedInput.value = reader.result;
+                        
+                        // 2. Show the preview of the saved image
+                        preview.src = reader.result;
+                        preview.style.display = 'block';
+                        
+                        // 3. Hide the cropper and show only the final image
+                        const cropperContainer = document.getElementById(`cropper-container${index}`);
+                        cropperContainer.style.display = 'none';
+                        
+                        // 4. Destroy the cropper instance
+                        croppers[index].destroy();
+                        delete croppers[index];
+                        
+                        // 5. Disable the file input
+                        fileInput.disabled = true;
+                        
+                        // 6. Update the save button to show saved state
+                        saveBtn.innerHTML = '<i class="fas fa-check"></i> Saved';
+                        saveBtn.className = 'save-image-btn saved-btn';
+                        saveBtn.disabled = true;
+                        
+                        // 7. Show saved badge
+                        savedBadge.style.display = 'block';
+                        
+                        // 8. Show success message
+                        Swal.fire({
+                            icon: 'success',
+                            title: `Image ${index} saved!`,
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    };
+                    reader.readAsDataURL(blob);
+                }, 'image/jpeg', 0.92); // 92% quality
+            }
         } else {
-            Swal.fire('Error', 'Upload and crop the image before saving.', 'error');
+            Swal.fire({
+                icon: 'error',
+                title: 'No Image',
+                text: 'Please upload and crop the image before saving.',
+            });
         }
     }
 
-    document.getElementById('productForm').addEventListener('submit', function (e) {
-        e.preventDefault();
 
-        let isValid = true;
-        const fields = ['productName', 'description', 'brand', 'regularPrice', 'salePrice', 'category', 'color'];
-
-        // Validate basic fields
-        fields.forEach(field => {
-            const input = document.getElementsByName(field)[0];
-            const error = document.getElementById(`${field}-error`);
-            if (!input.value.trim()) {
-                error.textContent = 'This field is required.';
-                isValid = false;
-            } else {
-                error.textContent = '';
-            }
-        });
-
-        // Validate size variants
-        const sizeSelects = document.querySelectorAll('[name*="[size]"]');
-        const quantityInputs = document.querySelectorAll('[name*="[quantity]"]');
-        const variantsError = document.getElementById('variants-error');
-        
-        let hasValidVariant = false;
-        let totalQuantity = 0;
-        
-        sizeSelects.forEach((sizeSelect, index) => {
-            const quantityInput = quantityInputs[index];
-            
-            if (sizeSelect.value && quantityInput.value && parseInt(quantityInput.value) > 0) {
-                hasValidVariant = true;
-                totalQuantity += parseInt(quantityInput.value);
-            }
-        });
-        
-        if (!hasValidVariant) {
-            variantsError.textContent = 'At least one complete variant (size and quantity) is required.';
-            isValid = false;
-        } else if (!validateVariants()) {
-            isValid = false;
-        } else {
-            variantsError.textContent = '';
-        }
-        
-        // Validate images
-        for (let i = 1; i <= 4; i++) {
-            if (!document.getElementById(`image${i}`).files.length) {
-                document.getElementById(`image${i}-error`).textContent = 'Image is required.';
-                isValid = false;
-            } else {
-                document.getElementById(`image${i}-error`).textContent = '';
-                if (croppers[i]) {
-                    const canvas = croppers[i].getCroppedCanvas();
-                    document.getElementById(`croppedImage${i}`).value = canvas.toDataURL('image/jpeg');
-                }
-            }
-        }
-
-        if (isValid) {
-            const formData = new FormData(this);
-            fetch('/admin/addProducts', {
-                method: 'POST',
-                body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire('Success', 'Product added successfully!', 'success').then(() => {
-                        window.location.reload();
-                    });
-                } else {
-                    Swal.fire('Error', data.message, 'error');
-                }
-            })
-            .catch(() => {
-                Swal.fire('Error', 'Something went wrong.', 'error');
-            });
-        }
-    });
 </script>
 
 <%- include("../../views/partials/admin/footer") %>

@@ -1,20 +1,17 @@
 const Brand = require('../models/brandSchema');
 const Product = require('../models/productSchema');
 
-
 const getBrandPage = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = 6;               // You can increase limit if you want to see more brands per page
+    const limit = 6;
     const skip = (page - 1) * limit;
 
-    // Find brands sorted by newest first, paginate
     const brandData = await Brand.find({})
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
 
-    // Get total brand count for pagination
     const totalBrands = await Brand.countDocuments();
     const totalPages = Math.ceil(totalBrands / limit);
 
@@ -23,6 +20,8 @@ const getBrandPage = async (req, res) => {
       currentPage: page,
       totalPages,
       totalBrands,
+      error: req.query.error,  // Pass error query parameter
+      success: req.query.success  // Pass success query parameter
     });
   } catch (error) {
     console.error('Error fetching brand data:', error);
@@ -33,29 +32,33 @@ const getBrandPage = async (req, res) => {
 const addBrand = async (req, res) => {
   try {
     const brandName = req.body.name.trim();
-    const existingBrand = await Brand.findOne({ brandName: brandName });
-
-    if (!existingBrand) {
-      // multer adds file info to req.file
-      const image = req.file ? req.file.filename : null;
-
-      if (!image) {
-        // No image uploaded, handle error or redirect with message
-        return res.redirect('/admin/brands'); // You can add error flash message if needed
-      }
-
-      const newBrand = new Brand({
-        brandName,
-        brandImage: [image], // Save as array (even if single image)
-      });
-
-      await newBrand.save();
+    
+    // Check if brand name is empty
+    if (!brandName) {
+      return res.redirect('/admin/brands?error=Brand name is required');
     }
-    // If brand exists, just ignore or handle accordingly (maybe redirect with error message)
-    res.redirect('/admin/brands');
+
+    const existingBrand = await Brand.findOne({ brandName: { $regex: new RegExp(`^${brandName}$`, 'i') } });
+
+    if (existingBrand) {
+      return res.redirect('/admin/brands?error=Brand already exists');
+    }
+
+    if (!req.file) {
+      return res.redirect('/admin/brands?error=Brand image is required');
+    }
+
+    const newBrand = new Brand({
+      brandName,
+      brandImage: [req.file.filename],
+    });
+
+    await newBrand.save();
+    return res.redirect('/admin/brands?success=Brand added successfully');
+    
   } catch (error) {
     console.error('Add brand error:', error);
-    res.redirect('/pageerror');
+    res.redirect('/admin/brands?error=Something went wrong');
   }
 };
 

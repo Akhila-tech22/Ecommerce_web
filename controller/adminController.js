@@ -8,14 +8,14 @@ const Category = require('../models/categorySchema')
 
 
 
-
+/*
 const pageerror = async (req,res) => {
     try {
-        res.render('dashboard')
+        res.render('pageerror')
     } catch (error) {
-        res.redirect('/pageerror')
+        res.redirect('/dashboard')
     }
-}
+} */
 
 
 const loadLogin = (req, res) => {
@@ -489,6 +489,8 @@ module.exports = {
   getSalesData,
   getRevenueTrends,
   getCustomerStats,
-  loadLogin, login, pageerror, logout
+  loadLogin, login, 
+  //pageerror,
+   logout
 }
 

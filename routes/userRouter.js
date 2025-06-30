@@ -46,12 +46,13 @@ router.get('/auth/google/callback',
 
 //profile management
  router.get("/forgot-password",blockLoggedInUsers,profileController.getForgotPassPage)
+ router.post('/check-email-existence', blockLoggedInUsers,profileController.checkEmailExistence);
  router.post("/forgot-email-valid",blockLoggedInUsers,profileController.forgotEmailValid)
  router.post("/verify-passForgot-otp",blockLoggedInUsers,profileController.verifyForgotPassOtp)
  router.get("/reset-password",resetPasswordMiddleware,profileController.getResetPassPage)
  router.post("/resend-forgot-otp",blockLoggedInUsers,profileController.resendOtp);
  router.post("/reset-password",resetPasswordMiddleware,profileController.postNewPassword);
-
+router.post('/remove-profile-image',profileController. removeProfileImage);
 router.post("/change-password", userAuth, profileController.changePassword)
 
 router.get('/userProfile', userAuth, profileController.userProfile)
@@ -64,7 +65,8 @@ router.post("/verify-email-otp",userAuth,profileController.verifyEmailOtp)
 
 router.post('/upload-profile-image', upload.single('profileImage'), profileController.updateProfileImage);
 
-
+router.get('/about',userController.getAboutPage);
+router.get('/contact', userController.getContact)
 
 
 
@@ -119,6 +121,7 @@ router.post('/verifyPayment', userAuth, checkoutController.verifyPayment);
 //coupon management
 router.get("/mycoupons",userAuth,couponController.loadCoupons)
 router.post("/apply-coupon", userAuth, checkoutController.applyCoupon);
+
 
 
 // wallet Management

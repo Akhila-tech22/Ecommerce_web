@@ -502,9 +502,7 @@
               </small>
             </div>
             <div class="d-flex gap-2">
-              <button type="button" class="btn btn-outline-secondary" onclick="window.history.back()">
-                <i class="fas fa-arrow-left me-1"></i> Cancel
-              </button>
+             
               <button class="btn btn-primary btn-lg" type="submit">
                 <i class="fas fa-save me-1"></i> Update Product
               </button>
@@ -520,170 +518,494 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 <script>
-    let croppers = {};
-    let variantCounter = 0;
+  // Enhanced frontend validation and form handling
+let croppers = {};
+let variantCounter = 0;
 
-    // Initialize variant counter
-    document.addEventListener('DOMContentLoaded', function() {
-        const variants = document.querySelectorAll('.variant-item');
-        variantCounter = variants.length;
+// Initialize variant counter
+document.addEventListener('DOMContentLoaded', function() {
+    const variants = document.querySelectorAll('.variant-item');
+    variantCounter = variants.length;
+    
+    // Add real-time validation
+    setupRealTimeValidation();
+});
+
+// Setup real-time validation
+function setupRealTimeValidation() {
+    // Price validation
+    const regularPriceInput = document.getElementById('regularPrice');
+    const salePriceInput = document.getElementById('salePrice');
+    
+    regularPriceInput.addEventListener('input', validatePrices);
+    salePriceInput.addEventListener('input', validatePrices);
+    
+    // Product name validation
+    const productNameInput = document.getElementById('product_name');
+    productNameInput.addEventListener('input', validateProductName);
+    
+    // Description validation
+    const descriptionInput = document.getElementById('description');
+    descriptionInput.addEventListener('input', validateDescription);
+}
+
+// Validate prices in real-time
+function validatePrices() {
+    const regularPrice = parseFloat(document.getElementById('regularPrice').value);
+    const salePrice = parseFloat(document.getElementById('salePrice').value);
+    
+    // Remove existing error messages
+    removeFieldError('regularPrice');
+    removeFieldError('salePrice');
+    
+    // Validate regular price
+    if (regularPrice <= 0) {
+        showFieldError('regularPrice', 'Regular price must be greater than 0');
+    }
+    
+    // Validate sale price
+    if (salePrice <= 0) {
+        showFieldError('salePrice', 'Sale price must be greater than 0');
+    }
+    
+    // Validate sale price vs regular price
+    if (regularPrice > 0 && salePrice > 0 && salePrice > regularPrice) {
+        showFieldError('salePrice', 'Sale price cannot be greater than regular price');
+    }
+}
+
+// Validate product name
+function validateProductName() {
+    const productName = document.getElementById('product_name').value.trim();
+    removeFieldError('product_name');
+    
+    if (!productName) {
+        showFieldError('product_name', 'Product name is required');
+    } else if (productName.length < 3) {
+        showFieldError('product_name', 'Product name must be at least 3 characters long');
+    }
+}
+
+// Validate description
+function validateDescription() {
+    const description = document.getElementById('description').value.trim();
+    removeFieldError('description');
+    
+    if (!description) {
+        showFieldError('description', 'Product description is required');
+    } else if (description.length < 10) {
+        showFieldError('description', 'Description must be at least 10 characters long');
+    }
+}
+
+// Show field error
+function showFieldError(fieldId, message) {
+    const field = document.getElementById(fieldId);
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'field-error text-danger small mt-1';
+    errorDiv.textContent = message;
+    errorDiv.id = `error-${fieldId}`;
+    
+    // Add error styling to field
+    field.classList.add('is-invalid');
+    
+    // Insert error message after the field
+    if (field.parentNode.classList.contains('form-floating')) {
+        field.parentNode.insertAdjacentElement('afterend', errorDiv);
+    } else {
+        field.insertAdjacentElement('afterend', errorDiv);
+    }
+}
+
+// Remove field error
+function removeFieldError(fieldId) {
+    const field = document.getElementById(fieldId);
+    const errorDiv = document.getElementById(`error-${fieldId}`);
+    
+    if (errorDiv) {
+        errorDiv.remove();
+    }
+    
+    field.classList.remove('is-invalid');
+}
+
+// Enhanced form validation before submission
+function validateForm() {
+    const errors = [];
+    
+    // Validate product name
+    const productName = document.getElementById('product_name').value.trim();
+    if (!productName) {
+        errors.push('Product name is required');
+    }
+    
+    // Validate description
+    const description = document.getElementById('description').value.trim();
+    if (!description) {
+        errors.push('Product description is required');
+    }
+    
+    // Validate prices
+    const regularPrice = parseFloat(document.getElementById('regularPrice').value);
+    const salePrice = parseFloat(document.getElementById('salePrice').value);
+    
+    if (isNaN(regularPrice) || regularPrice <= 0) {
+        errors.push('Regular price must be a positive number');
+    }
+    
+    if (isNaN(salePrice) || salePrice <= 0) {
+        errors.push('Sale price must be a positive number');
+    }
+    
+    if (regularPrice > 0 && salePrice > 0 && salePrice > regularPrice) {
+        errors.push('Sale price cannot be greater than regular price');
+    }
+    
+    // Validate color
+    const color = document.getElementById('color').value;
+    if (!color) {
+        errors.push('Product color is required');
+    }
+    
+    // Validate brand
+    const brand = document.getElementById('brand').value.trim();
+    if (!brand) {
+        errors.push('Brand is required');
+    }
+    
+    // Validate category
+    const category = document.getElementById('category').value;
+    if (!category) {
+        errors.push('Category is required');
+    }
+    
+    // Validate variants
+    const variants = document.querySelectorAll('.variant-item');
+    if (variants.length === 0) {
+        errors.push('At least one variant is required');
+    }
+    
+    const sizes = [];
+    variants.forEach((variant, index) => {
+        const sizeSelect = variant.querySelector('select[name*="size"]');
+        const quantityInput = variant.querySelector('input[name*="quantity"]');
+        
+        if (!sizeSelect.value) {
+            errors.push(` Size is required`);
+        } else {
+            if (sizes.includes(sizeSelect.value)) {
+                errors.push(` Duplicate size found`);
+            }
+            sizes.push(sizeSelect.value);
+        }
+        
+        const quantity = parseInt(quantityInput.value);
+        if (isNaN(quantity) || quantity < 0) {
+            errors.push(`Variant ${index + 1}: Quantity must be a non-negative number`);
+        }
     });
+    
+    // Validate images
+    const imageCount = countImages();
+    if (imageCount < 4) {
+        errors.push(`${4 - imageCount} more image(s) required. Please upload exactly 4 images.`);
+    }
+    
+    return errors;
+}
 
-    function previewImage(event, index) {
-      const input = event.target;
-      if (input.files && input.files[0]) {
+// Count current images
+function countImages() {
+    let count = 0;
+    
+    // Count existing images
+    document.querySelectorAll('.card-img-top').forEach(img => {
+        if (img.src && !img.src.includes('placeholder')) {
+            count++;
+        }
+    });
+    
+    // Count new cropped images
+    for (let i = 1; i <= 4; i++) {
+        const croppedData = document.getElementById(`croppedImage${i + 1}`);
+        if (croppedData && croppedData.value) {
+            count++;
+        }
+    }
+    
+    // Count new file uploads
+    document.querySelectorAll('.image-input').forEach(input => {
+        if (input.files && input.files.length > 0) {
+            count++;
+        }
+    });
+    
+    return Math.min(count, 4); // Cap at 4
+}
+
+// Existing functions with enhancements...
+
+function previewImage(event, index) {
+    const input = event.target;
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid File Type',
+                text: 'Please select a valid image file (JPG, PNG, WEBP, etc.)'
+            });
+            input.value = '';
+            return;
+        }
+        
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            Swal.fire({
+                icon: 'error',
+                title: 'File Too Large',
+                text: 'Please select an image smaller than 5MB'
+            });
+            input.value = '';
+            return;
+        }
+        
         const reader = new FileReader();
         reader.onload = function (e) {
-          const preview = document.getElementById(`preview${index}`);
-          const previewContainer = input.parentElement.querySelector('.preview-container');
-          const saveBtn = document.getElementById(`saveImageBtn${index}`);
+            const preview = document.getElementById(`preview${index}`);
+            const previewContainer = input.parentElement.querySelector('.preview-container');
+            const saveBtn = document.getElementById(`saveImageBtn${index}`);
 
-          preview.src = e.target.result;
-          previewContainer.style.display = 'block';
-          saveBtn.style.display = 'inline-block';
+            preview.src = e.target.result;
+            previewContainer.style.display = 'block';
+            saveBtn.style.display = 'inline-block';
 
-          if (croppers[index]) croppers[index].destroy();
-          croppers[index] = new Cropper(preview, {
-            aspectRatio: 1,
-            viewMode: 1,
-            autoCropArea: 1
-          });
+            if (croppers[index]) croppers[index].destroy();
+            croppers[index] = new Cropper(preview, {
+                aspectRatio: 1,
+                viewMode: 1,
+                autoCropArea: 1
+            });
         };
-        reader.readAsDataURL(input.files[0]);
-      }
+        reader.readAsDataURL(file);
     }
+}
 
-    function saveCroppedImage(index) {
-      const canvas = croppers[index]?.getCroppedCanvas();
-      if (canvas) {
-        const dataURL = canvas.toDataURL('image/jpeg');
+function saveCroppedImage(index) {
+    const canvas = croppers[index]?.getCroppedCanvas();
+    if (canvas) {
+        const dataURL = canvas.toDataURL('image/jpeg', 0.8); // Reduced quality for smaller file size
         document.getElementById(`croppedImage${index + 1}`).value = dataURL;
         document.getElementById(`saveImageBtn${index}`).style.display = 'none';
 
         Swal.fire({
-          icon: 'success',
-          title: 'Saved!',
-          text: 'Cropped image has been saved. It will be updated when you submit the form.'
+            icon: 'success',
+            title: 'Saved!',
+            text: 'Cropped image has been saved. It will be updated when you submit the form.',
+            timer: 2000,
+            showConfirmButton: false
         });
-      }
     }
+}
 
-    function deleteSingleImage(imageName, productId, index) {
-      Swal.fire({
+function deleteSingleImage(imageName, productId, index) {
+    Swal.fire({
         title: 'Are you sure?',
-        text: "You won't be able to revert this!",
+        text: "You won't be able to revert this! You'll need to upload a new image to replace it.",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
         confirmButtonText: 'Yes, delete it!'
-      }).then((result) => {
+    }).then((result) => {
         if (result.isConfirmed) {
-          fetch('/admin/deleteImage', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              imageNameToServer: imageName,
-              productIdToServer: productId,
-              imageIndex: index
-            }),
-          }).then(response => response.json())
-            .then(data => {
-              if (data.status) {
-                Swal.fire('Deleted!', 'Your image has been deleted.', 'success');
+            fetch('/admin/deleteImage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    imageNameToServer: imageName,
+                    productIdToServer: productId,
+                    imageIndex: index
+                }),
+            }).then(response => response.json())
+                .then(data => {
+                    if (data.status) {
+                        Swal.fire('Deleted!', 'Your image has been deleted. Please upload a new image.', 'success');
 
-                const card = document.querySelectorAll('.card')[index];
-                card.innerHTML = `
-                  <div class="card-body">
-                    <div class="image-upload-container">
-                      <input type="file" name="image${index + 1}" accept="image/*" class="form-control image-input" data-index="${index}" onchange="previewImage(event, ${index})">
-                      <div class="preview-container" style="margin-top: 10px; display: none;">
-                        <img id="preview${index}" src="#" alt="Image preview" style="max-width: 100%; height: auto;">
-                        <button type="button" class="btn btn-success btn-sm" id="saveImageBtn${index}" onclick="saveCroppedImage(${index})" style="display: none;">Save Image</button>
-                      </div>
-                      <input type="hidden" name="croppedImage${index + 1}" id="croppedImage${index + 1}" value="">
-                    </div>
-                  </div>
-                `;
-              } else {
-                Swal.fire('Error!', 'Failed to delete image', 'error');
-              }
-            }).catch(error => {
-              console.error('Error:', error);
-              Swal.fire('Error!', 'An error occurred while deleting the image', 'error');
-            });
+                        const card = document.querySelectorAll('.card')[index];
+                        card.innerHTML = `
+                            <div class="card-body h-100 d-flex flex-column justify-content-center">
+                                <div class="image-upload-container">
+                                    <i class="fas fa-cloud-upload-alt fa-2x mb-3 text-danger"></i>
+                                    <input type="file" name="image${index + 1}" accept="image/*" class="form-control image-input mb-2" data-index="${index}" onchange="previewImage(event, ${index})">
+                                    <small class="text-danger"><strong>Required:</strong> Upload Image ${index + 1}</small>
+                                    <div class="preview-container mt-3" style="display: none;">
+                                        <img id="preview${index}" src="#" alt="Preview" style="max-width: 100%; height: auto; max-height: 150px;" class="mb-2">
+                                        <button type="button" class="btn btn-success btn-sm" id="saveImageBtn${index}" onclick="saveCroppedImage(${index})" style="display: none;">
+                                            <i class="fas fa-save me-1"></i> Save Image
+                                        </button>
+                                    </div>
+                                    <input type="hidden" name="croppedImage${index + 1}" id="croppedImage${index + 1}">
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        Swal.fire('Error!', 'Failed to delete image', 'error');
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error!', 'An error occurred while deleting the image', 'error');
+                });
         }
-      });
+    });
+}
+
+// Enhanced form submission
+document.getElementById('editProductForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    // Validate form
+    const validationErrors = validateForm();
+    if (validationErrors.length > 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            html: `<ul style="text-align: left; margin: 0; padding-left: 20px;">
+                ${validationErrors.map(error => `<li>${error}</li>`).join('')}
+            </ul>`,
+            confirmButtonText: 'Fix Issues'
+        });
+        return;
     }
 
-    // Add new variant function (only size and quantity)
-    function addVariant() {
-      const container = document.getElementById('variantsContainer');
-      const newVariantHtml = `
+    const form = e.target;
+    const formData = new FormData(form);
+
+    // Show loading
+    Swal.fire({
+        title: 'Updating Product...',
+        text: 'Please wait while we update your product.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Product Updated!',
+                    text: data.message,
+                    timer: 3000,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.href = '/admin/products';
+                });
+            } else {
+                // Handle validation errors from server
+                if (data.errors && Array.isArray(data.errors)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        html: `<ul style="text-align: left; margin: 0; padding-left: 20px;">
+                            ${data.errors.map(error => `<li>${error}</li>`).join('')}
+                        </ul>`,
+                        confirmButtonText: 'Fix Issues'
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Update Failed',
+                        text: data.message || 'An error occurred while updating the product'
+                    });
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Update Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Network Error',
+                text: 'Please check your internet connection and try again.'
+            });
+        });
+});
+
+// Add new variant with validation
+function addVariant() {
+    const container = document.getElementById('variantsContainer');
+    const newVariantHtml = `
         <div class="variant-item" data-variant-index="${variantCounter}">
-          <button type="button" class="variant-remove" onclick="removeVariant(this)">
-            <i class="fas fa-times"></i>
-          </button>
-          
-          <div class="variant-header">
-            <h5 class="variant-title">Variant #${variantCounter + 1}</h5>
-          </div>
-          
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <div class="form-floating">
-                <select name="variants[${variantCounter}][size]" class="form-select" required>
-                  <option value="">Choose Size</option>
-                  <option value="6">6</option>
-                 <option value="7">7</option>
-                  <option value="8">8</option>
-                  <option value="9">9</option>
-                             
-              
-                </select>
-                <label>Shoe Size</label>
-              </div>
+            <button type="button" class="variant-remove" onclick="removeVariant(this)">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="variant-header">
+                <h5 class="variant-title">Variant #${variantCounter + 1}</h5>
             </div>
-            <div class="col-md-6 mb-3">
-              <div class="form-floating">
-                <input type="number" name="variants[${variantCounter}][quantity]" value="0" class="form-control quantity-input" min="0" placeholder="Quantity" required>
-                <label>Quantity</label>
-              </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="form-floating">
+                        <select name="variants[${variantCounter}][size]" class="form-select" required>
+                            <option value="">Choose Size</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                        <label>Shoe Size</label>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="form-floating">
+                        <input type="number" name="variants[${variantCounter}][quantity]" value="0" class="form-control quantity-input" min="0" placeholder="Quantity" required>
+                        <label>Quantity</label>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      `;
-      
-      container.insertAdjacentHTML('beforeend', newVariantHtml);
-      variantCounter++;
-      updateVariantNumbers();
-    }
+    `;
+    
+    container.insertAdjacentHTML('beforeend', newVariantHtml);
+    variantCounter++;
+    updateVariantNumbers();
+}
 
-    // Remove variant function
-    function removeVariant(button) {
-      const variantItem = button.closest('.variant-item');
-      const variants = document.querySelectorAll('.variant-item');
-      
-      if (variants.length > 1) {
+// Remove variant with validation
+function removeVariant(button) {
+    const variantItem = button.closest('.variant-item');
+    const variants = document.querySelectorAll('.variant-item');
+    
+    if (variants.length > 1) {
         variantItem.remove();
         updateVariantNumbers();
-      } else {
+    } else {
         Swal.fire({
-          icon: 'warning',
-          title: 'Cannot Remove',
-          text: 'At least one variant is required!'
+            icon: 'warning',
+            title: 'Cannot Remove',
+            text: 'At least one variant is required!'
         });
-      }
     }
+}
 
-    // Update variant numbers and indices
-    function updateVariantNumbers() {
-      const variants = document.querySelectorAll('.variant-item');
-      variants.forEach((variant, index) => {
+// Update variant numbers and indices
+function updateVariantNumbers() {
+    const variants = document.querySelectorAll('.variant-item');
+    variants.forEach((variant, index) => {
         // Update variant title
         const title = variant.querySelector('.variant-title');
         if (title) {
-          title.textContent = `Variant #${index + 1}`;
+            title.textContent = `Variant #${index + 1}`;
         }
         
         // Update data attribute
@@ -694,65 +1016,12 @@
         const quantityInput = variant.querySelector('input[name*="quantity"]');
         
         if (sizeSelect) {
-          sizeSelect.name = `variants[${index}][size]`;
+            sizeSelect.name = `variants[${index}][size]`;
         }
         if (quantityInput) {
-          quantityInput.name = `variants[${index}][quantity]`;
+            quantityInput.name = `variants[${index}][quantity]`;
         }
-      });
-    }
-
-    // Form submission with AJAX
-    document.getElementById('editProductForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      const form = e.target;
-      const formData = new FormData(form);
-
-      // Validate that at least one variant exists
-      const variants = document.querySelectorAll('.variant-item');
-      if (variants.length === 0) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Validation Error',
-          text: 'At least one variant is required!'
-        });
-        return;
-      }
-
-      // Validate color selection
-      const colorSelect = document.getElementById('color');
-      if (!colorSelect.value) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Validation Error',
-          text: 'Please select a product color!'
-        });
-        return;
-      }
-
-      fetch(form.action, {
-        method: 'POST',
-        body: formData
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            Swal.fire({
-              icon: 'success',
-              title: 'Product Updated!',
-              text: data.message
-            }).then(() => {
-              window.location.href = '/admin/products';
-            });
-          } else {
-            Swal.fire('Error!', data.message || 'Update failed.', 'error');
-          }
-        })
-        .catch(error => {
-          console.error('Update Error:', error);
-          Swal.fire('Error!', 'An unexpected error occurred.', 'error');
-        });
     });
+}
 </script>
   

@@ -155,32 +155,84 @@ const verifyOtp = async (req, res) => {
 const loadHome = async (req, res) => {
     try {
         const user = req.session.user;
-        const categories = await Category.find({isListed:true})
-        let productData = await Product.find({
-            isBlocked:false,
-            category:{$in:categories.map(category=>category._id)},
-            quantity:{$gt:0},
-        })
-
-        productData.sort((a,b) => new Date(b.createdAt)-new Date(a.createdAt))
-        productData = productData.slice(0,12);
-
-
-        if(user){
-            const userData = await User.findOne({_id:user});
-            res.render('home',{user:userData, products:productData, })
-            
-            
-        } else{
-            return res.render('home',{products:productData,req:req})
-        }
-            
+        const categories = await Category.find({ isListed: true });
         
+        // 1. Get main products (limited to 12)
+        let productData = await Product.find({
+            isBlocked: false,
+            category: { $in: categories.map(category => category._id) },
+            'variants.quantity': { $gt: 0 }
+        })
+        .sort({ createdAt: -1 })
+        .limit(12)
+        .lean();
+
+        // 2. Get trending products - consider sales, views, and recent purchases
+        let trendingProducts = await Product.aggregate([
+            {
+                $match: {
+                    isBlocked: false,
+                    category: { $in: categories.map(c => c._id) },
+                    'variants.quantity': { $gt: 0 }
+                }
+            },
+            {
+                $project: {
+                    productName: 1,
+                    productImage: 1,
+                    salePrice: 1,
+                    regularPrice: 1,
+                    sold: 1,
+                    views: 1,
+                    createdAt: 1,
+                    // Calculate a trending score (adjust weights as needed)
+                    trendingScore: {
+                        $add: [
+                            { $multiply: ["$sold", 0.5] }, // Sales count more
+                            { $multiply: ["$views", 0.3] }, // Views count less
+                            { 
+                                $multiply: [
+                                    { 
+                                        $divide: [
+                                            { $subtract: [new Date(), "$createdAt"] },
+                                            1000 * 60 * 60 * 24 // Convert to days
+                                        ] 
+                                    },
+                                    -0.2 // Newer products get a boost
+                                ] 
+                            }
+                        ]
+                    }
+                }
+            },
+            { $sort: { trendingScore: -1 } },
+            { $limit: 8 }
+        ]);
+
+        console.log('Main Products:', productData.length);
+        console.log('Trending Products:', trendingProducts.length);
+
+        if (user) {
+            const userData = await User.findOne({ _id: user });
+            res.render('home', {
+                user: userData,
+                products: productData,
+                trendingProducts, // Changed from relatedProducts to trendingProducts
+                req
+            });
+        } else {
+            res.render('home', {
+                products: productData,
+                trendingProducts, // Changed from relatedProducts to trendingProducts
+                req
+            });
+        }
+
     } catch (error) {
-        console.log('Home Page Not Found')
-        res.status(500).send('Server Error')
+        console.error('Home Page Error:', error);
+        res.status(500).send('Server Error');
     }
-}
+};
 
 
 const pageNotFound = async (req,res) => {
@@ -516,6 +568,23 @@ const loadShoppingPage = async (req, res) => {
     }
 };
 
+const getAboutPage = async (req,res) =>{
+    try{
+        res.render('about')
+    } 
+    catch(error){
+        res.redirect('/')
+
+    }
+}
+
+const getContact = async (req,res) => {
+    try{
+        res.render('contact')
+    } catch(error) {
+        res.redirect('/')
+    }
+}
 
 
 
@@ -536,6 +605,8 @@ module.exports = {loadHome,
     logout,
     loadShoppingPage,
     generateReferralCode,
+    getAboutPage,
+    getContact,
  
    
 }

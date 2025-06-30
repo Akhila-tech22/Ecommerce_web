@@ -38,6 +38,163 @@
     }
 }
 
+/* Trending Products Section */
+.trending-product-area {
+  padding: 60px 0;
+  background: #f9f9ff;
+}
+
+.trending-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  margin: 10px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.trending-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.product-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+}
+
+.product-badge .badge {
+  font-size: 12px;
+  padding: 5px 10px;
+  margin-left: 5px;
+}
+
+.trending-card .product-img {
+  display: block;
+  text-align: center;
+  margin-bottom: 15px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 5px;
+}
+
+.trending-card .product-img img {
+  max-height: 180px;
+  width: auto;
+  transition: all 0.3s;
+}
+
+.trending-card:hover .product-img img {
+  transform: scale(1.05);
+}
+
+.trending-card .desc {
+  padding: 0 5px;
+}
+
+.trending-card .title h6 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #222;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trending-card .price h6 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ff3368;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.trending-card .price .l-through {
+  font-size: 14px;
+  text-decoration: line-through;
+  color: #999;
+}
+
+.prd-bottom {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.prd-bottom .social-info {
+  display: flex;
+  align-items: center;
+  color: #777;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.prd-bottom .social-info:hover {
+  color: #ff3368;
+}
+
+.prd-bottom .social-info .hover-text {
+  margin-left: 5px;
+  display: none;
+}
+
+.prd-bottom .social-info:hover .hover-text {
+  display: inline;
+}
+
+/* Owl Carousel Customization */
+.trending-slider .owl-stage {
+  padding: 20px 0;
+}
+
+.trending-slider .owl-nav {
+  position: absolute;
+  top: -80px;
+  right: 0;
+}
+
+.trending-slider .owl-nav button {
+  width: 40px;
+  height: 40px;
+  background: #fff !important;
+  border: 1px solid #eee !important;
+  border-radius: 50% !important;
+  margin-left: 10px;
+  transition: all 0.3s;
+}
+
+.trending-slider .owl-nav button:hover {
+  background: #ff3368 !important;
+  color: #fff !important;
+}
+
+.trending-slider .owl-nav button span {
+  font-size: 24px;
+  line-height: 38px;
+}
+
+.trending-slider .owl-dots {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.trending-slider .owl-dots button.owl-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ddd !important;
+  margin: 0 5px;
+}
+
+.trending-slider .owl-dots button.owl-dot.active {
+  background: #ff3368 !important;
+}
+
 		</style>
 
 </head>
@@ -149,101 +306,72 @@
 	</section>
 	<!-- end features Area -->
 
+	<!-- Start Trending Products Area -->
+<section class="trending-product-area section_gap">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center">
+        <div class="section-title">
+          <h1>Trending Now</h1>
+          <p>Discover our most popular products this season</p>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <% if (trendingProducts && trendingProducts.length > 0) { %>
+          <div class="trending-slider owl-carousel">
+            <% for (let i = 0; i < trendingProducts.length; i++) { %>
+              <div class="item">
+                <div class="trending-card">
+                  <div class="product-badge">
+                    <% if (trendingProducts[i].regularPrice > trendingProducts[i].salePrice) { %>
+                      <span class="badge badge-danger">Sale</span>
+                    <% } %>
+                    <span class="badge badge-success">Trending</span>
+                  </div>
+                  <a href="/productDetails?id=<%= trendingProducts[i]._id %>" class="product-img">
+                    <img class="img-fluid" src="<%= trendingProducts[i].productImage[0] %>" alt="<%= trendingProducts[i].productName %>">
+                  </a>
+                  <div class="desc">
+                    <a href="/productDetails?id=<%= trendingProducts[i]._id %>" class="title">
+                      <h6><%= trendingProducts[i].productName %></h6>
+                    </a>
+                    <div class="price">
+                      <h6>₹<%= trendingProducts[i].salePrice %></h6>
+                      <% if (trendingProducts[i].regularPrice > trendingProducts[i].salePrice) { %>
+                        <h6 class="l-through">₹<%= trendingProducts[i].regularPrice %></h6>
+                      <% } %>
+                    </div>
+                    <div class="prd-bottom">
+                      <a href="#" onclick="addToWishlist('<%= trendingProducts[i]._id %>')" class="social-info">
+                        <span class="lnr lnr-heart"></span>
+                        <p class="hover-text">Wishlist</p>
+                      </a>
+                      <a href="/productDetails?id=<%= trendingProducts[i]._id %>" class="social-info">
+                        <span class="lnr lnr-eye"></span>
+                        <p class="hover-text">View Details</p>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% } %>
+          </div>
+        <% } else { %>
+          <p class="text-center w-100">No trending products found</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End Trending Products Area -->
+
 
 
 	
 
 
-	<!-- start product Area -->
-	<section class="owl-carousel active-product-area section_gap">
-		<!-- single product slide -->
-		<div class="single-product-slider">
-			<div class="container">
-				<div class="row justify-content-center">
-					<div class="col-lg-6 text-center">
-						<div class="section-title">
-							<h1>Latest Products</h1>
-							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-								dolore
-								magna aliqua.</p>
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<!-- single product -->
-
-
-				<!-- Latest Products -->
-<% for(let i = 0; i < Math.min(4, products.length); i++) { %>
-    <div class="col-lg-3 col-md-6 col-sm-6 col-6">
-        <div class="single-product">
-            <a href="/productDetails?id=<%= products[i]._id %>">
-                <img class="img-fluid" src="<%= products[i].productImage[0] %>" alt="">
-                <div class="product-details">
-                    <h6><%= products[i].productName %></h6>
-                    <div class="price">
-                        <h6>₹ <%= products[i].salePrice %></h6>
-                        <h6 class="l-through">₹ <%= products[i].regularPrice %></h6>
-                    </div>
-                </div>
-            </a>
-            <div class="prd-bottom">
-                <a href="#" onclick="addToCart('<%= products[i]._id %>', '<%= products[i].variants.size%>')" class="social-info">
-                    <span class="ti-bag"></span>
-                    <p class="hover-text">add to cart</p>
-                </a>
-                <a href="#" onclick="addToWishlist('<%= products[i]._id %>', '<%= products[i].variants.size%>')" class="social-info">
-                    <span class="lnr lnr-heart"></span>
-                    <p class="hover-text">Wishlist</p>
-                </a>
-                <a href="/productDetails?id=<%= products[i]._id %>" class="social-info">
-                    <span class="lnr lnr-move"></span>
-                    <p class="hover-text">view more</p>
-                </a>
-            </div>
-        </div>
-    </div>
-<% } %>
-
-<!-- Most Selling Products -->
-<% for(let i = 0; i < Math.min(4, products.length); i++) { %>
-    <div class="col-lg-3 col-md-6 col-sm-6 col-6">
-        <div class="single-product">
-            <a href="/productDetails?id=<%= products[i]._id %>">
-                <img class="img-fluid" src="<%= products[i].productImage[0] %>" alt="">
-                <div class="product-details">
-                    <h6><%= products[i].productName %></h6>
-                    <div class="price">
-                        <h6>₹ <%= products[i].salePrice %>.00</h6>
-                        <h6 class="l-through">₹ <%= products[i].regularPrice %>.00</h6>
-                    </div>
-                </div>
-            </a>
-            <div class="prd-bottom">
-                <a href="#" onclick="addToCart('<%= products[i]._id %>')" class="social-info">
-                    <span class="ti-bag"></span>
-                    <p class="hover-text">add to cart</p>
-                </a>
-                <a href="#" onclick="addToWishlist('<%= products[i]._id %>')" class="social-info">
-                    <span class="lnr lnr-heart"></span>
-                    <p class="hover-text">Wishlist</p>
-                </a>
-                <a href="/productDetails?id=<%= products[i]._id %>" class="social-info">
-                    <span class="lnr lnr-move"></span>
-                    <p class="hover-text">view more</p>
-                </a>
-            </div>
-        </div>
-    </div>
-<% } %>
-
-
-					
-				</div>
-			</div>
-		</div>
-	</section>
-	<!-- end product Area -->
 
 				
 					
@@ -300,5 +428,33 @@
 	<script src="js/gmaps.min.js"></script>
 	<script src="js/main.js"></script>
 </body>
+<script>
+	// Initialize Trending Products Slider
+$(document).ready(function() {
+  $('.trending-slider').owlCarousel({
+    loop: true,
+    margin: 20,
+    nav: true,
+    dots: true,
+    autoplay: true,
+    autoplayTimeout: 3000,
+    autoplayHoverPause: true,
+    responsive: {
+      0: {
+        items: 1
+      },
+      576: {
+        items: 2
+      },
+      768: {
+        items: 3
+      },
+      992: {
+        items: 4
+      }
+    }
+  });
+});
+</script>
 
 </html>

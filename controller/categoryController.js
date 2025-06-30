@@ -53,38 +53,130 @@ const categoryInfo = async (req, res) => {
   }
 
 
-const addCategory = async (req, res) => {
+  const addCategory = async (req, res) => {
     try {
       const { name, description } = req.body
   
-      
       const trimmedName = name.trim()
       if (!trimmedName || trimmedName.length === 0) {
-      
         return res.status(400).json({ success: false, message: "Category name cannot be empty" })
       }
   
-      if (!description) {
-      
+      if (!description || description.trim().length === 0) {
         return res.status(400).json({ success: false, message: "Description is required" })
       }
   
+      // Enhanced function to normalize text for comparison
+      function normalizeText(text) {
+        return text
+          .toLowerCase()
+          .trim()
+          // Replace all types of apostrophes and quotes with standard ones
+          .replace(/[''`'"]/g, "'")
+          .replace(/[""]/g, '"')
+          // Remove extra spaces and normalize whitespace
+          .replace(/\s+/g, ' ')
+          // Remove common punctuation that might be inconsistent
+          .replace(/[.,;:!?]/g, '')
+          // Handle common word variations
+          .replace(/\b(and|&)\b/g, 'and')
+          .replace(/\b(womens?|women's)\b/g, 'women')
+          .replace(/\b(mens?|men's)\b/g, 'men')
+          .replace(/\b(kids?|children's?)\b/g, 'kids')
+      }
       
-      const existingCategory = await Category.findOne({ name: new RegExp(`^${trimmedName}$`, "i") })
-      if (existingCategory) {
+      const normalizedInputName = normalizeText(trimmedName)
+      console.log('Input name normalized:', normalizedInputName)
+      
+      // Get all categories and check for duplicates
+      const allCategories = await Category.find({})
+      
+      for (let category of allCategories) {
+        const normalizedExistingName = normalizeText(category.name)
+        console.log('Existing name normalized:', normalizedExistingName)
         
-        return res.status(400).json({ success: false, message: "Category with this name already exists" })
+        if (normalizedExistingName === normalizedInputName) {
+          console.log('DUPLICATE FOUND!')
+          return res.status(409).json({ 
+            success: false, 
+            message: `Duplicate category` 
+          })
+        }
+      }
+
+      // Additional check for very similar names using edit distance
+      const isSimilar = (str1, str2) => {
+        const levenshteinDistance = (a, b) => {
+          const matrix = Array(b.length + 1).fill(null).map(() => Array(a.length + 1).fill(null))
+          
+          for (let i = 0; i <= a.length; i += 1) {
+            matrix[0][i] = i
+          }
+          
+          for (let j = 0; j <= b.length; j += 1) {
+            matrix[j][0] = j
+          }
+          
+          for (let j = 1; j <= b.length; j += 1) {
+            for (let i = 1; i <= a.length; i += 1) {
+              const indicator = a[i - 1] === b[j - 1] ? 0 : 1
+              matrix[j][i] = Math.min(
+                matrix[j][i - 1] + 1,
+                matrix[j - 1][i] + 1,
+                matrix[j - 1][i - 1] + indicator
+              )
+            }
+          }
+          
+          return matrix[b.length][a.length]
+        }
+        
+        const distance = levenshteinDistance(str1, str2)
+        const maxLength = Math.max(str1.length, str2.length)
+        const similarity = 1 - (distance / maxLength)
+        
+        return similarity > 0.85 
+      }
+
+      // Check for very similar names
+      for (let category of allCategories) {
+        const normalizedExistingName = normalizeText(category.name)
+        
+        if (isSimilar(normalizedInputName, normalizedExistingName)) {
+          console.log('SIMILAR CATEGORY FOUND!')
+          return res.status(409).json({ 
+            success: false, 
+            message: `Duplicate category` 
+          })
+        }
       }
   
-      const newCategory = new Category({ name: trimmedName, description })
+      const newCategory = new Category({ name: trimmedName, description: description.trim() })
       const savedCategory = await newCategory.save()
       
-      res.status(201).json({ success: true, message: "Category added successfully", category: savedCategory })
+      res.status(201).json({ 
+        success: true, 
+        message: "Category added successfully", 
+        category: savedCategory 
+      })
     } catch (error) {
       console.error("Error in addCategory:", error)
-      res.status(500).json({ success: false, message: "Failed to add category", error: error.message })
+      
+      // Handle MongoDB duplicate key error
+      if (error.code === 11000) {
+        return res.status(409).json({ 
+          success: false, 
+          message: "Category with this name already exists" 
+        })
+      }
+      
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to add category", 
+        error: error.message 
+      })
     }
-  }
+}
 
 
 const addCategoryOffer = async (req, res) => {

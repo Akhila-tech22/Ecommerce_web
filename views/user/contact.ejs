@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us - Karma Shoes</title>
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #6a5acd;
+      --secondary: #50C878;
+      --dark: #2F2E41;
+      --light: #F8F9FA;
+      --success: #28a745;
+      --danger: #dc3545;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .hero-contact {
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.4)), 
+                  url('https://images.unsplash.com/photo-1423666639041-f56000c27a9a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+      min-height: 50vh;
+      display: flex;
+      align-items: center;
+    }
+    
+    .display-title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .contact-card {
+      border: none;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      overflow: hidden;
+    }
+
+    .contact-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+
+    .contact-info-card {
+      background: linear-gradient(135deg, var(--primary), #5a4cb3);
+      color: white;
+      padding: 3rem 2rem;
+      height: 100%;
+    }
+
+    .contact-form-card {
+      padding: 3rem 2rem;
+      background: white;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      transition: background 0.3s ease;
+    }
+
+    .info-item:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .info-item i {
+      font-size: 1.5rem;
+      margin-right: 1rem;
+      width: 40px;
+      text-align: center;
+    }
+
+    .form-control {
+      border: 2px solid #e9ecef;
+      border-radius: 10px;
+      padding: 12px 15px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 0.2rem rgba(106, 90, 205, 0.25);
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+
+    .btn-karma {
+      background: var(--primary);
+      color: white;
+      padding: 12px 30px;
+      border-radius: 50px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      border: none;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+    
+    .btn-karma:hover {
+      background: #5a4cb3;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
+    }
+
+    .map-container {
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .social-links {
+      margin-top: 2rem;
+    }
+
+    .social-links a {
+      display: inline-block;
+      width: 50px;
+      height: 50px;
+      line-height: 50px;
+      text-align: center;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      margin: 0 8px;
+      transition: all 0.3s ease;
+      font-size: 1.2rem;
+    }
+
+    .social-links a:hover {
+      background: white;
+      color: var(--primary);
+      transform: translateY(-3px);
+    }
+
+    .faq-section {
+      background: var(--light);
+    }
+
+    .faq-item {
+      background: white;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .faq-header {
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      padding: 1.5rem;
+      font-weight: 600;
+      color: var(--dark);
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .faq-header:hover {
+      color: var(--primary);
+    }
+
+    .faq-content {
+      padding: 0 1.5rem 1.5rem;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .alert-success, .alert-danger {
+      border-radius: 10px;
+      border: none;
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .required {
+      color: var(--danger);
+    }
+
+    @media (max-width: 768px) {
+      .hero-contact {
+        min-height: 40vh;
+      }
+      
+      .display-title {
+        font-size: 2.5rem;
+      }
+      
+      .contact-info-card,
+      .contact-form-card {
+        padding: 2rem 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <%- include("../../views/partials/user/header") %>
+
+  <!-- Hero Banner -->
+  <section class="hero-contact text-white">
+    <div class="container text-center py-5">
+      <h1 class="display-title display-3 mb-4">Get In Touch</h1>
+      <p class="lead fs-4">We'd love to hear from you</p>
+    </div>
+  </section>
+
+  <!-- Contact Form & Info Section -->
+  <section class="py-5">
+    <div class="container">
+      <div class="row g-0">
+        <!-- Contact Information -->
+        <div class="col-lg-5">
+          <div class="contact-card h-100">
+            <div class="contact-info-card">
+              <h3 class="mb-4">Let's Start a Conversation</h3>
+              <p class="mb-4">Have questions about our shoes? Need help with sizing? Want to learn more about our sustainability practices? We're here to help!</p>
+              
+              <div class="info-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <div>
+                  <h6 class="mb-1">Visit Our Store</h6>
+                  <p class="mb-0">123 Sustainable Street<br>Green City, GC 12345</p>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <i class="fas fa-phone"></i>
+                <div>
+                  <h6 class="mb-1">Call Us</h6>
+                  <p class="mb-0">+1 (555) 123-4567<br>Mon-Fri: 9AM-6PM</p>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <i class="fas fa-envelope"></i>
+                <div>
+                  <h6 class="mb-1">Email Us</h6>
+                  <p class="mb-0">hello@karmashoes.com<br>support@karmashoes.com</p>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <i class="fas fa-clock"></i>
+                <div>
+                  <h6 class="mb-1">Business Hours</h6>
+                  <p class="mb-0">Monday - Friday: 9:00 AM - 6:00 PM<br>Saturday: 10:00 AM - 4:00 PM</p>
+                </div>
+              </div>
+
+              <div class="social-links">
+                <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="col-lg-7">
+          <div class="contact-card h-100">
+            <div class="contact-form-card">
+              <h3 class="mb-4">Send Us a Message</h3>
+              
+              <!-- Success/Error Messages -->
+              <% if (typeof success !== 'undefined' && success) { %>
+                <div class="alert alert-success">
+                  <i class="fas fa-check-circle me-2"></i>
+                  Thank you for your message! We'll get back to you within 24 hours.
+                </div>
+              <% } %>
+              
+              <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-danger">
+                  <i class="fas fa-exclamation-circle me-2"></i>
+                  <%= error %>
+                </div>
+              <% } %>
+
+              <form action="/contact" method="POST" id="contactForm">
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="firstName" class="form-label">First Name <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="firstName" name="firstName" required>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="lastName" class="form-label">Last Name <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="lastName" name="lastName" required>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="email" class="form-label">Email Address <span class="required">*</span></label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="phone" class="form-label">Phone Number</label>
+                    <input type="tel" class="form-control" id="phone" name="phone">
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="subject" class="form-label">Subject <span class="required">*</span></label>
+                  <select class="form-control" id="subject" name="subject" required>
+                    <option value="">Please select a subject</option>
+                    <option value="general">General Inquiry</option>
+                    <option value="product">Product Question</option>
+                    <option value="order">Order Support</option>
+                    <option value="returns">Returns & Exchanges</option>
+                    <option value="sizing">Sizing Help</option>
+                    <option value="wholesale">Wholesale Inquiry</option>
+                    <option value="sustainability">Sustainability Questions</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                <div class="mb-4">
+                  <label for="message" class="form-label">Message <span class="required">*</span></label>
+                  <textarea class="form-control" id="message" name="message" rows="6" placeholder="Tell us how we can help you..." required></textarea>
+                </div>
+
+                <div class="mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="newsletter" name="newsletter">
+                    <label class="form-check-label" for="newsletter">
+                      I'd like to receive updates about new products and special offers
+                    </label>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-karma">
+                  <i class="fas fa-paper-plane me-2"></i>
+                  Send Message
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Map Section -->
+  <section class="py-5 bg-light">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="fw-bold">Find Our Store</h2>
+        <p class="text-muted">Visit us in person for a personalized fitting experience</p>
+      </div>
+      
+      <div class="map-container">
+        <iframe 
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.9663095343008!2d-74.00425878459418!3d40.74844797932681!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259a9b3117469%3A0xd134e199a405a163!2sEmpire%20State%20Building!5e0!3m2!1sen!2sus!4v1614630292129!5m2!1sen!2sus" 
+          width="100%" 
+          height="400" 
+          style="border:0;" 
+          allowfullscreen="" 
+          loading="lazy" 
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="py-5 faq-section">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="fw-bold">Frequently Asked Questions</h2>
+        <p class="text-muted">Quick answers to common questions</p>
+      </div>
+      
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <div class="faq-item">
+            <button class="faq-header" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+              <i class="fas fa-chevron-down me-2"></i>
+              What is your return policy?
+            </button>
+            <div id="faq1" class="collapse">
+              <div class="faq-content">
+                We offer a 30-day return policy for unworn shoes in original packaging. If you're not completely satisfied with your purchase, we'll provide a full refund or exchange.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-header" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+              <i class="fas fa-chevron-down me-2"></i>
+              How do I find my correct shoe size?
+            </button>
+            <div id="faq2" class="collapse">
+              <div class="faq-content">
+                We recommend using our online size guide or visiting our store for a professional fitting. Our shoes tend to run true to size, but we're always happy to help you find the perfect fit.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-header" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+              <i class="fas fa-chevron-down me-2"></i>
+              Are your shoes really sustainable?
+            </button>
+            <div id="faq3" class="collapse">
+              <div class="faq-content">
+                Absolutely! We use recycled materials, sustainable manufacturing processes, and ensure fair labor practices throughout our supply chain. Learn more about our sustainability commitment on our About page.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-header" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+              <i class="fas fa-chevron-down me-2"></i>
+              How long does shipping take?
+            </button>
+            <div id="faq4" class="collapse">
+              <div class="faq-content">
+                Standard shipping takes 3-5 business days within the US. We also offer expedited shipping options. International shipping times vary by location.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%- include("../../views/partials/user/footer") %>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Custom JS -->
+  <script>
+    // Form validation and enhancement
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const subject = document.getElementById('subject').value;
+      const message = document.getElementById('message').value.trim();
+      
+      if (!firstName || !lastName || !email || !subject || !message) {
+        e.preventDefault();
+        alert('Please fill in all required fields.');
+        return;
+      }
+      
+      // Simple email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        e.preventDefault();
+        alert('Please enter a valid email address.');
+        return;
+      }
+    });
+
+    // FAQ accordion enhancement
+    document.querySelectorAll('.faq-header').forEach(button => {
+      button.addEventListener('click', function() {
+        const icon = this.querySelector('i');
+        const isExpanded = this.getAttribute('aria-expanded') === 'true';
+        
+        // Reset all icons
+        document.querySelectorAll('.faq-header i').forEach(i => {
+          i.className = 'fas fa-chevron-down me-2';
+        });
+        
+        // Update current icon
+        if (!isExpanded) {
+          icon.className = 'fas fa-chevron-up me-2';
+        }
+      });
+    });
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Form field animations
+    document.querySelectorAll('.form-control').forEach(input => {
+      input.addEventListener('focus', function() {
+        this.style.transform = 'scale(1.02)';
+      });
+      
+      input.addEventListener('blur', function() {
+        this.style.transform = 'scale(1)';
+      });
+    });
+  </script>
+</body>
+</html>

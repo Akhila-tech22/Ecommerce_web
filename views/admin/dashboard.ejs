@@ -23,10 +23,12 @@
     }
 
     .main-content {
-        width: 100%;
-        padding: 20px 30px;
-        padding-left: 280px;
-        margin-top: 62px;
+   width: 100%;
+    padding: 20px 30px;
+    padding-left: 280px;
+    margin-top: 74px;
+    margin-left: 21px;
+
     }
 
     .dashboard-header {
@@ -311,6 +313,68 @@
             grid-template-columns: 1fr;
         }
     }
+    /* Top Selling Styles */
+.top-selling-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+}
+
+.top-selling-card {
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.top-selling-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--white);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.top-selling-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.top-selling-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.top-selling-table th {
+    background: var(--light-gray);
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 14px;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.top-selling-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border: 3px solid var(--border-color);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s linear infinite;
+}
 </style>
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -398,6 +462,98 @@
                 </div>
             </div>
         </div>
+                <!-- Top Selling Section -->
+<div class="content-grid" style="margin-bottom: 32px;">
+    <!-- Top Selling Products -->
+    <div class="content-card">
+        <div class="card-header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 class="card-title">Top Selling Products</h3>
+                <div class="chart-controls">
+                    <button class="chart-btn active" onclick="updateTopSelling('products')">Products</button>
+                    <button class="chart-btn" onclick="updateTopSelling('categories')">Categories</button>
+                    <button class="chart-btn" onclick="updateTopSelling('brands')">Brands</button>
+                </div>
+            </div>
+        </div>
+        <div class="card-content">
+            <div class="table-container">
+                <table class="data-table">
+                    <thead id="topSellingHeader">
+                        <tr>
+                            <th>Product</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Sold</th>
+                            <th>Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topSellingTableBody">
+                        <% if (dashboardData.topSellingProducts?.length > 0) { %>
+                            <% dashboardData.topSellingProducts.forEach(product => { %>
+                                <tr>
+                                    <td>
+                                        <div class="product-cell">
+                                            <img src="<%= product.image || 'https://via.placeholder.com/32' %>" class="product-image" alt="Product">
+                                            <span><%= product.name %></span>
+                                        </div>
+                                    </td>
+                                    <td><%= product.category %></td>
+                                    <td>₹<%= product.price.toLocaleString() %></td>
+                                    <td><%= product.soldCount %></td>
+                                    <td>₹<%= product.totalRevenue.toLocaleString() %></td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr><td colspan="5" class="empty-state">No products found</td></tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Selling Summary -->
+    <div class="content-card">
+        <div class="card-header">
+            <h3 class="card-title">Sales Summary</h3>
+        </div>
+        <div class="card-content">
+            <div class="stats-grid" style="grid-template-columns: 1fr; gap: 16px;">
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="topProductRevenue">₹<%= dashboardData.topProductsRevenue?.toLocaleString() || '0' %></div>
+                    <p class="stat-label">Revenue from Top 10 Products</p>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-icon green">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="topCategoryRevenue">₹<%= dashboardData.topCategoriesRevenue?.toLocaleString() || '0' %></div>
+                    <p class="stat-label">Revenue from Top 10 Categories</p>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-icon purple">
+                            <i class="fas fa-copyright"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="topBrandRevenue">₹<%= dashboardData.topBrandsRevenue?.toLocaleString() || '0' %></div>
+                    <p class="stat-label">Revenue from Top 10 Brands</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
         <!-- Sales Report Section -->
         <div class="content-card" style="margin-bottom: 32px;">
@@ -571,6 +727,137 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
+    // Update top selling items table
+// Update top selling items table
+function updateTopSelling(type) {
+    // Update button states
+    document.querySelectorAll('.content-card .chart-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Find the clicked button and make it active
+    const clickedBtn = event.target;
+    clickedBtn.classList.add('active');
+    
+    // Update table header
+    const header = document.getElementById('topSellingHeader');
+    const tableBody = document.getElementById('topSellingTableBody');
+    
+    // Show loading state
+    tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;"><div class="loading-spinner"></div></td></tr>';
+    
+    fetch(`/admin/api/top-selling?type=${type}`)
+        .then(res => {
+            if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+        })
+        .then(data => {
+            if (type === 'products') {
+                header.innerHTML = `
+                    <tr>
+                        <th>Product</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Sold</th>
+                        <th>Revenue</th>
+                    </tr>
+                `;
+                
+                if (data.products && data.products.length > 0) {
+                    tableBody.innerHTML = data.products.map(product => `
+                        <tr>
+                            <td>
+                                <div class="product-cell">
+                                    <img src="${product.image || 'https://via.placeholder.com/32'}" class="product-image" alt="Product" onerror="this.src='https://via.placeholder.com/32'">
+                                    <span>${product.name || 'Unknown Product'}</span>
+                                </div>
+                            </td>
+                            <td>${product.category || 'Unknown'}</td>
+                            <td>₹${(product.price || 0).toLocaleString()}</td>
+                            <td>${product.soldCount || 0}</td>
+                            <td>₹${(product.totalRevenue || 0).toLocaleString()}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tableBody.innerHTML = '<tr><td colspan="5" class="empty-state">No products found</td></tr>';
+                }
+                
+                // Update revenue display
+                const revenueElement = document.getElementById('topProductRevenue');
+                if (revenueElement) {
+                    revenueElement.textContent = `₹${(data.totalRevenue || 0).toLocaleString()}`;
+                }
+                
+            } else if (type === 'categories') {
+                header.innerHTML = `
+                    <tr>
+                        <th>Category</th>
+                        <th>Products</th>
+                        <th>Avg Price</th>
+                        <th>Sold</th>
+                        <th>Revenue</th>
+                    </tr>
+                `;
+                
+                if (data.categories && data.categories.length > 0) {
+                    tableBody.innerHTML = data.categories.map(category => `
+                        <tr>
+                            <td>${category.name || 'Unknown Category'}</td>
+                            <td>${category.productCount || 0}</td>
+                            <td>₹${Math.round(category.averagePrice || 0).toLocaleString()}</td>
+                            <td>${category.soldCount || 0}</td>
+                            <td>₹${(category.totalRevenue || 0).toLocaleString()}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tableBody.innerHTML = '<tr><td colspan="5" class="empty-state">No categories found</td></tr>';
+                }
+                
+                // Update revenue display
+                const revenueElement = document.getElementById('topCategoryRevenue');
+                if (revenueElement) {
+                    revenueElement.textContent = `₹${(data.totalRevenue || 0).toLocaleString()}`;
+                }
+                
+            } else if (type === 'brands') {
+                header.innerHTML = `
+                    <tr>
+                        <th>Brand</th>
+                        <th>Products</th>
+                        <th>Avg Price</th>
+                        <th>Sold</th>
+                        <th>Revenue</th>
+                    </tr>
+                `;
+                
+                if (data.brands && data.brands.length > 0) {
+                    tableBody.innerHTML = data.brands.map(brand => `
+                        <tr>
+                            <td>${brand.name || 'Unknown Brand'}</td>
+                            <td>${brand.productCount || 0}</td>
+                            <td>₹${Math.round(brand.averagePrice || 0).toLocaleString()}</td>
+                            <td>${brand.soldCount || 0}</td>
+                            <td>₹${(brand.totalRevenue || 0).toLocaleString()}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tableBody.innerHTML = '<tr><td colspan="5" class="empty-state">No brands found</td></tr>';
+                }
+                
+                // Update revenue display
+                const revenueElement = document.getElementById('topBrandRevenue');
+                if (revenueElement) {
+                    revenueElement.textContent = `₹${(data.totalRevenue || 0).toLocaleString()}`;
+                }
+            }
+        })
+        .catch(err => {
+            console.error('Failed to load top selling items:', err);
+            tableBody.innerHTML = '<tr><td colspan="5" class="error-state">Failed to load data. Please try again.</td></tr>';
+        });
+}
     // Global variables for current filter settings
     let currentFilters = {
         startDate: null,

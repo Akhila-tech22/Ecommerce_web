@@ -5,6 +5,7 @@ const Order = require("../models/orderSchema");
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const Coupon = require('../models/couponSchema')
+const Transaction = require('../models/transactionSchema')
 
 
 const razorpay = new Razorpay({
@@ -70,6 +71,8 @@ const loadCheckoutPage = async (req, res) => {
       return res.redirect("/login");
     }
 
+     
+    
  
     const retryOrder = req.session.retryOrder;
     if (retryOrder) {
@@ -115,7 +118,9 @@ const loadCheckoutPage = async (req, res) => {
           razorpayKeyId: process.env.RAZORPAY_KEY_ID,
           appliedCoupon: order.couponDetails || null,
           isRetry: true,
-          retryOrderId: order.orderId
+          retryOrderId: order.orderId,
+          wallet : user.wallet || 0,
+
         });
       }
     }
@@ -274,6 +279,7 @@ const postAddAddressCheckout = async (req, res) => {
     }
 };
 
+
 const placeOrder = async (req, res) => {
   try {
     const userId = req.session.user;
@@ -283,11 +289,11 @@ const placeOrder = async (req, res) => {
       return res.status(400).json({ success: false, message: "Missing required fields" });
     }
 
-    
+    // Check if this is a retry order
     const retryOrder = req.session.retryOrder;
 
     if (retryOrder) {
-      
+      // Handle retry payment - reuse existing failed order
       const existingOrder = await Order.findOne({ 
         _id: retryOrder.originalOrderId, 
         userId: userId 
@@ -375,7 +381,7 @@ const placeOrder = async (req, res) => {
     const deliveryCharge = 50;
     const finalAmount = totalAmount + 50 - discount;
 
-    
+    //  ADDED: Prepare coupon details for database storage
     let couponDetails = null;
     let couponApplied = false;
     
@@ -397,10 +403,10 @@ const placeOrder = async (req, res) => {
         notes: { userId, addressId }
       });
 
-  
+      // Create order with payment_failed status initially
       const failedOrderItems = orderItems.map(item => ({
         ...item,
-        status: 'payment_failed'  
+        status: 'payment_failed'  // Keep your original logic
       }));
 
       const failedOrder = new Order({
@@ -412,11 +418,11 @@ const placeOrder = async (req, res) => {
         finalAmount,
         address: selectedAddress,
         paymentMethod: 'online',
-        paymentStatus: 'failed',  
-        status: 'payment_failed', 
+        paymentStatus: 'failed',  // Keep your original logic
+        status: 'payment_failed', // Keep your original logic
         invoiceDate: new Date(),
         razorpayOrderId: razorpayOrder.id,
-       
+        //  ADDED: Store coupon information even for failed orders
         couponApplied,
         couponDetails
       });
@@ -439,7 +445,89 @@ const placeOrder = async (req, res) => {
       });
     }
 
-   
+//  WALLET PAYMENT LOGIC - WITH TRANSACTION RECORDING
+if (paymentMethod.toLowerCase() === 'wallet') {
+  // Check if user has sufficient wallet balance
+  const currentWalletBalance = user.wallet || 0;
+  
+  if (currentWalletBalance < finalAmount) {
+    return res.status(400).json({ 
+      success: false, 
+      message: "Insufficient wallet balance" 
+    });
+  }
+
+  // Deduct amount from wallet
+  const newWalletBalance = currentWalletBalance - finalAmount;
+  user.wallet = newWalletBalance;
+  await user.save();
+
+  // Create successful order
+  const order = new Order({
+    userId,
+    orderedItems: orderItems,
+    totalPrice: totalAmount,
+    discount,
+    deliveryCharge,
+    finalAmount,
+    address: selectedAddress,
+    paymentMethod: 'wallet',
+    paymentStatus: 'completed',
+    status: 'pending',
+    invoiceDate: new Date(),
+    couponApplied,
+    couponDetails
+  });
+
+  await order.save();
+
+  // Record wallet debit transaction
+  const transaction = new Transaction({
+    userId,
+    amount: finalAmount,
+    transactionType: 'debit',
+    paymentMethod: 'wallet',
+    paymentGateway: 'wallet',
+    status: 'completed',
+    purpose: 'purchase',
+    description: `Wallet payment for order ${order.orderId || order._id}`,
+    orders: [{
+      orderId: order._id.toString(),
+      amount: finalAmount
+    }],
+    walletBalanceAfter: newWalletBalance
+  });
+
+  await transaction.save();
+  
+  // Reduce stock for wallet orders
+  for (const item of orderItems) {
+    const product = await Product.findById(item.product);
+    if (product) {
+      const variant = product.variants.find(v => v.size === item.size);
+      if (variant && variant.quantity >= item.quantity) {
+        variant.quantity -= item.quantity;
+        await product.save();
+      }
+    }
+  }
+  
+  // Clear cart
+  user.cart = [];
+  await user.save();
+
+  // Mark coupon as used for wallet orders
+  if (appliedCoupon && appliedCoupon.name) {
+    await Coupon.findOneAndUpdate(
+      { name: appliedCoupon.name },
+      { $addToSet: { userId: userId } }
+    );
+  }
+
+  return res.status(200).json({ success: true, orderId: order._id });
+}
+
+    //  ADDED: COD orders with coupon information
     const order = new Order({
       userId,
       orderedItems: orderItems,
@@ -452,7 +540,7 @@ const placeOrder = async (req, res) => {
       paymentStatus: 'pending',
       status: 'pending',
       invoiceDate: new Date(),
-
+      // ✅ ADDED: Store coupon information for COD orders
       couponApplied,
       couponDetails
     });
@@ -461,7 +549,7 @@ const placeOrder = async (req, res) => {
     user.cart = [];
     await user.save();
 
-   
+    // ✅ ADDED: Mark coupon as used for COD orders (since COD is confirmed immediately)
     if (appliedCoupon && appliedCoupon.name) {
       await Coupon.findOneAndUpdate(
         { name: appliedCoupon.name },
@@ -496,14 +584,14 @@ const verifyPayment = async (req, res) => {
       .digest("hex");
 
     if (razorpay_signature === expectedSign) {
-     
+      //  PAYMENT SUCCESS - Update order status (coupon info already stored)
       const order = await Order.findById(orderId);
       if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
 
-     
+      // Check if this is a retry payment
       const isRetry = req.session.retryOrder && req.session.retryOrder.originalOrderId.toString() === orderId;
 
-   
+      // Update order to success status
       order.paymentStatus = 'completed';
       order.status = 'pending';  
       order.razorpayPaymentId = razorpay_payment_id;
@@ -548,17 +636,19 @@ const verifyPayment = async (req, res) => {
         delete req.session.retryOrder;
       }
 
-  
+      //  NOTE: Coupon information is already stored in the order
+      // No additional coupon processing needed here since it was stored during placeOrder
 
       return res.status(200).json({ success: true, orderId: order._id });
     }
 
-  
+    // PAYMENT FAILED - Keep as payment_failed (don't change status)
+    // The order already has payment_failed status, so just return error
     return res.status(400).json({ success: false, message: "Payment verification failed" });
 
   } catch (err) {
     console.error("Payment verification error:", err);
-
+    // Don't change order status on server error, let it remain as is
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -594,7 +684,7 @@ const orderFailure = async (req, res) => {
 };
 
 
-
+// Modified applyCoupon function - store coupon in session
 const applyCoupon = async (req, res) => {
     try {
         const { couponCode, subtotal } = req.body;
@@ -641,3 +731,5 @@ module.exports = {
     applyCoupon,
     retry,
 };
+
+

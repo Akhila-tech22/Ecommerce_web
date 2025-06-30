@@ -358,10 +358,12 @@
     </section>
 </main>
 
+<!-- Your existing HTML structure remains the same, only updating the JavaScript section -->
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-// Updated changeQuantity function - now includes size parameter
+  // Updated changeQuantity function - now handles blocked products
 function changeQuantity(productId, action, size, maxStock) {
     const quantityElement = document.getElementById(`cartProductQuantity${productId}_${size}`);
     let currentQuantity = parseInt(quantityElement.value);
@@ -382,16 +384,14 @@ function changeQuantity(productId, action, size, maxStock) {
         return;
     }
 
-    // Your existing AJAX call...
-
     $.ajax({
         url: '/changeQuantity',
         method: 'POST',
-        data: { productId: productId, action: action, size: size }, // Include size
+        data: { productId: productId, action: action, size: size },
         success: (response) => {
             if (response.status) {
-                if (response.quantity === 0) {
-                    // Item was removed
+                if (response.removeItem) {
+                    // Item was removed (quantity became 0)
                     location.reload();
                 } else {
                     // Update quantity in input box
@@ -407,7 +407,30 @@ function changeQuantity(productId, action, size, maxStock) {
                     document.getElementById('cartTotal').innerText = `₹ ${(Math.round(response.grandTotal) + 50).toFixed(2)}`;
                 }
             } else {
-                Swal.fire('Error', response.message, 'error');
+                // Handle blocked product scenario
+                if (response.productBlocked) {
+                    Swal.fire({
+                        title: 'Product Unavailable!',
+                        text: response.message,
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        location.reload(); // Reload to reflect cart changes
+                    });
+                }
+                // Handle out of stock scenario
+                else if (response.outOfStock) {
+                    Swal.fire({
+                        title: 'Out of Stock!',
+                        text: response.message,
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        location.reload(); // Reload to reflect cart changes
+                    });
+                } else {
+                    Swal.fire('Error', response.message, 'error');
+                }
             }
         },
         error: (error) => {
@@ -430,7 +453,7 @@ function confirmRemove(productId, size) {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: `/deleteItem?id=${productId}&size=${size}`, // Include size in query
+                url: `/deleteItem?id=${productId}&size=${size}`,
                 method: 'GET',
                 success: (response) => {
                     if (response.status) {
@@ -457,6 +480,88 @@ function viewShippingCharge() {
         confirmButtonText: 'OK'
     });
 }
+
+// Show notifications when page loads (for blocked products and out of stock items)
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle out of stock items
+    const outOfStockItems = <%= JSON.stringify(outOfStockItems || []) %>;
+    
+    if (outOfStockItems && outOfStockItems.length > 0) {
+        let message = 'The following items were out of stock and removed from your cart:\n\n';
+        outOfStockItems.forEach(item => {
+            message += `• ${item.name} (Size: ${item.size})\n`;
+        });
+        
+        Swal.fire({
+            title: 'Items Out of Stock',
+            text: message,
+            icon: 'warning',
+            confirmButtonText: 'OK'
+        });
+    }
+
+    // Handle blocked items
+    const blockedItems = <%= JSON.stringify(blockedItems || []) %>;
+    
+    if (blockedItems && blockedItems.length > 0) {
+        let message = 'The following items are currently unavailable and have been removed from your cart:\n\n';
+        blockedItems.forEach(item => {
+            message += `• ${item.name} (Size: ${item.size})\n`;
+        });
+        
+        Swal.fire({
+            title: 'Products Unavailable',
+            text: message,
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
+
+    // Show both notifications if both exist
+    if (outOfStockItems && outOfStockItems.length > 0 && blockedItems && blockedItems.length > 0) {
+        // If both exist, show them in sequence
+        setTimeout(() => {
+            let message = 'The following items are currently unavailable and have been removed from your cart:\n\n';
+            blockedItems.forEach(item => {
+                message += `• ${item.name} (Size: ${item.size})\n`;
+            });
+            
+            Swal.fire({
+                title: 'Products Unavailable',
+                text: message,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }, 500); // Small delay to show after out of stock notification
+    }
+});
+
+// Function to periodically check cart for blocked/unblocked products (optional)
+function checkCartStatus() {
+    // This function can be called periodically to check if products have been unblocked
+    // You can implement this if you want real-time updates
+    $.ajax({
+        url: '/checkCartStatus', // You would need to create this endpoint
+        method: 'GET',
+        success: (response) => {
+            if (response.hasChanges) {
+                Swal.fire({
+                    title: 'Cart Updated',
+                    text: 'Some products in your cart have been updated. Refreshing your cart...',
+                    icon: 'info',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    location.reload();
+                });
+            }
+        },
+        error: (error) => {
+            console.error("Cart status check error:", error);
+        }
+    });
+}
+
 
 </script>
 

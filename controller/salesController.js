@@ -70,6 +70,11 @@ const loadSalesPage = async (req, res) => {
           paymentStatus: 'completed',
           'orderedItems.status': { $nin: ['cancelled', 'payment_failed'] }
         },
+         { 
+    paymentMethod: 'wallet', 
+    paymentStatus: 'completed',
+    'orderedItems.status': { $nin: ['cancelled', 'payment_failed'] }
+  },
      
 
       ]
@@ -100,14 +105,14 @@ const loadSalesPage = async (req, res) => {
            : 'N/A');
 
       // Filter items based on their individual status
-      const validItems = order.orderedItems.filter(item => {
-        if (order.paymentMethod === 'cod') {
-          return item.status === 'delivered';
-        } else if (order.paymentMethod === 'online') {
-          return item.status !== 'cancelled' && item.status !== 'payment_failed' && order.paymentStatus === 'completed';
-        }
-        return false;
-      });
+     const validItems = order.orderedItems.filter(item => {
+  if (order.paymentMethod === 'cod') {
+    return item.status === 'delivered';
+  } else if (order.paymentMethod === 'online' || order.paymentMethod === 'wallet') {
+    return item.status !== 'cancelled' && item.status !== 'payment_failed' && order.paymentStatus === 'completed';
+  }
+  return false;
+});
 
       // Skip if no valid items
       if (validItems.length === 0) continue;
@@ -225,6 +230,12 @@ const getSalesReport = async (req, res) => {
           paymentStatus: 'completed',
           'orderedItems.status': { $nin: [ 'payment_failed'] }
         },
+         // Wallet orders that are not cancelled and payment is completed
+  { 
+    paymentMethod: 'wallet', 
+    paymentStatus: 'completed',
+    'orderedItems.status': { $nin: ['cancelled', 'payment_failed'] }
+  },
         
 
       ]
@@ -707,6 +718,214 @@ const createSaleRecord = async (order) => {
 };
 
 
+const getTopSelling = async (req, res) => {
+  try {
+    const { type } = req.query;
+    
+    const matchCondition = {
+      paymentStatus: { $ne: 'failed' },
+      $or: [
+        { 
+          paymentMethod: 'cod', 
+          'orderedItems.status': 'delivered' 
+        },
+        { 
+          paymentMethod: 'online', 
+          paymentStatus: 'completed',
+          'orderedItems.status': { $nin: ['cancelled', 'payment_failed'] }
+        },
+         { 
+    paymentMethod: 'wallet', 
+    paymentStatus: 'completed',
+    'orderedItems.status': { $nin: ['cancelled', 'payment_failed'] }
+  },
+      ]
+    };
+
+    if (type === 'products') {
+      const products = await Order.aggregate([
+        { $unwind: '$orderedItems' },
+        { $match: matchCondition },
+        {
+          $lookup: {
+            from: 'products',
+            let: { productId: '$orderedItems.product' },
+            pipeline: [
+              { 
+                $match: { 
+                  $expr: { $eq: ['$_id', '$$productId'] },
+                  isBlocked: false,
+                  status: { $ne: 'Discontinued' }
+                } 
+              }
+            ],
+            as: 'productDetails'
+          }
+        },
+        { $match: { 'productDetails.0': { $exists: true } } },
+        {
+          $lookup: {
+            from: 'categories',
+            let: { categoryId: { $arrayElemAt: ['$productDetails.category', 0] } },
+            pipeline: [
+              { 
+                $match: { 
+                  $expr: { $eq: ['$_id', '$$categoryId'] }
+                } 
+              }
+            ],
+            as: 'categoryDetails'
+          }
+        },
+        {
+          $group: {
+            _id: '$orderedItems.product',
+            name: { $first: { $arrayElemAt: ['$productDetails.productName', 0] } },
+            soldCount: { $sum: '$orderedItems.quantity' },
+            totalRevenue: { $sum: { $multiply: ['$orderedItems.quantity', '$orderedItems.price'] } },
+            currentProduct: { $first: { $arrayElemAt: ['$productDetails', 0] } },
+            currentCategory: { $first: { $arrayElemAt: ['$categoryDetails', 0] } }
+          }
+        },
+        { $sort: { totalRevenue: -1 } },
+        { $limit: 10 },
+        {
+          $project: {
+            _id: 0,
+            productId: '$_id',
+            name: 1,
+            image: { $arrayElemAt: ['$currentProduct.productImage', 0] },
+            category: '$currentCategory.name',
+            price: '$currentProduct.salePrice',
+            soldCount: 1,
+            totalRevenue: 1
+          }
+        }
+      ]);
+
+      const totalRevenue = products.reduce((sum, product) => sum + (product.totalRevenue || 0), 0);
+      return res.json({ products, totalRevenue });
+
+    } else if (type === 'categories') {
+      const categories = await Order.aggregate([
+        { $unwind: '$orderedItems' },
+        { $match: matchCondition },
+        {
+          $lookup: {
+            from: 'products',
+            let: { productId: '$orderedItems.product' },
+            pipeline: [
+              { 
+                $match: { 
+                  $expr: { $eq: ['$_id', '$$productId'] },
+                  isBlocked: false,
+                  status: { $ne: 'Discontinued' }
+                } 
+              }
+            ],
+            as: 'productDetails'
+          }
+        },
+        { $match: { 'productDetails.0': { $exists: true } } },
+        {
+          $lookup: {
+            from: 'categories',
+            let: { categoryId: { $arrayElemAt: ['$productDetails.category', 0] } },
+            pipeline: [
+              { 
+                $match: { 
+                  $expr: { $eq: ['$_id', '$$categoryId'] }
+                } 
+              }
+            ],
+            as: 'categoryDetails'
+          }
+        },
+        {
+          $group: {
+            _id: { $arrayElemAt: ['$categoryDetails._id', 0] },
+            name: { $first: { $arrayElemAt: ['$categoryDetails.name', 0] } },
+            soldCount: { $sum: '$orderedItems.quantity' },
+            totalRevenue: { $sum: { $multiply: ['$orderedItems.quantity', '$orderedItems.price'] } },
+            productCount: { $addToSet: '$orderedItems.product' }
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            categoryId: '$_id',
+            name: 1,
+            soldCount: 1,
+            totalRevenue: 1,
+            productCount: { $size: '$productCount' },
+            averagePrice: { $divide: ['$totalRevenue', '$soldCount'] }
+          }
+        },
+        { $sort: { totalRevenue: -1 } },
+        { $limit: 10 }
+      ]);
+
+      const totalRevenue = categories.reduce((sum, category) => sum + (category.totalRevenue || 0), 0);
+      return res.json({ categories, totalRevenue });
+
+    } else if (type === 'brands') {
+      const brands = await Order.aggregate([
+        { $unwind: '$orderedItems' },
+        { $match: matchCondition },
+        {
+          $lookup: {
+            from: 'products',
+            let: { productId: '$orderedItems.product' },
+            pipeline: [
+              { 
+                $match: { 
+                  $expr: { $eq: ['$_id', '$$productId'] },
+                  isBlocked: false,
+                  status: { $ne: 'Discontinued' },
+                  brand: { $exists: true, $ne: null } 
+                } 
+              }
+            ],
+            as: 'productDetails'
+          }
+        },
+        { $match: { 'productDetails.0': { $exists: true } } },
+        {
+          $group: {
+            _id: { $arrayElemAt: ['$productDetails.brand', 0] },
+            name: { $first: { $arrayElemAt: ['$productDetails.brand', 0] } },
+            soldCount: { $sum: '$orderedItems.quantity' },
+            totalRevenue: { $sum: { $multiply: ['$orderedItems.quantity', '$orderedItems.price'] } },
+            productCount: { $addToSet: '$orderedItems.product' }
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            name: 1,
+            soldCount: 1,
+            totalRevenue: 1,
+            productCount: { $size: '$productCount' },
+            averagePrice: { $divide: ['$totalRevenue', '$soldCount'] }
+          }
+        },
+        { $sort: { totalRevenue: -1 } },
+        { $limit: 10 }
+      ]);
+
+      const totalRevenue = brands.reduce((sum, brand) => sum + (brand.totalRevenue || 0), 0);
+      return res.json({ brands, totalRevenue });
+    }
+
+    return res.status(400).json({ error: 'Invalid type parameter' });
+
+  } catch (error) {
+    console.error('Error fetching top selling data:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
 module.exports = {
   loadSalesPage,
   createSaleRecord,
@@ -714,5 +933,7 @@ module.exports = {
   getSalesData,
   downloadSalesReport,
   generatePDF,
-  generateExcel
+  generateExcel,
+    
+  getTopSelling
 };

@@ -32,10 +32,10 @@
     }
   
     .content-main {
-      padding: 1.5rem;
-      max-width: 1200px;
-      margin: 0 auto;
-      margin-left: 17.5rem; /* Shifted to right */
+        padding: 1.5rem;
+    max-width: 1200px;
+    margin-left: 327px;
+
     }
   
     .content-header h2 {
@@ -382,46 +382,53 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
   <script>
-    // Add Category Form Submission
-    document.getElementById('addCategoryForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const formData = new FormData(this);
+   // Add Category Form Submission
+document.getElementById('addCategoryForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const formData = new FormData(this);
 
-      fetch('/admin/addCategory', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(Object.fromEntries(formData))
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          Swal.fire({
-            title: 'Success!',
-            text: data.message,
-            icon: 'success'
-          }).then(() => {
-            location.reload();
-          });
-        } else {
-          Swal.fire({
-            title: 'Error!',
-            text: data.message,
-            icon: 'error'
-          });
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        Swal.fire({
-          title: 'Error!',
-          text: 'An error occurred while adding the category',
-          icon: 'error'
-        });
+  fetch('/admin/addCategory', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(Object.fromEntries(formData))
+  })
+  .then(response => {
+    // Don't automatically parse as JSON, check status first
+    if (!response.ok) {
+      return response.json().then(errorData => {
+        throw new Error(errorData.message || 'Failed to add category');
       });
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data.success) {
+      Swal.fire({
+        title: 'Success!',
+        text: data.message,
+        icon: 'success'
+      }).then(() => {
+        location.reload();
+      });
+    } else {
+      Swal.fire({
+        title: 'Error!',
+        text: data.message,
+        icon: 'error'
+      });
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    Swal.fire({
+      title: 'Error!',
+      text: error.message || 'An error occurred while adding the category',
+      icon: 'error'
     });
-
+  });
+});
     // Edit Category Function
    function triggerEdit(button) {
   const id = button.dataset.id;
