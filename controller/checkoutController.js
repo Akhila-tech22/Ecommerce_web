@@ -418,11 +418,11 @@ const placeOrder = async (req, res) => {
         finalAmount,
         address: selectedAddress,
         paymentMethod: 'online',
-        paymentStatus: 'failed',  // Keep your original logic
-        status: 'payment_failed', // Keep your original logic
+        paymentStatus: 'failed',  
+        status: 'payment_failed', 
         invoiceDate: new Date(),
         razorpayOrderId: razorpayOrder.id,
-        //  ADDED: Store coupon information even for failed orders
+     
         couponApplied,
         couponDetails
       });

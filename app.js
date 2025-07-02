@@ -47,7 +47,6 @@ app.use(express.static(path.join(__dirname, 'karma-master')));
 
 //  Use Routers
 app.use('/', userRouter);
-app.use('/user', userRouter);
 app.use('/admin', adminRouter);
 
 //  Error handling middleware 
@@ -60,8 +59,11 @@ app.use((err, req, res, next) => {
     });
 });
 
-app.listen(process.env.PORT, () => {
-    console.log("Server running on port", process.env.PORT);
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log("Server running on port", port);
 });
+
 
 module.exports = app;

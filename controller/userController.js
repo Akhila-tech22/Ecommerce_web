@@ -17,6 +17,11 @@ const signup = async (req, res) => {
     try {
         const { name, phone, email, password, cPassword, code } = req.body;
         
+        // Validate required fields
+        if (!name || !phone || !email || !password) {
+            return res.render("signup", { message: "All fields are required" });
+        }
+
         if (password !== cPassword) {
             return res.render("signup", { message: "Passwords don't match" });
         }
@@ -37,10 +42,13 @@ const signup = async (req, res) => {
         }
 
         const otp = generateOtp();
+        console.log("Generated OTP for signup:", otp); // Debug log
+
         const emailSent = await sendVerificationEmail(email, otp);
 
         if (!emailSent) {
-            return res.json({ message: "email-error" });
+            console.log("Failed to send OTP email"); // Debug log
+            return res.render("signup", { message: "Failed to send OTP. Please check your email and try again." });
         }
 
         // Store referral owner ID in session if valid code was used
@@ -53,21 +61,33 @@ const signup = async (req, res) => {
         };
         req.session.userOtp = otp;
 
+        console.log("OTP stored in session:", req.session.userOtp); // Debug log
+        console.log("User data stored in session:", req.session.userData); // Debug log
+
         res.render("verify-otp");  
-        console.log("OTP sent", otp);
+        console.log("OTP sent successfully", otp);
 
     } catch (error) {
         console.error("Signup error", error);
-        res.redirect("/pageNotFound");
+        res.render("signup", { message: "An error occurred during signup. Please try again." });
     }
 };
-
-
 
 // Updated verifyOtp function with transaction recording
 const verifyOtp = async (req, res) => {
     try {
         const { otp } = req.body;
+        
+        console.log("Received OTP:", otp); // Debug log
+        console.log("Session OTP:", req.session.userOtp); // Debug log
+        
+        if (!req.session.userOtp) {
+            return res.json({ success: false, message: "OTP session expired" });
+        }
+
+        if (!req.session.userData) {
+            return res.json({ success: false, message: "User data not found in session" });
+        }
         
         if (otp === req.session.userOtp) {
             const userData = req.session.userData;
@@ -151,7 +171,6 @@ const verifyOtp = async (req, res) => {
     }
 };
 
-
 const loadHome = async (req, res) => {
     try {
         const user = req.session.user;
@@ -234,7 +253,6 @@ const loadHome = async (req, res) => {
     }
 };
 
-
 const pageNotFound = async (req,res) => {
     try {
         res.render('page-404')
@@ -243,16 +261,15 @@ const pageNotFound = async (req,res) => {
     }
 }
 
-
 const loadsignup = async (req,res) => {
     try {
-
        return res.render('signup')
     } catch(error) {
-        console.log("loadsignup error:", error.message);  // 🔥 see what went wrong
+        console.log("loadsignup error:", error.message);
         res.status(500).send("server error");
     }
 }
+
 const loadLogin = async (req, res) => {
     try {
         if (!req.session.user) {
@@ -267,66 +284,97 @@ const loadLogin = async (req, res) => {
     }
 };
 
-
-
-
 function generateOtp() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    console.log("Generated OTP:", otp); // Debug log
+    return otp;
 }
 
 async function sendVerificationEmail(email, otp) {
     try {
-        const transporter = nodemailer.createTransport({
+        console.log("Attempting to send email to:", email);
+        console.log("Using email credentials:", process.env.NODEMAILER_EMAIL);
+        
+        // Create transporter with corrected configuration
+       const transporter = nodemailer.createTransport({
             service: "gmail",
+            host: "smtp.gmail.com",
             port: 587,
             secure: false,
-            requireTLS: true,
             auth: {
                 user: process.env.NODEMAILER_EMAIL,
                 pass: process.env.NODEMAILER_PASSWORD
+            },
+            tls: {
+                rejectUnauthorized: false
             }
         });
 
-        const info = await transporter.sendMail({
-            from: process.env.NODEMAILER_EMAIL,
+        // Test connection first
+        await transporter.verify();
+        console.log('SMTP connection verified successfully');
+
+        const mailOptions = {
+            from: process.env.NODEMAILER_EMAIL, // Simplified from object
             to: email,
-            subject: "Verify your account",
-            text: `Your OTP is ${otp}`,
-            html: `<b>Your OTP: ${otp}</b>`
-        });
-        return info.accepted.length > 0;
+            subject: "Verify your account - OTP",
+            text: `Your OTP for account verification is: ${otp}. This OTP will expire in 10 minutes.`,
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #333;">Account Verification</h2>
+                    <p>Your OTP for account verification is:</p>
+                    <div style="background-color: #f4f4f4; padding: 20px; text-align: center; font-size: 24px; font-weight: bold; color: #333; margin: 20px 0; border-radius: 8px;">
+                        ${otp}
+                    </div>
+                    <p style="color: #666;">This OTP will expire in 10 minutes.</p>
+                    <p style="color: #666;">If you didn't request this, please ignore this email.</p>
+                </div>
+            `
+        };
+
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Email sent successfully:', info.messageId);
+        console.log('Response:', info.response);
+        
+        return true; // Return true on success
+        
     } catch (error) {
-        console.error("Error sending email", error);
+        console.error("Email sending error:", error);
+        
+        // More specific error logging
+        if (error.code === 'EAUTH') {
+            console.error("❌ Authentication failed. Check your Gmail App Password");
+        } else if (error.responseCode === 535) {
+            console.error("❌ Invalid credentials. Make sure 2FA is enabled and you're using App Password");
+        } else if (error.code === 'ECONNECTION') {
+            console.error("❌ Connection failed. Check internet connection");
+        }
+        
         return false;
     }
 }
 
-
-
 const securePassword = async (password) => {
     try {
-        
         const passwordHash = await bcrypt.hash(password,10);
-
         return passwordHash;
-
     } catch (error) {
-        
+        console.error("Password hashing error:", error);
+        throw error;
     }
 }
 
-
-
-
-
 const resendOtp = async (req, res) => {
     try {
-        const { email } = req.session.userData;
+        console.log("Resend OTP requested"); // Debug log
+        console.log("Session userData:", req.session.userData); // Debug log
 
-        // Check if email exists in session
-        if (!email) {
-            return res.status(400).json({ success: false, message: 'Email not found in session' });
+        if (!req.session.userData || !req.session.userData.email) {
+            console.log("No email found in session"); // Debug log
+            return res.status(400).json({ success: false, message: 'Session expired. Please start signup again.' });
         }
+
+        const { email } = req.session.userData;
 
         // Generate new OTP
         const otp = generateOtp();
@@ -337,14 +385,14 @@ const resendOtp = async (req, res) => {
         // Send OTP via email
         const emailSent = await sendVerificationEmail(email, otp);
 
-        console.log("Generated OTP:", otp);
+        console.log("Generated OTP for resend:", otp);
 
         // Check if the email was sent successfully
         if (emailSent) {
-            console.log("Resended OTP:", otp);
+            console.log("Resent OTP successfully:", otp);
             return res.status(200).json({ success: true, message: 'OTP Resent Successfully' });
         } else {
-            console.log("Failed to resend OTP", otp);
+            console.log("Failed to resend OTP:", otp);
             return res.status(500).json({ success: false, message: 'Failed to resend OTP. Please try again' });
         }
     } catch (error) {
@@ -353,11 +401,9 @@ const resendOtp = async (req, res) => {
     }
 };
 
-
-
 const login = async (req, res) => {
   try {
-    const { email, password, googleLogin } = req.body; // use a flag like 'googleLogin' to detect Google login
+    const { email, password, googleLogin } = req.body;
 
     if (!email) {
       return res.render('login', { message: "Please enter email" });
@@ -423,12 +469,8 @@ const logout = async (req,res) => {
     } catch (error) {
         console.log("logout error", error );
         res.redirect("/pageNotFound")
-        
     }
 }
-
-
-
 
 const loadShoppingPage = async (req, res) => {
     try {
@@ -574,7 +616,6 @@ const getAboutPage = async (req,res) =>{
     } 
     catch(error){
         res.redirect('/')
-
     }
 }
 
@@ -585,14 +626,6 @@ const getContact = async (req,res) => {
         res.redirect('/')
     }
 }
-
-
-
-
-
-
-
-
 
 module.exports = {loadHome,
     pageNotFound,
@@ -606,7 +639,5 @@ module.exports = {loadHome,
     loadShoppingPage,
     generateReferralCode,
     getAboutPage,
-    getContact,
- 
-   
+    getContact
 }

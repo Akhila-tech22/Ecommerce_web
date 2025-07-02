@@ -513,37 +513,139 @@ const addAddress = async (req,res) => {
     }
 }
 
-const postAddAddress = async (req,res) => {
+const postAddAddress = async (req, res) => {
     try {
-        
         const userId = req.session.user;
-        const userData = await User.findOne({_id:userId})
-        const { addressType, name, country, city, landMark, state, streetAddress, pincode, phone, altPhone } = req.body;
+        const userData = await User.findOne({ _id: userId });
 
-        const userAddress = await Address.findOne({userId:userData._id});
-        
-        if(!userAddress){
-            const newAddress = new Address({
-                userId:userData,
-                address: [{addressType, name, country, city, landMark, state, streetAddress, pincode, phone, altPhone}]
+        const {
+            addressType, name, country, city, landMark,
+            state, streetAddress, pincode, phone, altPhone
+        } = req.body;
 
+        // Trim and normalize input data
+        const normalizedData = {
+            addressType: addressType.trim(),
+            name: name.trim().toLowerCase(),
+            country: country.trim().toLowerCase(),
+            city: city.trim().toLowerCase(),
+            landMark: landMark.trim().toLowerCase(),
+            state: state.trim().toLowerCase(),
+            streetAddress: streetAddress.trim().toLowerCase(),
+            pincode: pincode.toString().trim(),
+            phone: phone.toString().trim(),
+            altPhone: altPhone.toString().trim()
+        };
+
+        const userAddress = await Address.findOne({ userId: userData._id });
+
+        if (userAddress) {
+            // Check for duplicate with normalized comparison
+            const isDuplicate = userAddress.address.some(addr => {
+                return (
+                    addr.name.trim().toLowerCase() === normalizedData.name &&
+                    addr.phone.toString().trim() === normalizedData.phone &&
+                    addr.city.trim().toLowerCase() === normalizedData.city &&
+                    addr.state.trim().toLowerCase() === normalizedData.state &&
+                    addr.streetAddress.trim().toLowerCase() === normalizedData.streetAddress &&
+                    addr.pincode.toString().trim() === normalizedData.pincode
+                );
             });
-            await newAddress.save();
-        }else{
-            userAddress.address.push({addressType, name, country, city, landMark, state, streetAddress, pincode, phone, altPhone})
+
+            if (isDuplicate) {
+                console.log("Duplicate address found in ADD");
+                return res.render("add-address", {
+                    user: userData,
+                    from: req.query.from,
+                    error: "This address already exists."
+                });
+            }
+
+            userAddress.address.push({
+                addressType, name, country, city, landMark,
+                state, streetAddress, pincode, phone, altPhone
+            });
             await userAddress.save();
+        } else {
+            const newDoc = new Address({
+                userId: userData,
+                address: [{
+                    addressType, name, country, city, landMark,
+                    state, streetAddress, pincode, phone, altPhone
+                }]
+            });
+            await newDoc.save();
         }
 
-        res.redirect("/address")
+        res.redirect("/address");
 
     } catch (error) {
-
-        console.error("Error adding address",error)
-
-        res.redirect("/pageNotFound")
-        
+        console.error("Error adding address:", error);
+        res.redirect("/pageNotFound");
     }
-}
+};
+
+const postEditAddress = async (req, res) => {
+    try {
+        const addressId = req.query.id;
+        const userId = req.session.user;
+
+        const addressDoc = await Address.findOne({ "address._id": addressId });
+        const user = await User.findById(userId);
+
+        if (!addressDoc) return res.redirect("/pageNotFound");
+
+        const data = req.body;
+
+        // Check duplicate (excluding current address being edited)
+        const isDuplicate = addressDoc.address.some(addr =>
+            addr._id.toString() !== addressId &&
+            addr.name.toLowerCase().trim() === data.name.toLowerCase().trim() &&
+            addr.phone === data.phone &&
+            addr.city.toLowerCase().trim() === data.city.toLowerCase().trim() &&
+            addr.state.toLowerCase().trim() === data.state.toLowerCase().trim() &&
+            addr.streetAddress.toLowerCase().trim() === data.streetAddress.toLowerCase().trim() &&
+            addr.pincode === data.pincode
+        );
+
+        if (isDuplicate) {
+            const currentAddress = addressDoc.address.find(a => a._id.toString() === addressId);
+            return res.render("edit-address", {
+                address: currentAddress,
+                user: user,
+                from: req.query.from,
+                error: "Another address with the same details already exists."
+            });
+        }
+
+        await Address.updateOne(
+            { "address._id": addressId },
+            {
+                $set: {
+                    "address.$": {
+                        _id: addressId,
+                        addressType: data.addressType,
+                        name: data.name,
+                        country: data.country,
+                        city: data.city,
+                        landMark: data.landMark,
+                        state: data.state,
+                        streetAddress: data.streetAddress,
+                        pincode: data.pincode,
+                        phone: data.phone,
+                        altPhone: data.altPhone
+                    }
+                }
+            }
+        );
+
+        res.redirect("/address");
+
+    } catch (error) {
+        console.error("Error editing address:", error);
+        res.redirect("/pageNotFound");
+    }
+};
 
 const editAddress = async (req, res) => {
     try {
@@ -579,46 +681,7 @@ const editAddress = async (req, res) => {
 };
 
 
-const postEditAddress = async (req,res) => {
-    try {
 
-        const data = req.body;
-        const addressId = req.query.id;
-        const user = req.session.user;
-        const findAddress = await Address.findOne({
-            "address._id":addressId
-        });
-        if(!findAddress){
-            res.redirect("/pageNotFound")
-        }
-        await Address.updateOne(
-            {"address._id":addressId},
-            {$set:{
-                "address.$":{
-                    _id:addressId,
-                    addressType:data.addressType,
-                    name:data.name,
-                    country:data.country,
-                    city:data.city,
-                    landMark:data.landMark,
-                    state:data.state,
-                    streetAddress:data.streetAddress,
-                    pincode:data.pincode,
-                    phone:data.phone,
-                    altPhone:data.altPhone
-                }
-            }}
-        )
-
-        res.redirect("/address")
-        
-    } catch (error) {
-
-        console.error("Error in editing address",error)
-        res.redirect("/pageNotFound")
-        
-    }
-}
 
 const deleteAddress = async (req,res) => {
     try {
